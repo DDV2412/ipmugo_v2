@@ -2,30 +2,44 @@ import db from "../models";
 import Journal from "../models/journal";
 import fs from "fs";
 import path from "path";
-import Article from "../models/article";
-import { IncludeOptions } from "sequelize";
+import Interest from "../models/interest";
+import { IncludeOptions, Op } from "sequelize";
+import JournalInterest from "../models/journal_interest";
 import { requestPagination } from "../helper/requestPagination";
 
 class JournalRepo {
   Journal: typeof Journal;
-  Article: typeof Article;
+  Interest: typeof Interest;
+  JournalInterest: typeof JournalInterest;
   constructor() {
     this.Journal = Journal;
-    this.Article = Article;
+    this.Interest = Interest;
+    this.JournalInterest = JournalInterest;
   }
   allJournals = async (filters: {}) => {
     try {
       const { limit, sort, page, sortBy } = requestPagination(filters);
 
+      let where = filters["search"]
+        ? {
+            [Op.or]: {
+              name: { [Op.like]: `%${filters["search"]}%` },
+              abbreviation: { [Op.like]: `%${filters["search"]}%` },
+              description: { [Op.like]: `%${filters["search"]}%` },
+            },
+          }
+        : {};
+
       let journals = await db.transaction(async (transaction) => {
         return await this.Journal.findAndCountAll({
+          where: where,
           offset: (page - 1) * limit,
           limit,
           include: [
             {
-              model: this.Article,
-              as: "articles",
+              model: this.Interest,
               transaction,
+              as: "interests",
             } as IncludeOptions,
           ],
           order: [[sortBy, sort]],
@@ -47,7 +61,13 @@ class JournalRepo {
           where: {
             id: id,
           },
-          include: [{ model: this.Article, transaction } as IncludeOptions],
+          include: [
+            {
+              model: this.Interest,
+              transaction,
+              as: "interests",
+            } as IncludeOptions,
+          ],
           transaction,
         });
       });
@@ -64,6 +84,21 @@ class JournalRepo {
         return await this.Journal.create(journalData);
       });
 
+      await journalData["interests"].map(async (interest: any) => {
+        const check = await this.Interest.findOne({
+          where: {
+            name: interest["name"],
+          },
+        });
+
+        if (check) {
+          await this.JournalInterest.create({
+            journal_id: journal["id"],
+            interest_id: check["id"],
+          });
+        }
+      });
+
       return journal;
     } catch (error: any) {
       return error["message"];
@@ -76,6 +111,35 @@ class JournalRepo {
         return await journal.update(journalData, transaction);
       });
 
+      if (
+        journalData["interests"] != undefined &&
+        journalData["interests"] != null
+      ) {
+        await journalData["interests"].map(async (interest: any) => {
+          const check = await this.Interest.findOne({
+            where: {
+              name: interest["name"],
+            },
+          });
+
+          if (check) {
+            const isExists = await this.JournalInterest.findOne({
+              where: {
+                journal_id: update["id"],
+                interest_id: check["id"],
+              },
+            });
+
+            if (!isExists) {
+              await this.JournalInterest.create({
+                journal_id: journal["id"],
+                interest_id: check["id"],
+              });
+            }
+          }
+        });
+      }
+
       return update;
     } catch (error: any) {
       return error["message"];
@@ -84,33 +148,51 @@ class JournalRepo {
 
   deleteJournal = async (journal: any) => {
     try {
-      fs.unlink(
+      if (
+        journal["thumbnail"] != null &&
         journal["thumbnail"].replace(
           `http://127.0.0.1:5000`,
-          path.join(__dirname + "/../static")
-        ),
-        (err) => {
-          if (err) {
-            return;
+          path.join(__dirname + "/../static") != undefined
+        )
+      ) {
+        fs.unlink(
+          journal["thumbnail"].replace(
+            `http://127.0.0.1:5000`,
+            path.join(__dirname + "/../static")
+          ),
+          (err) => {
+            if (err) {
+              return;
+            }
           }
-        }
-      );
+        );
+      }
 
-      fs.unlink(
+      if (
+        journal["cover"] != null &&
         journal["cover"].replace(
           `http://127.0.0.1:5000`,
-          path.join(__dirname + "/../static")
-        ),
-        (err) => {
-          if (err) {
-            return;
+          path.join(__dirname + "/../static") != undefined
+        )
+      ) {
+        fs.unlink(
+          journal["cover"].replace(
+            `http://127.0.0.1:5000`,
+            path.join(__dirname + "/../static")
+          ),
+          (err) => {
+            if (err) {
+              return;
+            }
           }
-        }
-      );
+        );
+      }
 
-      return await db.transaction(async () => {
+      let results = await db.transaction(async () => {
         return await journal.destroy();
       });
+
+      return results;
     } catch (error: any) {
       return error["message"];
     }

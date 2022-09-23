@@ -39,15 +39,14 @@ export namespace journal {
     createdAt?: CreationOptional<Date>;
     updatedAt?: CreationOptional<Date>;
     articles?: Article;
-
-    createArticle: HasManyCreateAssociationMixin<Article>;
+    Interests: NonAttribute<Interest[]>;
   }
 
   export interface Article
     extends Model<InferAttributes<Article>, InferCreationAttributes<Article>> {
     id: CreationOptional<string>;
     journal_id: ForeignKey<Journal["id"]>;
-    identifier: string;
+    identifier?: string;
     publish_date: string;
     topic: string;
     title: string;
@@ -61,14 +60,11 @@ export namespace journal {
     file: string;
     article_parsing: string;
     keywords: string;
-    oai_update: string;
+    oai_update?: string;
     createdAt?: CreationOptional<Date>;
     updatedAt?: CreationOptional<Date>;
     authors?: Author;
-
-    getJournal: BelongsToGetAssociationMixin<Journal>;
-    createAuthor: HasManyCreateAssociationMixin<Author>;
-    addAuthor: HasManyAddAssociationsMixin<Author, string>;
+    Interests: NonAttribute<Interest[]>;
   }
 
   export interface Interest
@@ -78,6 +74,28 @@ export namespace journal {
     > {
     id: CreationOptional<string>;
     name: string;
+    Journals: NonAttribute<Journal[]>;
+    Articles: NonAttribute<Article[]>;
+  }
+
+  export interface JournalInterest
+    extends Model<
+      InferAttributes<JournalInterest>,
+      InferCreationAttributes<JournalInterest>
+    > {
+    id: CreationOptional<string>;
+    journal_id: ForeignKey<Journal["id"]>;
+    interest_id: ForeignKey<Interest["id"]>;
+  }
+
+  export interface ArticleInterest
+    extends Model<
+      InferAttributes<ArticleInterest>,
+      InferCreationAttributes<ArticleInterest>
+    > {
+    id: CreationOptional<string>;
+    article_id: ForeignKey<Article["id"]>;
+    interest_id: ForeignKey<Interest["id"]>;
   }
 
   export interface Author
@@ -89,7 +107,5 @@ export namespace journal {
     email: string;
     affiliation: string;
     orcid?: string;
-
-    getArticle: BelongsToGetAssociationMixin<Article>;
   }
 }

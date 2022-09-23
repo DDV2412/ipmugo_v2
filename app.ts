@@ -17,6 +17,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import routes from "./routes";
 import errorMiddleware from "./middleware/errorMiddleware";
+import path from "path";
 
 /**
  * Import Database
@@ -30,10 +31,12 @@ import JournalRepo from "./repository/journal";
 import JournalUC from "./usecase/journal";
 import ArticleRepo from "./repository/article";
 import ArticleUC from "./usecase/article";
-import path from "path";
+import InterestUC from "./usecase/interest";
+import InterestRepo from "./repository/interest";
 
 const JournalUc = new JournalUC(new JournalRepo());
 const ArticleUc = new ArticleUC(new ArticleRepo());
+const InterestUc = new InterestUC(new InterestRepo());
 
 class Application {
   public app: Express;
@@ -69,6 +72,7 @@ class Application {
 
       req.uc.JournalUC = JournalUc;
       req.uc.ArticleUC = ArticleUc;
+      req.uc.InterestUC = InterestUc;
 
       next();
     });

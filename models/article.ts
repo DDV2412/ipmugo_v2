@@ -81,7 +81,7 @@ const Article = db.define<Article>(
       allowNull: true,
     },
     oai_update: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.DATE,
     },
   },
@@ -92,7 +92,13 @@ Article.beforeCreate(async (article: Article) => {
   article["id"] = uuidv4();
 });
 
-Article.hasMany(Author);
-Author.belongsTo(Article);
+Article.hasMany(Author, {
+  as: "authors",
+  foreignKey: "article_id",
+});
+Author.belongsTo(Article, {
+  as: "authors",
+  foreignKey: "article_id",
+});
 
 export default Article;

@@ -4,6 +4,7 @@ import Article from "../controller/article";
 import fileUpload from "../controller/uploadFile";
 import upload from "../lib/multer";
 import multer from "multer";
+import Interest from "../controller/interest";
 
 class Router {
   router: express.Router;
@@ -41,6 +42,16 @@ class Router {
     this.router.post("/article", Article.createArticle);
     this.router.put("/article/:articleId", Article.updateArticle);
     this.router.delete("/article/:articleId", Article.deleteArticle);
+
+    /**
+     * Interest
+     */
+
+    this.router.get("/interests", Interest.allInterests);
+    this.router.get("/interest/:interestId", Interest.interestById);
+    this.router.post("/interest", Interest.createInterest);
+    this.router.put("/interest/:interestId", Interest.updateInterest);
+    this.router.delete("/interest/:interestId", Interest.deleteInterest);
   }
 }
 

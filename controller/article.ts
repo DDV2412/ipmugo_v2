@@ -5,13 +5,14 @@ import validation from "../validation";
 export default {
   allArticles: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { limit, sort, page, sortBy } = req.query;
+      const { limit, sort, page, sortBy, search } = req.query;
 
       let articles = await req.uc.ArticleUC.allArticles({
         limit,
         sort,
         page,
         sortBy,
+        search,
       });
 
       if (articles == null) {
@@ -52,7 +53,11 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      console.log(req.body);
+      let journal = await req.uc.JournalUC.journalById(req.body["journal_id"]);
+
+      if (!journal) {
+        return next(new ErrorHandler("Journal not found", 404));
+      }
 
       let article = await req.uc.ArticleUC.createArticle(req.body);
 
@@ -78,14 +83,14 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let journal = await req.uc.ArticleUC.updateJournal(
+      let article = await req.uc.ArticleUC.updateArticle(
         checkArticle,
         req.body
       );
 
       res.status(200).json({
         status: "success",
-        journal: journal,
+        article: article,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
@@ -93,12 +98,7 @@ export default {
   },
   deleteArticle: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { error } = validation.journal(req.body);
-
       const articleId = req.params["articleId"];
-
-      if (error)
-        return next(new ErrorHandler(error["details"][0].message, 400));
 
       let checkArticle = await req.uc.ArticleUC.articleById(articleId);
 
@@ -106,11 +106,11 @@ export default {
         return next(new ErrorHandler("Article not found", 404));
       }
 
-      await req.uc.ArticleUC.deleteJournal(checkArticle);
+      await req.uc.ArticleUC.deleteArticle(checkArticle);
 
       res.status(200).json({
         status: "success",
-        message: `Successfully deleted journal name ${checkArticle["title"]}`,
+        message: `Successfully deleted article ${checkArticle["title"]}`,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));

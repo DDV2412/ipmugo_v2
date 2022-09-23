@@ -5,13 +5,14 @@ import validation from "../validation";
 export default {
   allJournals: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { limit, sort, page, sortBy } = req.query;
+      const { limit, sort, page, sortBy, search } = req.query;
 
       let journals = await req.uc.JournalUC.allJournals({
         limit,
         sort,
         page,
         sortBy,
+        search,
       });
 
       if (journals == null) {

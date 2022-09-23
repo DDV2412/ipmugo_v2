@@ -2,9 +2,9 @@ import { QueryInterface, DataTypes, UUIDV4 } from "sequelize";
 import Article from "../../models/article";
 import Author from "../../models/author";
 
-import { author } from "../../types/models/author";
+import { journal } from "../../types/models/journal";
 
-import AuthorType = author.Author;
+import AuthorType = journal.Author;
 
 module.exports = {
   up: async (queryInterface: QueryInterface): Promise<void> => {
@@ -30,17 +30,16 @@ module.exports = {
             onUpdate: "CASCADE",
           },
           firstname: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(48),
             allowNull: false,
           },
           lastname: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(48),
             allowNull: false,
           },
           email: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(64),
             allowNull: true,
-            unique: true,
           },
           affiliation: {
             type: DataTypes.STRING,

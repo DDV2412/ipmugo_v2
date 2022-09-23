@@ -41,6 +41,14 @@ export default {
           "string.empty": "Journal URL cannot be an empty field",
           "any.required": "Journal URL is required field",
         }),
+        interests: joi.array().items(
+          joi.object().keys({
+            name: joi.string().required().messages({
+              "string.empty": "Interest name cannot be an empty field",
+              "any.required": "Interest name is required",
+            }),
+          })
+        ),
       })
       .validate(body);
   },
@@ -121,6 +129,18 @@ export default {
             }),
           })
         ),
+      })
+      .validate(body);
+  },
+
+  interest: (body: any) => {
+    return joi
+      .object()
+      .keys({
+        name: joi.string().required().messages({
+          "string.empty": "Interest name cannot be an empty field",
+          "any.required": "Interest name is required field",
+        }),
       })
       .validate(body);
   },

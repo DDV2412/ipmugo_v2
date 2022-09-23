@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 import { journal } from "../types/models/journal";
 import Journal = journal.Journal;
 import Article from "./article";
+import Interest from "./interest";
+import JournalInterest from "./journal_interest";
 
 const Journal = db.define<Journal>(
   "Journal",
@@ -64,7 +66,7 @@ Journal.beforeCreate(async (journal: Journal) => {
   journal["id"] = uuidv4();
 });
 
-Article.belongsTo(Journal, { foreignKey: "journal_id", as: "articles" });
+Article.belongsTo(Journal, { foreignKey: "journal_id", as: "journal" });
 Journal.hasMany(Article, { foreignKey: "journal_id", as: "articles" });
 
 export default Journal;

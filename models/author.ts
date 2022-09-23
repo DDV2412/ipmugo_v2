@@ -20,17 +20,16 @@ const Author = db.define<Author>(
       allowNull: false,
     },
     firstname: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(48),
       allowNull: false,
     },
     lastname: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING(48),
       allowNull: false,
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(64),
       allowNull: true,
-      unique: true,
     },
     affiliation: {
       type: DataTypes.STRING,

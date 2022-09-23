@@ -1,15 +1,17 @@
 import { QueryInterface, DataTypes, UUIDV4 } from "sequelize";
 import Interest from "../../models/interest";
+import Journal from "../../models/journal";
+import Journal_Interest from "../../models/journal_interest";
 
 import { journal } from "../../types/models/journal";
 
-import InterestType = journal.Interest;
+import JournalInterestType = journal.JournalInterest;
 
 module.exports = {
   up: async (queryInterface: QueryInterface): Promise<void> => {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      return await queryInterface.createTable<InterestType>(
-        Interest.tableName,
+      return await queryInterface.createTable<JournalInterestType>(
+        Journal_Interest.tableName,
         {
           id: {
             type: DataTypes.UUID,
@@ -18,10 +20,25 @@ module.exports = {
             allowNull: false,
             unique: true,
           },
-          name: {
-            type: DataTypes.STRING,
+          journal_id: {
+            type: DataTypes.UUID,
             allowNull: false,
-            unique: true,
+            references: {
+              model: Journal.tableName,
+              key: "id",
+            },
+            onDelete: "CASCADE",
+            onUpdate: "CASCADE",
+          },
+          interest_id: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            references: {
+              model: Interest.tableName,
+              key: "id",
+            },
+            onDelete: "CASCADE",
+            onUpdate: "CASCADE",
           },
         },
         {
@@ -35,7 +52,7 @@ module.exports = {
 
   down: async (queryInterface: QueryInterface): Promise<void> => {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      return await queryInterface.dropTable(Interest.tableName, {
+      return await queryInterface.dropTable(Journal_Interest.tableName, {
         transaction,
       });
     });

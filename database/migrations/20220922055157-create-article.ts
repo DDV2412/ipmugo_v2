@@ -2,9 +2,9 @@ import { QueryInterface, DataTypes, UUIDV4 } from "sequelize";
 import Article from "../../models/article";
 import Journal from "../../models/journal";
 
-import { article } from "../../types/models/article";
+import { journal } from "../../types/models/journal";
 
-import ArticleType = article.Article;
+import ArticleType = journal.Article;
 
 module.exports = {
   up: async (queryInterface: QueryInterface): Promise<void> => {
@@ -89,7 +89,7 @@ module.exports = {
             allowNull: true,
           },
           oai_update: {
-            allowNull: false,
+            allowNull: true,
             type: DataTypes.DATE,
           },
           createdAt: {
