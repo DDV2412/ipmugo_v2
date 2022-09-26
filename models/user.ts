@@ -66,7 +66,7 @@ const User = db.define<User>(
       allowNull: true,
     },
   },
-  { timestamps: false }
+  { timestamps: true }
 );
 
 User.beforeCreate(async (user: User) => {

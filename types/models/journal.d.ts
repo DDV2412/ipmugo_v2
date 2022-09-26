@@ -108,4 +108,30 @@ export namespace journal {
     affiliation?: string;
     orcid?: string;
   }
+
+  export interface Citation
+    extends Model<
+      InferAttributes<Citation>,
+      InferCreationAttributes<Citation>
+    > {
+    id: CreationOptional<string>;
+    article_id: ForeignKey<Article["id"]>;
+    count: number;
+    source: string;
+  }
+
+  export interface ScopusMetric
+    extends Model<
+      InferAttributes<ScopusMetric>,
+      InferCreationAttributes<ScopusMetric>
+    > {
+    id: CreationOptional<string>;
+    journal_id: ForeignKey<Journal["id"]>;
+    sjr: number;
+    snip: number;
+    citeScore: number;
+    year: number;
+    trackScore: number;
+    trackYear: number;
+  }
 }
