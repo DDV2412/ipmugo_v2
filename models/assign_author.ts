@@ -15,11 +15,11 @@ const AssignAuthor = db.define<AssignAuthor>(
       allowNull: false,
       unique: true,
     },
-    userId: {
+    author_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    articleId: {
+    article_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },

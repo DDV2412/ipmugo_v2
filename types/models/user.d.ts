@@ -107,8 +107,8 @@ export namespace user {
       InferCreationAttributes<AuthorATArticle>
     > {
     id: CreationOptional<string>;
-    userId: ForeignKey<User["id"]>;
-    articleId: ForeignKey<Article["id"]>;
+    author_id: ForeignKey<User["id"]>;
+    article_id: ForeignKey<Article["id"]>;
   }
 
   export interface EditorInJournal
@@ -117,7 +117,7 @@ export namespace user {
       InferCreationAttributes<EditorInJournal>
     > {
     id: CreationOptional<string>;
-    userId: ForeignKey<User["id"]>;
-    journalId: ForeignKey<Journal["id"]>;
+    editor_id: ForeignKey<User["id"]>;
+    journal_id: ForeignKey<Journal["id"]>;
   }
 }

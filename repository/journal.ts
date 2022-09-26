@@ -5,37 +5,24 @@ import path from "path";
 import Interest from "../models/interest";
 import { IncludeOptions, Op } from "sequelize";
 import JournalInterest from "../models/journal_interest";
-import { requestPagination } from "../helper/requestPagination";
 import loggerWinston from "../helper/logger-winston";
+import ElasticRepo from "./elastic";
 
 class JournalRepo {
   Journal: typeof Journal;
   Interest: typeof Interest;
   JournalInterest: typeof JournalInterest;
+  Elastic: any;
   constructor() {
     this.Journal = Journal;
     this.Interest = Interest;
     this.JournalInterest = JournalInterest;
+    this.Elastic = new ElasticRepo();
   }
-  allJournals = async (filters: {}) => {
+  allJournals = async () => {
     try {
-      const { limit, sort, page, sortBy } = requestPagination(filters);
-
-      let where = filters["search"]
-        ? {
-            [Op.or]: {
-              name: { [Op.like]: `%${filters["search"]}%` },
-              abbreviation: { [Op.like]: `%${filters["search"]}%` },
-              description: { [Op.like]: `%${filters["search"]}%` },
-            },
-          }
-        : {};
-
       let journals = await db.transaction(async (transaction) => {
         return await this.Journal.findAndCountAll({
-          where: where,
-          offset: (page - 1) * limit,
-          limit,
           include: [
             {
               model: this.Interest,
@@ -43,13 +30,56 @@ class JournalRepo {
               as: "interests",
             } as IncludeOptions,
           ],
-          order: [[sortBy, sort]],
           distinct: true,
           transaction,
         });
       });
 
       return journals;
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  searchByElastic = async (filters: {}) => {
+    try {
+      const _search = filters["search"]
+        ? {
+            from: filters["from"] ? filters["from"] - 1 : 0,
+            size: filters["size"],
+            query: {
+              bool: {
+                should: [
+                  {
+                    term: { id: filters["search"] },
+                  },
+                  {
+                    term: { name: filters["search"] },
+                  },
+                  {
+                    term: { issn: filters["search"] },
+                  },
+                  {
+                    term: { description: filters["search"] },
+                  },
+                  {
+                    term: { e_issn: filters["search"] },
+                  },
+                ],
+              },
+            },
+          }
+        : {
+            size: filters["size"] ? filters["size"] : 25,
+            query: {
+              match_all: {},
+            },
+          };
+
+      let articles = await this.Elastic.search("journals", _search);
+
+      return articles;
     } catch (error) {
       loggerWinston.error(error);
       return null;

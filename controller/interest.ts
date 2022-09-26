@@ -3,28 +3,6 @@ import ErrorHandler from "../helper/errorHandler";
 import validation from "../validation";
 
 export default {
-  allInterests: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { search } = req.query;
-
-      let interests = await req.uc.InterestUC.allInterests({
-        name: search,
-      });
-
-      if (interests == null) {
-        interests = [];
-      }
-
-      res.status(200).json({
-        status: "success",
-        total: interests.count,
-        interests: interests.rows,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
-  },
-
   searchByElastic: async (req: Request, res: Response, next: NextFunction) => {
     try {
       let size: any = 10;

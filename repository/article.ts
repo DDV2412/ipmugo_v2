@@ -10,8 +10,6 @@ import { IncludeOptions, Op } from "sequelize";
 import ArticleInterest from "../models/article_interest";
 import loggerWinston from "../helper/logger-winston";
 
-import { requestPagination } from "../helper/requestPagination";
-
 class ArticleRepo {
   Article: typeof Article;
   Author: typeof Author;
@@ -28,56 +26,7 @@ class ArticleRepo {
     this.Elastic = new ElasticRepo();
   }
 
-  allArticles = async (filters: {}) => {
-    try {
-      const { limit, sort, page, sortBy } = requestPagination(filters);
-
-      let where = filters["search"]
-        ? {
-            [Op.or]: {
-              title: { [Op.like]: `%${filters["search"]}%` },
-              abstract: { [Op.like]: `%${filters["search"]}%` },
-              topic: { [Op.like]: `%${filters["search"]}%` },
-            },
-          }
-        : {};
-
-      let articles = await db.transaction(async (transaction) => {
-        return await this.Article.findAndCountAll({
-          where: where,
-          offset: (page - 1) * limit,
-          limit,
-          include: [
-            {
-              model: this.Journal,
-              as: "journal",
-              transaction,
-            } as IncludeOptions,
-            {
-              model: this.Author,
-              as: "authors",
-              transaction,
-            } as IncludeOptions,
-            {
-              model: this.Interest,
-              as: "interests",
-              transaction,
-            } as IncludeOptions,
-          ],
-          order: [[sortBy, sort]],
-          distinct: true,
-          transaction,
-        });
-      });
-
-      return articles;
-    } catch (error) {
-      loggerWinston.error(error);
-      return null;
-    }
-  };
-
-  getAllforElastic = async () => {
+  allArticles = async () => {
     try {
       let articles = await db.transaction(async (transaction) => {
         return await this.Article.findAndCountAll({
@@ -119,6 +68,9 @@ class ArticleRepo {
             query: {
               bool: {
                 should: [
+                  {
+                    term: { id: filters["search"] },
+                  },
                   {
                     term: { title: filters["search"] },
                   },

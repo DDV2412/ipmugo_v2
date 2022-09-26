@@ -20,7 +20,7 @@ module.exports = {
             allowNull: false,
             unique: true,
           },
-          userId: {
+          author_id: {
             type: DataTypes.UUID,
             allowNull: false,
             references: {
@@ -30,7 +30,7 @@ module.exports = {
             onDelete: "CASCADE",
             onUpdate: "CASCADE",
           },
-          articleId: {
+          article_id: {
             type: DataTypes.UUID,
             allowNull: false,
             references: {

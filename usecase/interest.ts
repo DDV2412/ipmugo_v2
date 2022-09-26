@@ -4,10 +4,6 @@ class InterestUC {
     this.Interest = Interest;
   }
 
-  allInterests = async (filters: {}) => {
-    return await this.Interest.allInterests(filters);
-  };
-
   searchByElastic = async (filters: {}) => {
     return await this.Interest.searchByElastic(filters);
   };

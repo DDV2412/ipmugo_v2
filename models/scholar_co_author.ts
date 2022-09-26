@@ -6,7 +6,7 @@ import { user } from "../types/models/user";
 import ScholarCOAuthor = user.ScholarCOAuthor;
 
 const ScholarCOAuthor = db.define<ScholarCOAuthor>(
-  "Scholar_CO_Author",
+  "Scholar_Co_Author",
   {
     id: {
       type: DataTypes.UUID,

@@ -3,16 +3,23 @@ import ErrorHandler from "../helper/errorHandler";
 import validation from "../validation";
 
 export default {
-  allJournals: async (req: Request, res: Response, next: NextFunction) => {
+  searchByElastic: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { limit, sort, page, sortBy, search } = req.query;
+      let size: any = 25;
 
-      let journals = await req.uc.JournalUC.allJournals({
-        limit,
-        sort,
-        page,
-        sortBy,
-        search,
+      let { search, from } = req.query;
+
+      if (
+        typeof req.query["size"] != "undefined" ||
+        req.query["size"] != null
+      ) {
+        size = req.query["size"];
+      }
+
+      let journals = await req.uc.JournalUC.searchByElastic({
+        search: search,
+        size: size,
+        from: from,
       });
 
       if (journals == null) {
@@ -21,15 +28,16 @@ export default {
 
       res.status(200).json({
         status: "success",
-        total: journals.count,
-        journals: journals.rows,
-        currentPage: req.body["from"] ? +req.body["from"] : 0,
-        countPage: Math.ceil(journals.count / req.body["size"]),
+        total: journals["hits"]["total"]["value"],
+        journals: journals["hits"]["hits"],
+        currentPage: from ? +from : 0,
+        countPage: Math.ceil(journals["hits"]["total"]["value"] / size),
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
     }
   },
+
   journalById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const journalId = req.params["journalId"];

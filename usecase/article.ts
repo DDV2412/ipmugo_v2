@@ -4,10 +4,6 @@ class ArticleUC {
     this.Article = Article;
   }
 
-  allArticles = async (filters: {}) => {
-    return await this.Article.allArticles(filters);
-  };
-
   searchByElastic = async (filters: {}) => {
     return await this.Article.searchByElastic(filters);
   };

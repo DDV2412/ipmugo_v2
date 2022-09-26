@@ -4,8 +4,8 @@ class JournalUC {
     this.Journal = Journal;
   }
 
-  allJournals = async (filters: {}) => {
-    return await this.Journal.allJournals(filters);
+  searchByElastic = async (filters: {}) => {
+    return await this.Journal.searchByElastic(filters);
   };
   journalById = async (id: string) => {
     return await this.Journal.journalById(id);

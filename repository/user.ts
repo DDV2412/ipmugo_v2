@@ -33,6 +33,16 @@ class UserRepo {
 
   userByEmail = async (email: string) => {
     try {
+      let user = await db.transaction(async (transaction) => {
+        return await this.User.findOne({
+          where: {
+            email: email,
+          },
+          transaction,
+        });
+      });
+
+      return user;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -41,30 +51,53 @@ class UserRepo {
 
   userById = async (id: string) => {
     try {
+      let user = await db.transaction(async (transaction) => {
+        return await this.User.findOne({
+          where: {
+            id: id,
+          },
+          transaction,
+        });
+      });
+
+      return user;
     } catch (error) {
       loggerWinston.error(error);
       return null;
     }
   };
 
-  createUser = async (userData: {}) => {
+  createUser = async (userData: any) => {
     try {
+      let user = await db.transaction(async (transaction) => {
+        return await this.User.create(userData);
+      });
+
+      return user;
     } catch (error) {
       loggerWinston.error(error);
       return null;
     }
   };
 
-  updateUser = async (user: {}, userData: {}) => {
+  updateUser = async (user: any, userData: {}) => {
     try {
+      let update = await db.transaction(async (transaction) => {
+        return await user.update(userData, transaction);
+      });
+
+      return update;
     } catch (error) {
       loggerWinston.error(error);
       return null;
     }
   };
 
-  deleteUser = async (user: {}) => {
+  deleteUser = async (user: any) => {
     try {
+      return await db.transaction(async (transaction) => {
+        return await user.destroy();
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;

@@ -10,7 +10,7 @@ class Sync {
   }
 
   bulk = async () => {
-    const articles = await this.Article.getAllforElastic();
+    const articles = await this.Article.allArticles();
 
     const dataset: Array<{}> = [];
 

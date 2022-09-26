@@ -15,11 +15,11 @@ const AssignEditor = db.define<AssignEditor>(
       allowNull: false,
       unique: true,
     },
-    userId: {
+    editor_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    journalId: {
+    journal_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },

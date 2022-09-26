@@ -11,18 +11,10 @@ class InterestRepo {
     this.Elastic = new ElasticRepo();
   }
 
-  allInterests = async (filters: {}) => {
+  allInterests = async () => {
     try {
-      let where = filters["search"]
-        ? {
-            name: filters["search"],
-          }
-        : {};
-
       let interests = await db.transaction(async (transaction) => {
         return await this.Interest.findAndCountAll({
-          where: where,
-          distinct: true,
           transaction,
         });
       });
