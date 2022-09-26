@@ -30,7 +30,7 @@ module.exports = {
             onUpdate: "CASCADE",
           },
           count: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: false,
           },
           source: {

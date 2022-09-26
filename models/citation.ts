@@ -20,7 +20,7 @@ const Citation = db.define<Citation>(
       allowNull: false,
     },
     count: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     source: {

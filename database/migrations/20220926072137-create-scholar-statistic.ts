@@ -30,11 +30,11 @@ module.exports = {
             onUpdate: "CASCADE",
           },
           year: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.STRING,
             allowNull: false,
           },
           count: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: false,
           },
         },

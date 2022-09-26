@@ -30,27 +30,27 @@ module.exports = {
             onUpdate: "CASCADE",
           },
           sjr: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.FLOAT,
             allowNull: false,
           },
           snip: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.FLOAT,
             allowNull: false,
           },
           citeScore: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.FLOAT,
             allowNull: false,
           },
           year: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.STRING,
             allowNull: false,
           },
           trackScore: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.FLOAT,
             allowNull: false,
           },
           trackYear: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.STRING,
             allowNull: false,
           },
         },
