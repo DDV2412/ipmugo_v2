@@ -23,6 +23,8 @@ export default {
         status: "success",
         total: journals.count,
         journals: journals.rows,
+        currentPage: req.body["from"] ? +req.body["from"] : 0,
+        countPage: Math.ceil(journals.count / req.body["size"]),
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));

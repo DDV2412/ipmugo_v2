@@ -33,7 +33,7 @@ module.exports = {
             type: DataTypes.STRING,
             allowNull: true,
           },
-          publish_date: {
+          publishDate: {
             type: DataTypes.DATE,
             allowNull: false,
           },
@@ -50,7 +50,7 @@ module.exports = {
             allowNull: true,
           },
           format: {
-            type: DataTypes.STRING(48),
+            type: DataTypes.STRING,
             allowNull: false,
             defaultValue: "application/pdf",
           },
@@ -58,7 +58,7 @@ module.exports = {
             type: DataTypes.STRING(4),
             allowNull: true,
           },
-          info: {
+          resources: {
             type: DataTypes.STRING,
             allowNull: true,
           },
@@ -80,7 +80,7 @@ module.exports = {
             type: DataTypes.STRING,
             allowNull: true,
           },
-          article_parsing: {
+          articleParsing: {
             type: DataTypes.STRING,
             allowNull: true,
           },
@@ -88,7 +88,7 @@ module.exports = {
             type: DataTypes.TEXT,
             allowNull: true,
           },
-          oai_update: {
+          dateModify: {
             allowNull: true,
             type: DataTypes.DATE,
           },

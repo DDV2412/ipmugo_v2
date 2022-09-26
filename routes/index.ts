@@ -38,6 +38,8 @@ class Router {
      */
 
     this.router.get("/articles", Article.allArticles);
+    this.router.get("/articles/_search", Article.searchByElastic);
+    this.router.get("/articles/_advanced", Article.advancedByElastic);
     this.router.get("/article/:articleId", Article.articleById);
     this.router.post("/article", Article.createArticle);
     this.router.put("/article/:articleId", Article.updateArticle);
@@ -48,6 +50,7 @@ class Router {
      */
 
     this.router.get("/interests", Interest.allInterests);
+    this.router.get("/interests/_search", Interest.searchByElastic);
     this.router.get("/interest/:interestId", Interest.interestById);
     this.router.post("/interest", Interest.createInterest);
     this.router.put("/interest/:interestId", Interest.updateInterest);

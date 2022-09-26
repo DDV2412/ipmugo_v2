@@ -3,7 +3,6 @@ import db from "./index";
 import { v4 as uuidv4 } from "uuid";
 
 import { journal } from "../types/models/journal";
-import Journal from "./journal";
 import Article = journal.Article;
 import Author from "./author";
 
@@ -25,7 +24,7 @@ const Article = db.define<Article>(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    publish_date: {
+    publishDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
@@ -42,7 +41,7 @@ const Article = db.define<Article>(
       allowNull: true,
     },
     format: {
-      type: DataTypes.STRING(48),
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "application/pdf",
     },
@@ -50,7 +49,7 @@ const Article = db.define<Article>(
       type: DataTypes.STRING(4),
       allowNull: true,
     },
-    info: {
+    resources: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -72,7 +71,7 @@ const Article = db.define<Article>(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    article_parsing: {
+    articleParsing: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -80,7 +79,7 @@ const Article = db.define<Article>(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    oai_update: {
+    dateModify: {
       allowNull: true,
       type: DataTypes.DATE,
     },

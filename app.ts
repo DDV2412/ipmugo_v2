@@ -1,10 +1,10 @@
 import apm from "elastic-apm-node";
 
-// apm.start({
-//   serviceName: process.env.ELASTIC_SERVERNAME,
-//   serverUrl: "http://localhost:8200",
-//   environment: process.env.NODE_ENV,
-// });
+apm.start({
+  serviceName: process.env.ELASTIC_SERVERNAME,
+  serverUrl: "http://localhost:8200",
+  environment: process.env.NODE_ENV,
+});
 
 import express, {
   ErrorRequestHandler,
@@ -18,6 +18,7 @@ import morgan from "morgan";
 import routes from "./routes";
 import errorMiddleware from "./middleware/errorMiddleware";
 import path from "path";
+import loggerWinston from "./helper/logger-winston";
 
 /**
  * Import Database
@@ -49,10 +50,10 @@ class Application {
      */
     db.authenticate()
       .then(() => {
-        console.log("🚩 Connection has been established successfully.");
+        loggerWinston.info("🚩 Connection has been established successfully.");
       })
       .catch((error: ErrorRequestHandler) => {
-        console.log("⛔ Unable to connect to the database:", error);
+        loggerWinston.info("⛔ Unable to connect to the database:", error);
       });
 
     /**

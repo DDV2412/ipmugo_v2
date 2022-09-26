@@ -6,6 +6,7 @@ import Interest from "../models/interest";
 import { IncludeOptions, Op } from "sequelize";
 import JournalInterest from "../models/journal_interest";
 import { requestPagination } from "../helper/requestPagination";
+import loggerWinston from "../helper/logger-winston";
 
 class JournalRepo {
   Journal: typeof Journal;
@@ -49,7 +50,8 @@ class JournalRepo {
       });
 
       return journals;
-    } catch (err: any) {
+    } catch (error) {
+      loggerWinston.error(error);
       return null;
     }
   };
@@ -73,7 +75,8 @@ class JournalRepo {
       });
 
       return journal;
-    } catch (err: any) {
+    } catch (error) {
+      loggerWinston.error(error);
       return null;
     }
   };
@@ -100,8 +103,9 @@ class JournalRepo {
       });
 
       return journal;
-    } catch (error: any) {
-      return error["message"];
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
     }
   };
 
@@ -141,8 +145,9 @@ class JournalRepo {
       }
 
       return update;
-    } catch (error: any) {
-      return error["message"];
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
     }
   };
 
@@ -193,8 +198,9 @@ class JournalRepo {
       });
 
       return results;
-    } catch (error: any) {
-      return error["message"];
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
     }
   };
 }

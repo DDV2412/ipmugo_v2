@@ -21,11 +21,11 @@ const Author = db.define<Author>(
     },
     firstname: {
       type: DataTypes.STRING(48),
-      allowNull: false,
+      allowNull: true,
     },
     lastname: {
       type: DataTypes.STRING(48),
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING(64),

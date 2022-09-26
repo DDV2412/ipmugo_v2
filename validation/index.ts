@@ -1,7 +1,7 @@
 import joi from "joi";
 
 export default {
-  journal: (body: any) => {
+  journal: (body: {}) => {
     return joi
       .object()
       .keys({
@@ -52,7 +52,7 @@ export default {
       })
       .validate(body);
   },
-  article: (body: any) => {
+  article: (body: {}) => {
     return joi
       .object()
       .keys({
@@ -60,7 +60,11 @@ export default {
           "string.empty": "Journal ID cannot be an empty field",
           "any.required": "Journal ID is required",
         }),
-        publish_date: joi.string().required().messages({
+        identifier: joi.string().required().messages({
+          "string.empty": "OJS ID cannot be an empty field",
+          "any.required": "OJS ID is required",
+        }),
+        publishDate: joi.string().required().messages({
           "string.empty": "Publish date cannot be an empty field",
           "any.required": "Publish date is required",
         }),
@@ -80,9 +84,9 @@ export default {
           "string.empty": "Year cannot be an empty field",
           "any.required": "Year is required",
         }),
-        info: joi.string().required().messages({
-          "string.empty": "Info cannot be an empty field",
-          "any.required": "Info is required",
+        resources: joi.string().required().messages({
+          "string.empty": "Resources cannot be an empty field",
+          "any.required": "Resources is required",
         }),
         pages: joi.string().required().messages({
           "string.empty": "Pages cannot be an empty field",
@@ -133,7 +137,7 @@ export default {
       .validate(body);
   },
 
-  interest: (body: any) => {
+  interest: (body: {}) => {
     return joi
       .object()
       .keys({

@@ -1,11 +1,14 @@
 import db from "../models";
 import Interest from "../models/interest";
+import loggerWinston from "../helper/logger-winston";
+import ElasticRepo from "./elastic";
 
 class InterestRepo {
   Interest: typeof Interest;
-
+  Elastic: any;
   constructor() {
     this.Interest = Interest;
+    this.Elastic = new ElasticRepo();
   }
 
   allInterests = async (filters: {}) => {
@@ -26,6 +29,7 @@ class InterestRepo {
 
       return interests;
     } catch (error) {
+      loggerWinston.error(error);
       return null;
     }
   };
@@ -42,7 +46,36 @@ class InterestRepo {
       });
 
       return interest;
-    } catch (err: any) {
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  searchByElastic = async (filters: {}) => {
+    try {
+      const _search = filters["name"]
+        ? {
+            from: filters["from"] ? filters["from"] - 1 : 0,
+            size: filters["size"],
+            query: {
+              match: {
+                name: filters["name"],
+              },
+            },
+          }
+        : {
+            size: 10000,
+            query: {
+              match_all: {},
+            },
+          };
+
+      let interests = await this.Elastic.search("interests", _search);
+
+      return interests;
+    } catch (error) {
+      loggerWinston.error(error);
       return null;
     }
   };
@@ -54,8 +87,9 @@ class InterestRepo {
       });
 
       return interest;
-    } catch (error: any) {
-      return error["message"];
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
     }
   };
 
@@ -66,8 +100,9 @@ class InterestRepo {
       });
 
       return update;
-    } catch (error: any) {
-      return error["message"];
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
     }
   };
 
@@ -78,8 +113,9 @@ class InterestRepo {
       });
 
       return results;
-    } catch (error: any) {
-      return error["message"];
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
     }
   };
 }

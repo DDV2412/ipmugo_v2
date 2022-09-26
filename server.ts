@@ -1,4 +1,5 @@
 import Application from "./app";
+import loggerWinston from "./helper/logger-winston";
 
 class App extends Application {
   constructor() {
@@ -9,7 +10,7 @@ class App extends Application {
 
   listen = () => {
     this.app.listen(this.app.get("port"), () => {
-      console.log(
+      loggerWinston.info(
         `⚡️[server]: Server is running at ${this.app.get(
           "host"
         )}:${this.app.get("port")}`

@@ -46,24 +46,24 @@ export namespace journal {
     extends Model<InferAttributes<Article>, InferCreationAttributes<Article>> {
     id: CreationOptional<string>;
     journal_id: ForeignKey<Journal["id"]>;
-    identifier?: string;
-    publish_date: string;
+    identifier: string;
+    publishDate: string;
     topic: string;
     title: string;
     abstract: string;
     format: string;
     year: string;
-    info: string;
+    resources: string;
     pages: string;
     doi: string;
     language: string;
     file: string;
-    article_parsing: string;
+    articleParsing: string;
     keywords: string;
-    oai_update?: string;
+    dateModify?: string;
     createdAt?: CreationOptional<Date>;
     updatedAt?: CreationOptional<Date>;
-    authors?: Author;
+    Authors?: NonAttribute<Author[]>;
     Interests: NonAttribute<Interest[]>;
   }
 
@@ -104,8 +104,8 @@ export namespace journal {
     article_id: ForeignKey<Article["id"]>;
     firstname: string;
     lastname: string;
-    email: string;
-    affiliation: string;
+    email?: string;
+    affiliation?: string;
     orcid?: string;
   }
 }

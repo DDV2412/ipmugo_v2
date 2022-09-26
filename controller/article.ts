@@ -23,11 +23,90 @@ export default {
         status: "success",
         total: articles.count,
         articles: articles.rows,
+        currentPage: req.body["from"] ? +req.body["from"] : 0,
+        countPage: Math.ceil(articles.count / req.body["size"]),
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
     }
   },
+
+  searchByElastic: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      let size: any = 25;
+
+      let { search, from } = req.query;
+
+      if (
+        typeof req.query["size"] != "undefined" ||
+        req.query["size"] != null
+      ) {
+        size = req.query["size"];
+      }
+
+      let articles = await req.uc.ArticleUC.searchByElastic({
+        search: search,
+        size: size,
+        from: from,
+      });
+
+      if (articles == null) {
+        articles = [];
+      }
+
+      res.status(200).json({
+        status: "success",
+        total: articles["hits"]["total"]["value"],
+        articles: articles["hits"]["hits"],
+        currentPage: from ? +from : 0,
+        countPage: Math.ceil(articles["hits"]["total"]["value"] / size),
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
+  advancedByElastic: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      let bodyQuery = {
+        from: req.query["from"] || 0,
+        size: req.query["size"] || 25,
+        query: {
+          nested: {
+            path: "authors",
+            query: {
+              bool: {
+                should: [{ match: { "authors.firstname": "dian" } }],
+              },
+            },
+          },
+        },
+      };
+
+      let articles = await req.uc.ArticleUC.advancedByElastic(bodyQuery);
+
+      if (articles == null) {
+        articles = [];
+      }
+
+      res.status(200).json({
+        status: "success",
+        total: articles["hits"]["total"]["value"],
+        articles: articles["hits"]["hits"],
+        currentPage: req.body["from"] ? +req.body["from"] : 0,
+        countPage: Math.ceil(
+          articles["hits"]["total"]["value"] / req.body["size"]
+        ),
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
   articleById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const articleId = req.params["articleId"];
@@ -46,6 +125,7 @@ export default {
       return next(new ErrorHandler(err["message"], 500));
     }
   },
+
   createArticle: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { error } = validation.article(req.body);

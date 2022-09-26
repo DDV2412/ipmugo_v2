@@ -8,7 +8,7 @@ export default {
       const { search } = req.query;
 
       let interests = await req.uc.InterestUC.allInterests({
-        search,
+        name: search,
       });
 
       if (interests == null) {
@@ -24,6 +24,42 @@ export default {
       return next(new ErrorHandler(err["message"], 500));
     }
   },
+
+  searchByElastic: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      let size: any = 10;
+
+      let { search, from } = req.query;
+
+      if (
+        typeof req.query["size"] != "undefined" ||
+        req.query["size"] != null
+      ) {
+        size = req.query["size"];
+      }
+
+      let interests = await req.uc.InterestUC.searchByElastic({
+        name: search,
+        size: size,
+        from: from,
+      });
+
+      if (interests == null) {
+        interests = [];
+      }
+
+      res.status(200).json({
+        status: "success",
+        total: interests["hits"]["total"]["value"],
+        interests: interests["hits"]["hits"],
+        currentPage: from ? +from : 0,
+        countPage: Math.ceil(interests["hits"]["total"]["value"] / size),
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
   interestById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const interestId = req.params["interestId"];

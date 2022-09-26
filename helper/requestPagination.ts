@@ -12,7 +12,7 @@ type exportedPaginationOptions = Required<paginationOptions>;
 export const requestPagination = function (
   paginationOptions: paginationOptions
 ) {
-  const maxLimit = 20;
+  const maxLimit = 25;
   let limit = Number(paginationOptions.limit) || maxLimit;
   limit = limit > maxLimit ? maxLimit : limit;
   let sort = paginationOptions.sort || "ASC";
@@ -22,13 +22,11 @@ export const requestPagination = function (
   if (sortBy === "order" && orderType === "priority") {
     sort = sort === "DESC" ? "ASC" : "DESC";
   }
-  let search = paginationOptions.search || "";
   return {
     limit,
     sort,
     page,
     sortBy,
     orderType,
-    search,
   } as exportedPaginationOptions;
 };

@@ -7,6 +7,11 @@ class InterestUC {
   allInterests = async (filters: {}) => {
     return await this.Interest.allInterests(filters);
   };
+
+  searchByElastic = async (filters: {}) => {
+    return await this.Interest.searchByElastic(filters);
+  };
+
   interestById = async (id: string) => {
     return await this.Interest.interestById(id);
   };
