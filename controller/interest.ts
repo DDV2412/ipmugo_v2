@@ -16,7 +16,7 @@ export default {
         size = req.query["size"];
       }
 
-      let interests = await req.uc.InterestUC.searchByElastic({
+      let interests = await req.InterestUC.searchByElastic({
         name: search,
         size: size,
         from: from,
@@ -42,7 +42,7 @@ export default {
     try {
       const interestId = req.params["interestId"];
 
-      let interest = await req.uc.InterestUC.interestById(interestId);
+      let interest = await req.InterestUC.interestById(interestId);
 
       if (!interest) {
         return next(new ErrorHandler("Interest not found", 404));
@@ -63,7 +63,7 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let interest = await req.uc.InterestUC.createInterest(req.body);
+      let interest = await req.InterestUC.createInterest(req.body);
 
       res.status(201).json({
         status: "success",
@@ -77,7 +77,7 @@ export default {
     try {
       const interestId = req.params["interestId"];
 
-      let checkInterest = await req.uc.InterestUC.interestById(interestId);
+      let checkInterest = await req.InterestUC.interestById(interestId);
 
       if (!checkInterest) {
         return next(new ErrorHandler("Interest not found", 404));
@@ -88,14 +88,14 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let article = await req.uc.InterestUC.updateInterest(
+      let interest = await req.InterestUC.updateInterest(
         checkInterest,
         req.body
       );
 
       res.status(200).json({
         status: "success",
-        article: article,
+        interest: interest,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
@@ -105,13 +105,13 @@ export default {
     try {
       const interestId = req.params["interestId"];
 
-      let checkInterest = await req.uc.InterestUC.interestById(interestId);
+      let checkInterest = await req.InterestUC.interestById(interestId);
 
       if (!checkInterest) {
         return next(new ErrorHandler("Interest not found", 404));
       }
 
-      await req.uc.InterestUC.deleteInterest(checkInterest);
+      await req.InterestUC.deleteInterest(checkInterest);
 
       res.status(200).json({
         status: "success",

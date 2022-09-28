@@ -16,7 +16,7 @@ export default {
         size = req.query["size"];
       }
 
-      let journals = await req.uc.JournalUC.searchByElastic({
+      let journals = await req.JournalUC.searchByElastic({
         search: search,
         size: size,
         from: from,
@@ -42,7 +42,7 @@ export default {
     try {
       const journalId = req.params["journalId"];
 
-      let journal = await req.uc.JournalUC.journalById(journalId);
+      let journal = await req.JournalUC.journalById(journalId);
 
       if (!journal) {
         return next(new ErrorHandler("Journal not found", 404));
@@ -63,7 +63,13 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let journal = await req.uc.JournalUC.createJournal(req.body);
+      let journal = await req.JournalUC.createJournal(req.body);
+
+      if (!journal) {
+        return next(
+          new ErrorHandler("Journal ISSN or E-ISSN not available", 400)
+        );
+      }
 
       res.status(201).json({
         status: "success",
@@ -77,7 +83,7 @@ export default {
     try {
       const journalId = req.params["journalId"];
 
-      let checkJournal = await req.uc.JournalUC.journalById(journalId);
+      let checkJournal = await req.JournalUC.journalById(journalId);
 
       if (!checkJournal) {
         return next(new ErrorHandler("Journal not found", 404));
@@ -87,10 +93,7 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let journal = await req.uc.JournalUC.updateJournal(
-        checkJournal,
-        req.body
-      );
+      let journal = await req.JournalUC.updateJournal(checkJournal, req.body);
 
       res.status(200).json({
         status: "success",
@@ -109,13 +112,13 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let checkJournal = await req.uc.JournalUC.journalById(journalId);
+      let checkJournal = await req.JournalUC.journalById(journalId);
 
       if (!checkJournal) {
         return next(new ErrorHandler("Journal not found", 404));
       }
 
-      await req.uc.JournalUC.deleteJournal(checkJournal);
+      await req.JournalUC.deleteJournal(checkJournal);
 
       res.status(200).json({
         status: "success",

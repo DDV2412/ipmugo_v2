@@ -34,7 +34,7 @@ export namespace user {
     salutation?: string;
     username: string;
     name: string;
-    photoProfile: string;
+    photoProfile?: string;
     email: string;
     password: string;
     googleScholar?: string;
@@ -43,7 +43,12 @@ export namespace user {
     biograph?: string;
     affiliation?: string;
     verified?: string;
+    createdAt?: CreationOptional<Date>;
+    updatedAt?: CreationOptional<Date>;
     Interests: NonAttribute<Interest[]>;
+    Roles: NonAttribute<Role[]>;
+    Articles: NonAttribute<Article[]>;
+    Journals: NonAttribute<Journal[]>;
   }
 
   export interface UserInterst
@@ -64,6 +69,8 @@ export namespace user {
     id: CreationOptional<string>;
     user_id: ForeignKey<User["id"]>;
     article_id: ForeignKey<Article["id"]>;
+    createdAt?: CreationOptional<Date>;
+    updatedAt?: CreationOptional<Date>;
   }
 
   export interface ScholarProfile
@@ -119,5 +126,21 @@ export namespace user {
     id: CreationOptional<string>;
     editor_id: ForeignKey<User["id"]>;
     journal_id: ForeignKey<Journal["id"]>;
+  }
+
+  export interface Role
+    extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
+    id: CreationOptional<string>;
+    role_name: string;
+  }
+
+  export interface UserRole
+    extends Model<
+      InferAttributes<UserRole>,
+      InferCreationAttributes<UserRole>
+    > {
+    id: CreationOptional<string>;
+    user_id: ForeignKey<User["id"]>;
+    role_id: ForeignKey<Role["id"]>;
   }
 }

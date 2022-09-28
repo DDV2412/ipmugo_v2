@@ -86,8 +86,24 @@ class ArticleRepo {
                 ],
               },
             },
+            sort: [
+              {
+                publishDate: {
+                  order: "desc",
+                  format: "strict_date_optional_time_nanos",
+                },
+              },
+            ],
           }
         : {
+            sort: [
+              {
+                publishDate: {
+                  order: "desc",
+                  format: "strict_date_optional_time_nanos",
+                },
+              },
+            ],
             size: filters["size"] ? filters["size"] : 25,
             query: {
               match_all: {},

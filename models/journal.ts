@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import { journal } from "../types/models/journal";
 import Journal = journal.Journal;
 import Article from "./article";
-import Interest from "./interest";
-import JournalInterest from "./journal_interest";
 
 const Journal = db.define<Journal>(
   "Journal",

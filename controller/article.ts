@@ -16,7 +16,7 @@ export default {
         size = req.query["size"];
       }
 
-      let articles = await req.uc.ArticleUC.searchByElastic({
+      let articles = await req.ArticleUC.searchByElastic({
         search: search,
         size: size,
         from: from,
@@ -59,7 +59,7 @@ export default {
         },
       };
 
-      let articles = await req.uc.ArticleUC.advancedByElastic(bodyQuery);
+      let articles = await req.ArticleUC.advancedByElastic(bodyQuery);
 
       if (articles == null) {
         articles = [];
@@ -83,7 +83,7 @@ export default {
     try {
       const articleId = req.params["articleId"];
 
-      let article = await req.uc.ArticleUC.articleById(articleId);
+      let article = await req.ArticleUC.articleById(articleId);
 
       if (!article) {
         return next(new ErrorHandler("Article not found", 404));
@@ -105,13 +105,17 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let journal = await req.uc.JournalUC.journalById(req.body["journal_id"]);
+      let journal = await req.JournalUC.journalById(req.body["journal_id"]);
 
       if (!journal) {
         return next(new ErrorHandler("Journal not found", 404));
       }
 
-      let article = await req.uc.ArticleUC.createArticle(req.body);
+      let article = await req.ArticleUC.createArticle(req.body);
+
+      if (!article) {
+        return next(new ErrorHandler("Article DOI not available", 400));
+      }
 
       res.status(201).json({
         status: "success",
@@ -125,7 +129,7 @@ export default {
     try {
       const articleId = req.params["articleId"];
 
-      let checkArticle = await req.uc.ArticleUC.articleById(articleId);
+      let checkArticle = await req.ArticleUC.articleById(articleId);
 
       if (!checkArticle) {
         return next(new ErrorHandler("Article not found", 404));
@@ -135,10 +139,7 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let article = await req.uc.ArticleUC.updateArticle(
-        checkArticle,
-        req.body
-      );
+      let article = await req.ArticleUC.updateArticle(checkArticle, req.body);
 
       res.status(200).json({
         status: "success",
@@ -152,13 +153,13 @@ export default {
     try {
       const articleId = req.params["articleId"];
 
-      let checkArticle = await req.uc.ArticleUC.articleById(articleId);
+      let checkArticle = await req.ArticleUC.articleById(articleId);
 
       if (!checkArticle) {
         return next(new ErrorHandler("Article not found", 404));
       }
 
-      await req.uc.ArticleUC.deleteArticle(checkArticle);
+      await req.ArticleUC.deleteArticle(checkArticle);
 
       res.status(200).json({
         status: "success",

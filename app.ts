@@ -19,6 +19,7 @@ import routes from "./routes";
 import errorMiddleware from "./middleware/errorMiddleware";
 import path from "path";
 import loggerWinston from "./helper/logger-winston";
+import passport from "./lib/passport";
 
 /**
  * Import Database
@@ -34,10 +35,18 @@ import ArticleRepo from "./repository/article";
 import ArticleUC from "./usecase/article";
 import InterestUC from "./usecase/interest";
 import InterestRepo from "./repository/interest";
+import UserRepo from "./repository/user";
+import UserUC from "./usecase/user";
+import RoleUC from "./usecase/role";
+import RoleRepo from "./repository/role";
+import AuthUC from "./usecase/auth";
 
 const JournalUc = new JournalUC(new JournalRepo());
 const ArticleUc = new ArticleUC(new ArticleRepo());
 const InterestUc = new InterestUC(new InterestRepo());
+const UserUc = new UserUC(new UserRepo());
+const RoleUc = new RoleUC(new RoleRepo());
+const AuthUc = new AuthUC(new UserRepo());
 
 class Application {
   public app: Express;
@@ -59,6 +68,7 @@ class Application {
     /**
      * Init Middleware
      */
+
     this.app.use(helmet());
     this.app.use(morgan("combined"));
     this.app.use(express.json());
@@ -69,12 +79,12 @@ class Application {
      */
 
     this.app.use((req: Request, res: Response, next: NextFunction) => {
-      req.uc = [];
-
-      req.uc.JournalUC = JournalUc;
-      req.uc.ArticleUC = ArticleUc;
-      req.uc.InterestUC = InterestUc;
-
+      req.JournalUC = JournalUc;
+      req.ArticleUC = ArticleUc;
+      req.InterestUC = InterestUc;
+      req.UserUC = UserUc;
+      req.RoleUC = RoleUc;
+      req.AuthUC = AuthUc;
       next();
     });
 
@@ -85,6 +95,7 @@ class Application {
 
     this.app.use(express.static(path.join(__dirname, "/./static")));
 
+    this.app.use(passport.initialize());
     this.app.use(errorMiddleware);
   }
 }

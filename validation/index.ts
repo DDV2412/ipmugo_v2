@@ -41,14 +41,23 @@ export default {
           "string.empty": "Journal URL cannot be an empty field",
           "any.required": "Journal URL is required field",
         }),
-        interests: joi.array().items(
-          joi.object().keys({
-            name: joi.string().required().messages({
-              "string.empty": "Interest name cannot be an empty field",
-              "any.required": "Interest name is required",
-            }),
-          })
-        ),
+        interests: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                name: joi.string().required().messages({
+                  "string.empty": "Interest name cannot be an empty field",
+                  "any.required": "Interest name is required",
+                }),
+              })
+          )
+          .messages({
+            "any.required": "Interest is required",
+          }),
       })
       .validate(body);
   },
@@ -100,39 +109,60 @@ export default {
           "string.empty": "Keywords cannot be an empty field",
           "any.required": "Keywords is required",
         }),
-        authors: joi.array().items(
-          joi.object().keys({
-            firstname: joi.string().required().messages({
-              "string.empty": "Author firstname cannot be an empty field",
-              "any.required": "Author firstname is required",
-            }),
-            lastname: joi.string().required().messages({
-              "string.empty": "Author lastname cannot be an empty field",
-              "any.required": "Author lastname is required",
-            }),
-            email: joi.string().email().required().messages({
-              "string.empty": "Author email cannot be an empty field",
-              "any.required": "Author email is required",
-              "string.email": `Please insert a valid email address'`,
-            }),
-            affiliation: joi.string().required().messages({
-              "string.empty": "Author affiliation cannot be an empty field",
-              "any.required": "Author affiliation is required",
-            }),
-            orcid: joi.string().required().messages({
-              "string.empty": "Author orcid cannot be an empty field",
-              "any.required": "Author orcid is required",
-            }),
-          })
-        ),
-        interests: joi.array().items(
-          joi.object().keys({
-            name: joi.string().required().messages({
-              "string.empty": "Interest name cannot be an empty field",
-              "any.required": "Interest name is required",
-            }),
-          })
-        ),
+        authors: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                firstname: joi.string().required().messages({
+                  "string.empty": "Author firstname cannot be an empty field",
+                  "any.required": "Author firstname is required",
+                }),
+                lastname: joi.string().required().messages({
+                  "string.empty": "Author lastname cannot be an empty field",
+                  "any.required": "Author lastname is required",
+                }),
+                email: joi.string().email().required().messages({
+                  "string.empty": "Author email cannot be an empty field",
+                  "any.required": "Author email is required",
+                  "string.email": `Please insert a valid email address'`,
+                }),
+                affiliation: joi.string().required().messages({
+                  "string.empty": "Author affiliation cannot be an empty field",
+                  "any.required": "Author affiliation is required",
+                }),
+                orcid: joi
+                  .string()
+                  .required()
+                  .messages({
+                    "string.empty": "Author orcid cannot be an empty field",
+                    "any.required": "Author orcid is required",
+                  })
+                  .messages({
+                    "any.required": "Authors is required",
+                  }),
+              })
+          ),
+        interests: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                name: joi.string().required().messages({
+                  "string.empty": "Interest name cannot be an empty field",
+                  "any.required": "Interest name is required",
+                }),
+              })
+          )
+          .messages({
+            "any.required": "Interest is required",
+          }),
       })
       .validate(body);
   },
@@ -144,6 +174,201 @@ export default {
         name: joi.string().required().messages({
           "string.empty": "Interest name cannot be an empty field",
           "any.required": "Interest name is required field",
+        }),
+      })
+      .validate(body);
+  },
+
+  register: (body: {}) => {
+    return joi
+      .object()
+      .keys({
+        username: joi.string().required().messages({
+          "string.empty": "Username cannot be an empty field",
+          "any.required": "Username is required field",
+        }),
+        name: joi.string().required().messages({
+          "string.empty": "Name cannot be an empty field",
+          "any.required": "Name is required field",
+        }),
+        email: joi.string().required().email().messages({
+          "string.empty": "Email cannot be an empty field",
+          "any.required": `Email is a required field`,
+          "string.email": `Please insert a valid email address'`,
+        }),
+        password: joi
+          .string()
+          .required()
+          .min(8)
+          .pattern(
+            new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
+          )
+          .messages({
+            "string.empty": "Password cannot be an empty field",
+            "string.pattern.base":
+              "Invalid password, alphanumeric and characters",
+            "string.min": `Password should have a minimum length of {#limit}`,
+            "any.required": `Password is a required field`,
+          }),
+      })
+      .validate(body);
+  },
+
+  login: (body: {}) => {
+    return joi
+      .object()
+      .keys({
+        username: joi.string().required().messages({
+          "string.empty": "Username cannot be an empty field",
+          "any.required": "Username is required field",
+        }),
+        password: joi
+          .string()
+          .required()
+          .min(8)
+          .pattern(
+            new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
+          )
+          .messages({
+            "string.empty": "Password cannot be an empty field",
+            "string.pattern.base":
+              "Invalid password, alphanumeric and characters",
+            "string.min": `Password should have a minimum length of {#limit}`,
+            "any.required": `Password is a required field`,
+          }),
+      })
+      .validate(body);
+  },
+
+  user: (body: {}) => {
+    return joi
+      .object()
+      .keys({
+        username: joi.string().required().messages({
+          "string.empty": "Username cannot be an empty field",
+          "any.required": "Username is required field",
+        }),
+        name: joi.string().required().messages({
+          "string.empty": "Name cannot be an empty field",
+          "any.required": "Name is required field",
+        }),
+        email: joi.string().required().email().messages({
+          "string.empty": "Email cannot be an empty field",
+          "any.required": `Email is a required field`,
+          "string.email": `Please insert a valid email address'`,
+        }),
+        password: joi
+          .string()
+          .required()
+          .min(8)
+          .pattern(
+            new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
+          )
+          .messages({
+            "string.empty": "Password cannot be an empty field",
+            "string.pattern.base":
+              "Invalid password, alphanumeric and characters",
+            "string.min": `Password should have a minimum length of {#limit}`,
+            "any.required": `Password is a required field`,
+          }),
+        roles: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                role_name: joi.string().required().messages({
+                  "string.empty": "Role name cannot be an empty field",
+                  "any.required": "Role name is required field",
+                }),
+              })
+          )
+          .messages({
+            "any.required": "Roles is required",
+          }),
+      })
+      .validate(body);
+  },
+
+  profileUpdate: (body: {}) => {
+    return joi
+      .object()
+      .keys({
+        username: joi.string().required().messages({
+          "string.empty": "Username cannot be an empty field",
+          "any.required": "Username is required field",
+        }),
+        name: joi.string().required().messages({
+          "string.empty": "Name cannot be an empty field",
+          "any.required": "Name is required field",
+        }),
+        email: joi.string().required().email().messages({
+          "string.empty": "Email cannot be an empty field",
+          "any.required": `Email is a required field`,
+          "string.email": `Please insert a valid email address'`,
+        }),
+        password: joi
+          .string()
+          .required()
+          .min(8)
+          .pattern(
+            new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
+          )
+          .messages({
+            "string.empty": "Password cannot be an empty field",
+            "string.pattern.base":
+              "Invalid password, alphanumeric and characters",
+            "string.min": `Password should have a minimum length of {#limit}`,
+            "any.required": `Password is a required field`,
+          }),
+      })
+      .validate(body);
+  },
+
+  forgotPass: (body: {}) => {
+    return joi
+      .object()
+      .keys({
+        email: joi.string().required().email().messages({
+          "string.empty": "Email cannot be an empty field",
+          "any.required": `Email is a required field`,
+          "string.email": `Please insert a valid email address'`,
+        }),
+      })
+      .validate(body);
+  },
+
+  resetPassword: (body: {}) => {
+    return joi
+      .object()
+      .keys({
+        password: joi
+          .string()
+          .required()
+          .min(8)
+          .pattern(
+            new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
+          )
+          .messages({
+            "string.empty": "Password cannot be an empty field",
+            "string.pattern.base":
+              "Invalid password, alphanumeric and characters",
+            "string.min": `Password should have a minimum length of {#limit}`,
+            "any.required": `Password is a required field`,
+          }),
+      })
+      .validate(body);
+  },
+
+  role: (body: {}) => {
+    return joi
+      .object()
+      .keys({
+        role_name: joi.string().required().messages({
+          "string.empty": "Role name cannot be an empty field",
+          "any.required": "Role name is required field",
         }),
       })
       .validate(body);

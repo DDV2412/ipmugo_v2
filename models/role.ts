@@ -3,10 +3,10 @@ import db from "./index";
 import { v4 as uuidv4 } from "uuid";
 
 import { user } from "../types/models/user";
-import Bookmark = user.Bookmark;
+import Role = user.Role;
 
-const Bookmark = db.define<Bookmark>(
-  "Bookmark",
+const Role = db.define<Role>(
+  "Role",
   {
     id: {
       type: DataTypes.UUID,
@@ -15,20 +15,17 @@ const Bookmark = db.define<Bookmark>(
       allowNull: false,
       unique: true,
     },
-    user_id: {
-      type: DataTypes.UUID,
+    role_name: {
+      type: DataTypes.STRING,
       allowNull: false,
-    },
-    article_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
+      unique: true,
     },
   },
-  { timestamps: true }
+  { timestamps: false }
 );
 
-Bookmark.beforeCreate(async (user: Bookmark) => {
-  user["id"] = uuidv4();
+Role.beforeCreate(async (role: Role) => {
+  role["id"] = uuidv4();
 });
 
-export default Bookmark;
+export default Role;

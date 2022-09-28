@@ -1,17 +1,17 @@
 import { QueryInterface, DataTypes, UUIDV4 } from "sequelize";
+import Role from "../../models/role";
 import User from "../../models/user";
-import Bookmark from "../../models/bookmark";
+import UserRole from "../../models/user_role";
 
 import { user } from "../../types/models/user";
 
-import BookmarkType = user.Bookmark;
-import Article from "../../models/article";
+import UserRoleType = user.UserRole;
 
 module.exports = {
   up: async (queryInterface: QueryInterface): Promise<void> => {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      return await queryInterface.createTable<BookmarkType>(
-        Bookmark.tableName,
+      return await queryInterface.createTable<UserRoleType>(
+        UserRole.tableName,
         {
           id: {
             type: DataTypes.UUID,
@@ -30,23 +30,15 @@ module.exports = {
             onDelete: "CASCADE",
             onUpdate: "CASCADE",
           },
-          article_id: {
+          role_id: {
             type: DataTypes.UUID,
             allowNull: false,
             references: {
-              model: Article.tableName,
+              model: Role.tableName,
               key: "id",
             },
             onDelete: "CASCADE",
             onUpdate: "CASCADE",
-          },
-          createdAt: {
-            allowNull: false,
-            type: DataTypes.DATE,
-          },
-          updatedAt: {
-            allowNull: false,
-            type: DataTypes.DATE,
           },
         },
         {
@@ -60,7 +52,7 @@ module.exports = {
 
   down: async (queryInterface: QueryInterface): Promise<void> => {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      return await queryInterface.dropTable(Bookmark.tableName, {
+      return await queryInterface.dropTable(UserRole.tableName, {
         transaction,
       });
     });
