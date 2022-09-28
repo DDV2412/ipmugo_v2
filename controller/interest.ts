@@ -89,13 +89,13 @@ export default {
         return next(new ErrorHandler(error["details"][0].message, 400));
 
       let interest = await req.InterestUC.updateInterest(
-        checkInterest,
+        checkInterest["id"],
         req.body
       );
 
       res.status(200).json({
         status: "success",
-        interest: interest,
+        message: `Successfully deleted interest ${checkInterest["name"]}`,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
@@ -111,7 +111,7 @@ export default {
         return next(new ErrorHandler("Interest not found", 404));
       }
 
-      await req.InterestUC.deleteInterest(checkInterest);
+      await req.InterestUC.deleteInterest(checkInterest["id"]);
 
       res.status(200).json({
         status: "success",

@@ -36,11 +36,7 @@ class Router {
      * Journal
      */
 
-    this.router.get(
-      "/journals",
-      AuthMiddleware.authenticate,
-      Journal.searchByElastic
-    );
+    this.router.get("/journals", Journal.searchByElastic);
     this.router.get("/journal/:journalId", Journal.journalById);
     this.router.post("/journal", Journal.createJournal);
     this.router.put("/journal/:journalId", Journal.updateJournal);
@@ -77,9 +73,22 @@ class Router {
     this.router.put("/user/:userId", User.updateUser);
     this.router.delete("/user/:userId", User.deleteUser);
 
-    this.router.post("/bookmark", User.saveBookmark);
-    this.router.delete("/bookmark/:article_id/:user_id", User.deleteBookmark);
+    this.router.post(
+      "/bookmark/:article_id",
+      AuthMiddleware.authenticate,
+      User.saveBookmark
+    );
+    this.router.delete(
+      "/delete-bookmark/:article_id",
+      AuthMiddleware.authenticate,
+      User.deleteBookmark
+    );
 
+    this.router.post("/assign-author", User.assignAuthor);
+    this.router.delete("/assign-author", User.deleteAuthor);
+
+    this.router.post("/assign-editor", User.assignEditor);
+    this.router.delete("/assign-editor", User.deleteEditor);
     /**
      * Role
      */

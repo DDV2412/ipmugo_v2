@@ -15,12 +15,13 @@ class UserUC {
   createUser = async (userData: {}) => {
     return await this.User.createUser(userData);
   };
-  updateUser = async (user: {}, userData: {}) => {
-    return await this.User.updateUser(user, userData);
+  updateUser = async (user_id: string, userData: {}) => {
+    return await this.User.updateUser(user_id, userData);
   };
-  deleteUser = async (user: {}) => {
-    return await this.User.deleteUser(user);
+  deleteUser = async (user_id: string) => {
+    return await this.User.deleteUser(user_id);
   };
+
   saveBookmark = async (userData: {}) => {
     return await this.User.saveBookmark(userData);
   };
@@ -29,8 +30,20 @@ class UserUC {
     return await this.User.deleteBookmark(options);
   };
 
-  bookmarkById = async (options: {}) => {
-    return await this.User.bookmarkById(options);
+  assignAuthor = async (userData: {}) => {
+    return await this.User.assignAuthor(userData);
+  };
+
+  deleteAuthor = async (options: {}) => {
+    return await this.User.deleteAuthor(options);
+  };
+
+  assignEditor = async (userData: {}) => {
+    return await this.User.assignEditor(userData);
+  };
+
+  deleteEditor = async (options: {}) => {
+    return await this.User.deleteEditor(options);
   };
 }
 

@@ -85,10 +85,15 @@ class InterestRepo {
     }
   };
 
-  updateInterest = async (interest: any, interestData: any) => {
+  updateInterest = async (interest_id: string, interestData: any) => {
     try {
       let update = await db.transaction(async (transaction) => {
-        return await interest.update(interestData, transaction);
+        return await this.Interest.update(interestData, {
+          where: {
+            id: interest_id,
+          },
+          transaction,
+        });
       });
 
       return update;
@@ -98,10 +103,15 @@ class InterestRepo {
     }
   };
 
-  deleteInterest = async (interest: any) => {
+  deleteInterest = async (interest_id: string) => {
     try {
-      let results = await db.transaction(async () => {
-        return await interest.destroy();
+      let results = await db.transaction(async (transaction) => {
+        return await this.Interest.destroy({
+          where: {
+            id: interest_id,
+          },
+          transaction,
+        });
       });
 
       return results;

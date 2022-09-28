@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon server.ts",
     "start": "ts-node server.ts",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": "https://github.com/DDV2412/ipmugo_v2.git",
   "author": "DDV2412 <dhyanputra24@gmail.com>",

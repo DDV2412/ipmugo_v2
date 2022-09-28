@@ -139,11 +139,14 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let article = await req.ArticleUC.updateArticle(checkArticle, req.body);
+      let article = await req.ArticleUC.updateArticle(
+        checkArticle["id"],
+        req.body
+      );
 
       res.status(200).json({
         status: "success",
-        article: article,
+        message: `Successfully updated article ${checkArticle["title"]}`,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
@@ -159,7 +162,7 @@ export default {
         return next(new ErrorHandler("Article not found", 404));
       }
 
-      await req.ArticleUC.deleteArticle(checkArticle);
+      await req.ArticleUC.deleteArticle(checkArticle["id"]);
 
       res.status(200).json({
         status: "success",

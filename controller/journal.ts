@@ -93,11 +93,14 @@ export default {
       if (error)
         return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let journal = await req.JournalUC.updateJournal(checkJournal, req.body);
+      let journal = await req.JournalUC.updateJournal(
+        checkJournal["id"],
+        req.body
+      );
 
       res.status(200).json({
         status: "success",
-        journal: journal,
+        message: `Successfully deleted journal ${checkJournal["name"]}`,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
@@ -118,7 +121,7 @@ export default {
         return next(new ErrorHandler("Journal not found", 404));
       }
 
-      await req.JournalUC.deleteJournal(checkJournal);
+      await req.JournalUC.deleteJournal(checkJournal["id"]);
 
       res.status(200).json({
         status: "success",

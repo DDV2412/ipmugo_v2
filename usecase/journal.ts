@@ -10,16 +10,16 @@ class JournalUC {
   journalById = async (id: string) => {
     return await this.Journal.journalById(id);
   };
-  createJournal = async (journalData: any) => {
+  createJournal = async (journalData: {}) => {
     return await this.Journal.createJournal(journalData);
   };
 
-  updateJournal = async (journal: any, journalData: any) => {
-    return await this.Journal.updateJournal(journal, journalData);
+  updateJournal = async (journal_id: string, journalData: {}) => {
+    return await this.Journal.updateJournal(journal_id, journalData);
   };
 
-  deleteJournal = async (journal: any) => {
-    return await this.Journal.deleteJournal(journal);
+  deleteJournal = async (journal_id: string) => {
+    return await this.Journal.deleteJournal(journal_id);
   };
 }
 

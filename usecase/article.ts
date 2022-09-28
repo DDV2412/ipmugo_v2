@@ -19,16 +19,16 @@ class ArticleUC {
   articleByDOI = async (doi: string) => {
     return await this.Article.articleByDOI(doi);
   };
-  createArticle = async (articleData: any) => {
+  createArticle = async (articleData: {}) => {
     return await this.Article.createArticle(articleData);
   };
 
-  updateArticle = async (article: any, articleData: any) => {
-    return await this.Article.updateArticle(article, articleData);
+  updateArticle = async (article_id: string, articleData: {}) => {
+    return await this.Article.updateArticle(article_id, articleData);
   };
 
-  deleteArticle = async (article: any) => {
-    return await this.Article.deleteArticle(article);
+  deleteArticle = async (article_id: string) => {
+    return await this.Article.deleteArticle(article_id);
   };
 }
 

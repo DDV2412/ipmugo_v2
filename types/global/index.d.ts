@@ -7,7 +7,7 @@ declare global {
       UserUC: any;
       RoleUC: any;
       AuthUC: any;
-      user: any;
+      User: any;
     }
   }
 }

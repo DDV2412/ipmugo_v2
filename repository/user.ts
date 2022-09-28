@@ -7,6 +7,8 @@ import UserRole from "../models/user_role";
 import Bookmark from "../models/bookmark";
 import Article from "../models/article";
 import bcryptjs from "bcryptjs";
+import AssignAuthor from "../models/assign_author";
+import AssignEditor from "../models/assign_editor";
 
 class UserRepo {
   User: typeof User;
@@ -14,13 +16,16 @@ class UserRepo {
   UserRole: typeof UserRole;
   Bookmark: typeof Bookmark;
   Article: typeof Article;
-
+  AssignAuthor: typeof AssignAuthor;
+  AssignEditor: typeof AssignEditor;
   constructor() {
     this.User = User;
     this.Role = Role;
     this.UserRole = UserRole;
     this.Bookmark = Bookmark;
     this.Article = Article;
+    this.AssignAuthor = AssignAuthor;
+    this.AssignEditor = AssignEditor;
   }
 
   allUsers = async (filters: {}) => {
@@ -150,22 +155,27 @@ class UserRepo {
     }
   };
 
-  updateUser = async (user: any, userData: {}) => {
+  updateUser = async (user_id: string, userData: {}) => {
     try {
       let update = await db.transaction(async (transaction) => {
-        return await user.update(userData, transaction);
+        return await this.User.update(userData, {
+          where: {
+            id: user_id,
+          },
+          transaction,
+        });
       });
 
       userData["role"].map(async (role: any) => {
         await this.UserRole.destroy({
           where: {
-            user_id: user["id"],
+            user_id: user_id,
           },
           truncate: true,
         });
 
         await this.UserRole.create({
-          user_id: user["id"],
+          user_id: user_id,
           role_id: role["id"],
         });
       });
@@ -177,10 +187,15 @@ class UserRepo {
     }
   };
 
-  deleteUser = async (user: any) => {
+  deleteUser = async (user_id: string) => {
     try {
       return await db.transaction(async (transaction) => {
-        return await user.destroy();
+        return await this.User.destroy({
+          where: {
+            id: user_id,
+          },
+          transaction,
+        });
       });
     } catch (error) {
       loggerWinston.error(error);
@@ -202,12 +217,19 @@ class UserRepo {
   deleteBookmark = async (options: {}) => {
     try {
       return await db.transaction(async (transaction) => {
-        return await this.Bookmark.destroy({
+        let bookmark = await this.Bookmark.findOne({
           where: {
             user_id: options["user_id"],
             article_id: options["article_id"],
           },
+          transaction,
         });
+
+        if (!bookmark) {
+          return null;
+        }
+
+        return await bookmark.destroy();
       });
     } catch (error) {
       loggerWinston.error(error);
@@ -215,15 +237,67 @@ class UserRepo {
     }
   };
 
-  bookmarkById = async (options: {}) => {
+  assignAuthor = async (userData: {}) => {
     try {
       return await db.transaction(async (transaction) => {
-        return await this.Bookmark.findOne({
+        return await this.AssignAuthor.create(userData);
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  deleteAuthor = async (options: {}) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        let author = await this.AssignAuthor.findOne({
           where: {
-            user_id: options["user_id"],
+            author_id: options["author_id"],
             article_id: options["article_id"],
           },
+          transaction,
         });
+
+        if (!author) {
+          return null;
+        }
+
+        return await author.destroy();
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  assignEditor = async (userData: {}) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        return await this.AssignEditor.create(userData);
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  deleteEditor = async (options: {}) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        let author = await this.AssignEditor.findOne({
+          where: {
+            editor_id: options["editor_id"],
+            journal_id: options["journal_id"],
+          },
+          transaction,
+        });
+
+        if (!author) {
+          return null;
+        }
+
+        return await author.destroy();
       });
     } catch (error) {
       loggerWinston.error(error);

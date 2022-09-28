@@ -9,7 +9,11 @@ export default {
         return next(new ErrorHandler("Unauthorized", 401));
       }
 
-      req.user = user;
+      req.User = user;
+
+      if (!req.User) {
+        return next(new ErrorHandler("Unauthorized", 401));
+      }
 
       next();
     })(req, res, next);

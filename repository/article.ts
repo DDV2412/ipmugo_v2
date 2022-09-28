@@ -4,11 +4,10 @@ import Author from "../models/author";
 import Interest from "../models/interest";
 import Journal from "../models/journal";
 import ElasticRepo from "./elastic";
-import fs from "fs";
-import path from "path";
-import { IncludeOptions, Op } from "sequelize";
+import { IncludeOptions } from "sequelize";
 import ArticleInterest from "../models/article_interest";
 import loggerWinston from "../helper/logger-winston";
+import User from "../models/user";
 
 class ArticleRepo {
   Article: typeof Article;
@@ -17,6 +16,7 @@ class ArticleRepo {
   Journal: typeof Journal;
   ArticleInterest: typeof ArticleInterest;
   Elastic: any;
+  User: typeof User;
   constructor() {
     this.Article = Article;
     this.Author = Author;
@@ -24,6 +24,7 @@ class ArticleRepo {
     this.Journal = Journal;
     this.ArticleInterest = ArticleInterest;
     this.Elastic = new ElasticRepo();
+    this.User = User;
   }
 
   allArticles = async () => {
@@ -44,6 +45,11 @@ class ArticleRepo {
             {
               model: this.Interest,
               as: "interests",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.User,
+              as: "assign_authors",
               transaction,
             } as IncludeOptions,
           ],
@@ -249,10 +255,15 @@ class ArticleRepo {
     }
   };
 
-  updateArticle = async (article: any, articleData: any) => {
+  updateArticle = async (article_id: string, articleData: any) => {
     try {
       let update = await db.transaction(async (transaction) => {
-        return await article.update(articleData, transaction);
+        return await this.Article.update(articleData, {
+          where: {
+            id: article_id,
+          },
+          transaction,
+        });
       });
 
       if (
@@ -274,14 +285,14 @@ class ArticleRepo {
           if (check["hits"]["total"]["value"] != 0) {
             const isExists = await this.ArticleInterest.findOne({
               where: {
-                article_id: article["id"],
+                article_id: article_id,
                 interest_id: check["hits"]["hits"][0]["_id"],
               },
             });
 
             if (!isExists) {
               await this.ArticleInterest.create({
-                article_id: article["id"],
+                article_id: article_id,
                 interest_id: check["hits"]["hits"][0]["_id"],
               });
             }
@@ -297,14 +308,14 @@ class ArticleRepo {
         await articleData["authors"].map(async (author: any) => {
           const authorCheck = await this.Author.findOne({
             where: {
-              article_id: update["id"],
+              article_id: article_id,
               firstname: author["firstname"],
             },
           });
 
           if (!authorCheck) {
             await this.Author.create({
-              article_id: article["id"],
+              article_id: article_id,
               firstname: author["firstname"],
               lastname: author["lastname"],
               email: author["email"] ? author["email"] : null,
@@ -324,30 +335,15 @@ class ArticleRepo {
     }
   };
 
-  deleteArticle = async (article: any) => {
+  deleteArticle = async (article_id: string) => {
     try {
-      if (
-        article["file"] != null &&
-        article["file"].replace(
-          `http://127.0.0.1:5000`,
-          path.join(__dirname + "/../static")
-        ) != undefined
-      ) {
-        fs.unlink(
-          article["file"].replace(
-            `http://127.0.0.1:5000`,
-            path.join(__dirname + "/../static")
-          ),
-          (err) => {
-            if (err) {
-              return;
-            }
-          }
-        );
-      }
-
-      let results = await db.transaction(async () => {
-        return await article.destroy();
+      let results = await db.transaction(async (transaction) => {
+        return await this.Article.destroy({
+          where: {
+            id: article_id,
+          },
+          transaction,
+        });
       });
 
       return results;

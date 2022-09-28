@@ -12,11 +12,11 @@ class RoleUC {
   createRole = async (roleData: {}) => {
     return await this.Role.createRole(roleData);
   };
-  updateRole = async (role: {}, roleData: {}) => {
-    return await this.Role.updateRole(role, roleData);
+  updateRole = async (role_id: string, roleData: {}) => {
+    return await this.Role.updateRole(role_id, roleData);
   };
-  deleteRole = async (role: {}) => {
-    return await this.Role.deleteRole(role);
+  deleteRole = async (role_id: string) => {
+    return await this.Role.deleteRole(role_id);
   };
 }
 

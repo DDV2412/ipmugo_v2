@@ -1,23 +1,24 @@
 import db from "../models";
 import Journal from "../models/journal";
-import fs from "fs";
-import path from "path";
 import Interest from "../models/interest";
 import { IncludeOptions, Op } from "sequelize";
 import JournalInterest from "../models/journal_interest";
 import loggerWinston from "../helper/logger-winston";
 import ElasticRepo from "./elastic";
+import User from "../models/user";
 
 class JournalRepo {
   Journal: typeof Journal;
   Interest: typeof Interest;
   JournalInterest: typeof JournalInterest;
   Elastic: any;
+  User: typeof User;
   constructor() {
     this.Journal = Journal;
     this.Interest = Interest;
     this.JournalInterest = JournalInterest;
     this.Elastic = new ElasticRepo();
+    this.User = User;
   }
   allJournals = async () => {
     try {
@@ -28,6 +29,11 @@ class JournalRepo {
               model: this.Interest,
               transaction,
               as: "interests",
+            } as IncludeOptions,
+            {
+              model: this.User,
+              transaction,
+              as: "editorials",
             } as IncludeOptions,
           ],
           distinct: true,
@@ -139,10 +145,15 @@ class JournalRepo {
     }
   };
 
-  updateJournal = async (journal: any, journalData: any) => {
+  updateJournal = async (journal_id: string, journalData: any) => {
     try {
       let update = await db.transaction(async (transaction) => {
-        return await journal.update(journalData, transaction);
+        return await this.Journal.update(journalData, {
+          where: {
+            id: journal_id,
+          },
+          transaction,
+        });
       });
 
       if (
@@ -159,14 +170,14 @@ class JournalRepo {
           if (check) {
             const isExists = await this.JournalInterest.findOne({
               where: {
-                journal_id: update["id"],
+                journal_id: journal_id,
                 interest_id: check["id"],
               },
             });
 
             if (!isExists) {
               await this.JournalInterest.create({
-                journal_id: journal["id"],
+                journal_id: journal_id,
                 interest_id: check["id"],
               });
             }
@@ -181,50 +192,15 @@ class JournalRepo {
     }
   };
 
-  deleteJournal = async (journal: any) => {
+  deleteJournal = async (journal_id: string) => {
     try {
-      if (
-        journal["thumbnail"] != null &&
-        journal["thumbnail"].replace(
-          `http://127.0.0.1:5000`,
-          path.join(__dirname + "/../static") != undefined
-        )
-      ) {
-        fs.unlink(
-          journal["thumbnail"].replace(
-            `http://127.0.0.1:5000`,
-            path.join(__dirname + "/../static")
-          ),
-          (err) => {
-            if (err) {
-              return;
-            }
-          }
-        );
-      }
-
-      if (
-        journal["cover"] != null &&
-        journal["cover"].replace(
-          `http://127.0.0.1:5000`,
-          path.join(__dirname + "/../static") != undefined
-        )
-      ) {
-        fs.unlink(
-          journal["cover"].replace(
-            `http://127.0.0.1:5000`,
-            path.join(__dirname + "/../static")
-          ),
-          (err) => {
-            if (err) {
-              return;
-            }
-          }
-        );
-      }
-
-      let results = await db.transaction(async () => {
-        return await journal.destroy();
+      let results = await db.transaction(async (transaction) => {
+        return await this.Journal.destroy({
+          where: {
+            id: journal_id,
+          },
+          transaction,
+        });
       });
 
       return results;

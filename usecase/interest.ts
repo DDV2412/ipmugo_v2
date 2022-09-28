@@ -11,16 +11,16 @@ class InterestUC {
   interestById = async (id: string) => {
     return await this.Interest.interestById(id);
   };
-  createInterest = async (interestData: any) => {
+  createInterest = async (interestData: {}) => {
     return await this.Interest.createInterest(interestData);
   };
 
-  updateInterest = async (interest: any, interestData: any) => {
-    return await this.Interest.updateInterest(interest, interestData);
+  updateInterest = async (interest_id: string, interestData: {}) => {
+    return await this.Interest.updateInterest(interest_id, interestData);
   };
 
-  deleteInterest = async (interest: any) => {
-    return await this.Interest.deleteInterest(interest);
+  deleteInterest = async (interest_id: string) => {
+    return await this.Interest.deleteInterest(interest_id);
   };
 }
 

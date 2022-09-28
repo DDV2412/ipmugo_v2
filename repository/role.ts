@@ -54,10 +54,15 @@ class RoleRepo {
     }
   };
 
-  updateRole = async (role: any, roleData: {}) => {
+  updateRole = async (role_id: string, roleData: {}) => {
     try {
       let update = await db.transaction(async (transaction) => {
-        return await role.update(roleData, transaction);
+        return await this.Role.update(roleData, {
+          where: {
+            id: role_id,
+          },
+          transaction,
+        });
       });
 
       return update;
@@ -67,10 +72,15 @@ class RoleRepo {
     }
   };
 
-  deleteRole = async (role: any) => {
+  deleteRole = async (role_id: string) => {
     try {
       return await db.transaction(async (transaction) => {
-        return await role.destroy();
+        return await this.Role.destroy({
+          where: {
+            id: role_id,
+          },
+          transaction,
+        });
       });
     } catch (error) {
       loggerWinston.error(error);

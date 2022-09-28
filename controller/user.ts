@@ -110,11 +110,11 @@ export default {
       ) {
         req.body["password"] = bcryptjs.hashSync(req.body["password"], 12);
       }
-      let user = await req.UserUC.updateUser(checkuser, req.body);
+      let user = await req.UserUC.updateUser(checkuser["id"], req.body);
 
       res.status(200).json({
         status: "success",
-        user: user,
+        message: `Successfully updated user ${checkuser["name"]}`,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));
@@ -130,7 +130,7 @@ export default {
         return next(new ErrorHandler("User not found", 404));
       }
 
-      await req.UserUC.deleteUser(checkuser);
+      await req.UserUC.deleteUser(checkuser["id"]);
 
       res.status(200).json({
         status: "success",
@@ -143,13 +143,10 @@ export default {
 
   saveBookmark: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user_id, article_id } = req.body;
-
-      let checkuser = await req.UserUC.getUserById(user_id);
-
-      if (!checkuser) {
-        return next(new ErrorHandler("User not found", 404));
+      if (!req.User) {
+        return next(new ErrorHandler("Unauthorized", 401));
       }
+      const { article_id } = req.params;
 
       let checkArticle = await req.ArticleUC.articleById(article_id);
 
@@ -158,7 +155,7 @@ export default {
       }
 
       await req.UserUC.saveBookmark({
-        user_id: checkuser["id"],
+        user_id: req.User["id"],
         article_id: checkArticle["id"],
       });
 
@@ -173,25 +170,140 @@ export default {
 
   deleteBookmark: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user_id, article_id } = req.params;
-
-      let checkBook = await req.UserUC.bookmarkById({
-        user_id: user_id,
-        article_id: article_id,
-      });
-
-      if (!checkBook) {
-        return next(new ErrorHandler("Bookmark not found", 404));
+      if (!req.User) {
+        return next(new ErrorHandler("Unauthorized", 401));
       }
 
+      const { article_id } = req.params;
+
       await req.UserUC.deleteBookmark({
-        user_id: user_id,
+        user_id: req.User["id"],
         article_id: article_id,
       });
 
       res.status(200).json({
         status: "success",
         message: `Successfully deleted bookmark`,
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
+  assignAuthor: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { author_id, article_id } = req.body;
+
+      let checkUser = await req.UserUC.getUserById(author_id);
+
+      if (!checkUser) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      let checkArticle = await req.ArticleUC.articleById(article_id);
+
+      if (!checkArticle) {
+        return next(new ErrorHandler("Article not found", 404));
+      }
+
+      await req.UserUC.assignAuthor({
+        author_id: checkUser["id"],
+        article_id: checkArticle["id"],
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: `Successfully added author ${checkArticle["title"]}`,
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
+  deleteAuthor: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { author_id, article_id } = req.body;
+
+      let checkUser = await req.UserUC.getUserById(author_id);
+
+      if (!checkUser) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      let checkArticle = await req.ArticleUC.articleById(article_id);
+
+      if (!checkArticle) {
+        return next(new ErrorHandler("Article not found", 404));
+      }
+
+      await req.UserUC.deleteAuthor({
+        author_id: checkUser["id"],
+        article_id: checkArticle["id"],
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: `Successfully deleted author`,
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
+  assignEditor: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { editor_id, journal_id } = req.body;
+
+      let checkUser = await req.UserUC.getUserById(editor_id);
+
+      if (!checkUser) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      let checkJournal = await req.JournalUC.journalById(journal_id);
+
+      if (!checkJournal) {
+        return next(new ErrorHandler("Journal not found", 404));
+      }
+
+      await req.UserUC.assignEditor({
+        author_id: checkUser["id"],
+        article_id: checkJournal["id"],
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: `Successfully added editor ${checkJournal["name"]}`,
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
+  deleteEditor: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { editor_id, journal_id } = req.body;
+
+      let checkUser = await req.UserUC.getUserById(editor_id);
+
+      if (!checkUser) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      let checkJournal = await req.JournalUC.journalById(journal_id);
+
+      if (!checkJournal) {
+        return next(new ErrorHandler("Journal not found", 404));
+      }
+
+      await req.UserUC.deleteEditor({
+        author_id: checkUser["id"],
+        article_id: checkJournal["id"],
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: `Successfully deleted editor`,
       });
     } catch (err: any) {
       return next(new ErrorHandler(err["message"], 500));

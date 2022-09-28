@@ -1,6 +1,6 @@
 import RoleController from "../controller/role";
 
-let mockRoleUC = {
+let mockRoleUCSuccess = {
   allRoles: jest.fn().mockReturnValue({
     id: "e5a33e97-6c7c-4d69-8fc5-800d4442a461",
     role_name: "admin",
@@ -17,6 +17,15 @@ let mockRoleUC = {
     id: "e5a33e97-6c7c-4d69-8fc5-800d4442a461",
     role_name: "manager",
   }),
+
+  deleteRole: jest.fn().mockReturnValue(1),
+};
+
+let mockRoleUCFail = {
+  allRoles: jest.fn().mockReturnValue(null),
+  roleByName: jest.fn().mockReturnValue(null),
+  createRole: jest.fn().mockReturnValue(null),
+  updateRole: jest.fn().mockReturnValue(null),
 
   deleteRole: jest.fn().mockReturnValue(null),
 };
@@ -45,15 +54,32 @@ describe("Role controller testing", () => {
       {},
       {},
       {
-        RoleUC: mockRoleUC,
+        RoleUC: mockRoleUCSuccess,
       }
     );
     let res = mockResponse();
     await RoleController.allRoles(req, res, jest.fn());
 
-    expect(mockRoleUC.allRoles).toBeCalledWith();
+    expect(mockRoleUCSuccess.allRoles).toBeCalledWith();
     expect(res.status).toBeCalledWith(200);
   });
+
+  test("Get roles null", async () => {
+    let req: any = mockRequest(
+      {},
+      {},
+      {},
+      {
+        RoleUC: mockRoleUCFail,
+      }
+    );
+    let res = mockResponse();
+    await RoleController.allRoles(req, res, jest.fn());
+
+    expect(mockRoleUCFail.allRoles).toBeCalledWith();
+    expect(res.status).toBeCalledWith(200);
+  });
+
   test("Get role by name", async () => {
     let req: any = mockRequest(
       {},
@@ -62,15 +88,34 @@ describe("Role controller testing", () => {
         roleName: "admin",
       },
       {
-        RoleUC: mockRoleUC,
+        RoleUC: mockRoleUCSuccess,
       }
     );
     let res = mockResponse();
     await RoleController.roleByName(req, res, jest.fn());
 
-    expect(mockRoleUC.roleByName).toBeCalledWith(req.params["roleName"]);
+    expect(mockRoleUCSuccess.roleByName).toBeCalledWith(req.params["roleName"]);
     expect(res.status).toBeCalledWith(200);
   });
+
+  test("Get role by name null", async () => {
+    let req: any = mockRequest(
+      {},
+      {},
+      {
+        roleName: "manager",
+      },
+      {
+        RoleUC: mockRoleUCFail,
+      }
+    );
+    let res = mockResponse();
+    await RoleController.roleByName(req, res, jest.fn());
+
+    expect(mockRoleUCFail.roleByName).toBeCalledWith(req.params["roleName"]);
+    expect(res.status);
+  });
+
   test("Create new role", async () => {
     let req: any = mockRequest(
       {
@@ -79,15 +124,16 @@ describe("Role controller testing", () => {
       {},
       {},
       {
-        RoleUC: mockRoleUC,
+        RoleUC: mockRoleUCSuccess,
       }
     );
     let res = mockResponse();
     await RoleController.createRole(req, res, jest.fn());
 
-    expect(mockRoleUC.createRole).toBeCalledWith(req.body);
+    expect(mockRoleUCSuccess.createRole).toBeCalledWith(req.body);
     expect(res.status).toBeCalledWith(201);
   });
+
   test("Update role", async () => {
     let req: any = mockRequest(
       {
@@ -98,20 +144,19 @@ describe("Role controller testing", () => {
         roleName: "admin",
       },
       {
-        RoleUC: mockRoleUC,
+        RoleUC: mockRoleUCSuccess,
       }
     );
     let res = mockResponse();
     await RoleController.updateRole(req, res, jest.fn());
 
-    let role = {
-      id: "e5a33e97-6c7c-4d69-8fc5-800d4442a461",
-      role_name: "admin",
-    };
-
-    expect(mockRoleUC.updateRole);
+    expect(mockRoleUCSuccess.updateRole).toBeCalledWith(
+      "e5a33e97-6c7c-4d69-8fc5-800d4442a461",
+      req.body
+    );
     expect(res.status).toBeCalledWith(200);
   });
+
   test("Delete role", async () => {
     let req: any = mockRequest(
       {},
@@ -120,13 +165,15 @@ describe("Role controller testing", () => {
         roleName: "admin",
       },
       {
-        RoleUC: mockRoleUC,
+        RoleUC: mockRoleUCSuccess,
       }
     );
     let res = mockResponse();
     await RoleController.deleteRole(req, res, jest.fn());
 
-    expect(mockRoleUC.deleteRole);
+    expect(mockRoleUCSuccess.deleteRole).toBeCalledWith(
+      "e5a33e97-6c7c-4d69-8fc5-800d4442a461"
+    );
     expect(res.status).toBeCalledWith(200);
   });
 });
