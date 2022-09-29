@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { journal } from "../types/models/journal";
 import Article = journal.Article;
 import Author from "./author";
+import Citation from "./citation";
 
 const Article = db.define<Article>(
   "Article",
@@ -97,6 +98,16 @@ Article.hasMany(Author, {
 });
 Author.belongsTo(Article, {
   as: "authors",
+  foreignKey: "article_id",
+});
+
+Article.hasMany(Citation, {
+  as: "citations",
+  foreignKey: "article_id",
+});
+
+Citation.belongsTo(Article, {
+  as: "article",
   foreignKey: "article_id",
 });
 

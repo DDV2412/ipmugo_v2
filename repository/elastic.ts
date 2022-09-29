@@ -9,7 +9,7 @@ class ElasticRepo {
   constructor() {
     this.client = elastic.client;
   }
-  bulk = async (dataset: [{}], options: any) => {
+  bulk = async (dataset: any, options: any) => {
     const isExists = await this.client.indices.exists({
       index: options["indexName"],
     });
@@ -44,7 +44,7 @@ class ElasticRepo {
       );
     }
 
-    const operations = await dataset.flatMap((doc) => [
+    const operations = await dataset.flatMap((doc: any) => [
       {
         index: {
           _index: options["indexName"],

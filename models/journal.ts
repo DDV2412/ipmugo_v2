@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { journal } from "../types/models/journal";
 import Journal = journal.Journal;
 import Article from "./article";
+import ScopusMetric from "./scopus_metric";
 
 const Journal = db.define<Journal>(
   "Journal",
@@ -66,5 +67,14 @@ Journal.beforeCreate(async (journal: Journal) => {
 
 Article.belongsTo(Journal, { foreignKey: "journal_id", as: "journal" });
 Journal.hasMany(Article, { foreignKey: "journal_id", as: "articles" });
+Journal.hasOne(ScopusMetric, {
+  foreignKey: "journal_id",
+  as: "scopus_metric",
+});
+
+ScopusMetric.belongsTo(Journal, {
+  foreignKey: "journal_id",
+  as: "journal",
+});
 
 export default Journal;

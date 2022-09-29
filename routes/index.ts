@@ -36,7 +36,8 @@ class Router {
      * Journal
      */
 
-    this.router.get("/journals", Journal.searchByElastic);
+    this.router.get("/journals", Journal.allJournals);
+    this.router.get("/journals/_search", Journal.searchByElastic);
     this.router.get("/journal/:journalId", Journal.journalById);
     this.router.post("/journal", Journal.createJournal);
     this.router.put("/journal/:journalId", Journal.updateJournal);
@@ -46,7 +47,8 @@ class Router {
      * Article
      */
 
-    this.router.get("/articles", Article.searchByElastic);
+    this.router.get("/articles", Article.allArticles);
+    this.router.get("/articles/_search", Article.searchByElastic);
     this.router.get("/articles/_advanced", Article.advancedByElastic);
     this.router.get("/article/:articleId", Article.articleById);
     this.router.post("/article", Article.createArticle);

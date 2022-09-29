@@ -24,10 +24,6 @@ let mockRoleUCSuccess = {
 let mockRoleUCFail = {
   allRoles: jest.fn().mockReturnValue(null),
   roleByName: jest.fn().mockReturnValue(null),
-  createRole: jest.fn().mockReturnValue(null),
-  updateRole: jest.fn().mockReturnValue(null),
-
-  deleteRole: jest.fn().mockReturnValue(null),
 };
 
 const mockRequest = (body: {}, query: {}, params: {}, use_case: {}) => {
@@ -98,7 +94,7 @@ describe("Role controller testing", () => {
     expect(res.status).toBeCalledWith(200);
   });
 
-  test("Get role by name null", async () => {
+  test("Get role by name return null", async () => {
     let req: any = mockRequest(
       {},
       {},
@@ -137,11 +133,11 @@ describe("Role controller testing", () => {
   test("Update role", async () => {
     let req: any = mockRequest(
       {
-        role_name: "manager",
+        role_name: "admin",
       },
       {},
       {
-        roleName: "admin",
+        roleName: "manager",
       },
       {
         RoleUC: mockRoleUCSuccess,

@@ -38,6 +38,8 @@ class Sync {
         journal: article["journal"],
         authors: article["authors"],
         interests: article["interests"],
+        assign_authors: article["assign_authors"],
+        citations: article["citations"],
       });
     });
 
@@ -64,6 +66,7 @@ class Sync {
         createdAt: { type: "date" },
         updatedAt: { type: "date" },
         journal: {
+          type: "object",
           properties: {
             id: { type: "keyword" },
             name: { type: "text" },
@@ -77,10 +80,25 @@ class Sync {
             base_url: { type: "keyword" },
             createdAt: { type: "date" },
             updatedAt: { type: "date" },
+            scopus_metric: {
+              type: "object",
+              properties: {
+                id: { type: "keyword" },
+                journal_id: { type: "keyword" },
+                sjr: { type: "fload" },
+                snip: { type: "fload" },
+                citeScore: { type: "fload" },
+                year: { type: "number" },
+                trackScore: { type: "fload" },
+                trackYear: { type: "number" },
+              },
+            },
           },
         },
         authors: { type: "nested" },
         interests: { type: "nested" },
+        assign_authors: { type: "nested" },
+        citations: { type: "nested" },
       },
     });
   };

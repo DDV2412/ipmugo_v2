@@ -29,6 +29,8 @@ class Sync {
         createdAt: journal["createdAt"],
         updatedAt: journal["updatedAt"],
         interests: journal["interests"],
+        editorials: journal["editorials"],
+        scopus_metric: journal["scopus_metric"],
       });
     });
 
@@ -48,6 +50,20 @@ class Sync {
         createdAt: { type: "date" },
         updatedAt: { type: "date" },
         interests: { type: "nested" },
+        editorials: { type: "nested" },
+        scopus_metric: {
+          type: "object",
+          properties: {
+            id: { type: "keyword" },
+            journal_id: { type: "keyword" },
+            sjr: { type: "fload" },
+            snip: { type: "fload" },
+            citeScore: { type: "fload" },
+            year: { type: "number" },
+            trackScore: { type: "fload" },
+            trackYear: { type: "number" },
+          },
+        },
       },
     });
   };

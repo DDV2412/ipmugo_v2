@@ -3,6 +3,24 @@ import ErrorHandler from "../helper/errorHandler";
 import validation from "../validation";
 
 export default {
+  allArticles: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      let articles = await req.ArticleUC.allArticles();
+
+      if (articles == null) {
+        articles = [];
+      }
+
+      res.status(200).json({
+        status: "success",
+        total: articles.count,
+        articles: articles.rows,
+      });
+    } catch (err: any) {
+      return next(new ErrorHandler(err["message"], 500));
+    }
+  },
+
   searchByElastic: async (req: Request, res: Response, next: NextFunction) => {
     try {
       let size: any = 25;

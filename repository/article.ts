@@ -8,6 +8,8 @@ import { IncludeOptions } from "sequelize";
 import ArticleInterest from "../models/article_interest";
 import loggerWinston from "../helper/logger-winston";
 import User from "../models/user";
+import Citation from "../models/citation";
+import ScopusMetric from "../models/scopus_metric";
 
 class ArticleRepo {
   Article: typeof Article;
@@ -15,6 +17,8 @@ class ArticleRepo {
   Interest: typeof Interest;
   Journal: typeof Journal;
   ArticleInterest: typeof ArticleInterest;
+  Citation: typeof Citation;
+  ScopusMetric: typeof ScopusMetric;
   Elastic: any;
   User: typeof User;
   constructor() {
@@ -25,6 +29,8 @@ class ArticleRepo {
     this.ArticleInterest = ArticleInterest;
     this.Elastic = new ElasticRepo();
     this.User = User;
+    this.Citation = Citation;
+    this.ScopusMetric = ScopusMetric;
   }
 
   allArticles = async () => {
@@ -35,6 +41,7 @@ class ArticleRepo {
             {
               model: this.Journal,
               as: "journal",
+              include: [{ model: this.ScopusMetric, as: "scopus_metric" }],
               transaction,
             } as IncludeOptions,
             {
@@ -50,6 +57,11 @@ class ArticleRepo {
             {
               model: this.User,
               as: "assign_authors",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Citation,
+              as: "citations",
               transaction,
             } as IncludeOptions,
           ],
@@ -347,6 +359,43 @@ class ArticleRepo {
       });
 
       return results;
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  citations = async (article_id: string, citationData: {}) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        let citation = await this.Citation.findOne({
+          where: {
+            article_id: article_id,
+            source: citationData["source"],
+          },
+        });
+
+        if (citation) {
+          return await this.Citation.update(
+            {
+              count: citationData["count"],
+            },
+            {
+              where: {
+                article_id: article_id,
+                source: citationData["source"],
+              },
+              transaction,
+            }
+          );
+        } else {
+          return await this.Citation.create({
+            article_id: article_id,
+            source: citationData["source"],
+            count: citationData["count"],
+          });
+        }
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;

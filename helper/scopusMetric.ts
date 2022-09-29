@@ -36,3 +36,5 @@ class ScopusMetric {
     }
   };
 }
+
+export default new ScopusMetric();

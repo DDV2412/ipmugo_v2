@@ -40,6 +40,7 @@ export namespace journal {
     updatedAt?: CreationOptional<Date>;
     articles?: Article;
     Interests: NonAttribute<Interest[]>;
+    ScopusMetric: NonAttribute<ScopusMetric>;
   }
 
   export interface Article
@@ -65,6 +66,7 @@ export namespace journal {
     updatedAt?: CreationOptional<Date>;
     Authors?: NonAttribute<Author[]>;
     Interests: NonAttribute<Interest[]>;
+    Citations: NonAttribute<Citation[]>;
   }
 
   export interface Interest

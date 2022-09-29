@@ -6,12 +6,14 @@ import JournalInterest from "../models/journal_interest";
 import loggerWinston from "../helper/logger-winston";
 import ElasticRepo from "./elastic";
 import User from "../models/user";
+import ScopusMetric from "../models/scopus_metric";
 
 class JournalRepo {
   Journal: typeof Journal;
   Interest: typeof Interest;
   JournalInterest: typeof JournalInterest;
   Elastic: any;
+  ScopusMetric: typeof ScopusMetric;
   User: typeof User;
   constructor() {
     this.Journal = Journal;
@@ -19,6 +21,7 @@ class JournalRepo {
     this.JournalInterest = JournalInterest;
     this.Elastic = new ElasticRepo();
     this.User = User;
+    this.ScopusMetric = ScopusMetric;
   }
   allJournals = async () => {
     try {
@@ -34,6 +37,11 @@ class JournalRepo {
               model: this.User,
               transaction,
               as: "editorials",
+            } as IncludeOptions,
+            {
+              model: this.ScopusMetric,
+              transaction,
+              as: "scopus_metric",
             } as IncludeOptions,
           ],
           distinct: true,
@@ -204,6 +212,69 @@ class JournalRepo {
       });
 
       return results;
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  scopusMetric = async (journal_id: string, metricData: {}) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        let scopusMetric = await this.ScopusMetric.findOne({
+          where: {
+            journal_id: journal_id,
+          },
+        });
+
+        if (
+          metricData["interests"] != undefined &&
+          metricData["interests"] != null
+        ) {
+          await metricData["interests"].map(async (interest: any) => {
+            const check = await this.Interest.findOne({
+              where: {
+                name: interest["$"],
+              },
+            });
+
+            if (check) {
+              const isExists = await this.JournalInterest.findOne({
+                where: {
+                  journal_id: journal_id,
+                  interest_id: check["id"],
+                },
+              });
+
+              if (!isExists) {
+                await this.JournalInterest.create({
+                  journal_id: journal_id,
+                  interest_id: check["id"],
+                });
+              }
+            }
+          });
+        }
+
+        if (scopusMetric) {
+          return await this.ScopusMetric.update(metricData, {
+            where: {
+              journal_id: journal_id,
+            },
+            transaction,
+          });
+        } else {
+          return await this.ScopusMetric.create({
+            journal_id: journal_id,
+            sjr: metricData["sjr"],
+            snip: metricData["snip"],
+            citeScore: metricData["citeScore"],
+            year: metricData["year"],
+            trackScore: metricData["trackScore"],
+            trackYear: metricData["trackYear"],
+          });
+        }
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;
