@@ -8,6 +8,8 @@ declare global {
       RoleUC: any;
       AuthUC: any;
       User: any;
+      CitationUC: any;
+      FeatruredUC: any;
     }
   }
 }

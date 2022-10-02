@@ -107,7 +107,7 @@ Article.belongsToMany(User, {
 User.belongsToMany(Article, {
   through: AssignAuthor.tableName,
   foreignKey: "author_id",
-  as: "article_publish",
+  as: "publish_articles",
 });
 Article.belongsToMany(User, {
   through: AssignAuthor.tableName,

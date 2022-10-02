@@ -2,7 +2,9 @@ import apm from "elastic-apm-node";
 
 apm.start({
   serviceName: process.env.ELASTIC_SERVERNAME,
-  serverUrl: "http://localhost:8200",
+  serverUrl:
+    "https://5d337c58575542468125d5b1f152fc1b.apm.us-central1.gcp.cloud.es.io:443",
+  secretToken: "rbTt6cERt8IkTJSsXC",
   environment: process.env.NODE_ENV,
 });
 
@@ -40,6 +42,10 @@ import UserUC from "./usecase/user";
 import RoleUC from "./usecase/role";
 import RoleRepo from "./repository/role";
 import AuthUC from "./usecase/auth";
+import CitationUC from "./usecase/citation";
+import CitationRepo from "./repository/citations";
+import FeatruredUC from "./usecase/featured";
+import FeatruredRepo from "./repository/fearured";
 
 const JournalUc = new JournalUC(new JournalRepo());
 const ArticleUc = new ArticleUC(new ArticleRepo());
@@ -47,6 +53,8 @@ const InterestUc = new InterestUC(new InterestRepo());
 const UserUc = new UserUC(new UserRepo());
 const RoleUc = new RoleUC(new RoleRepo());
 const AuthUc = new AuthUC(new UserRepo());
+const CitationUc = new CitationUC(new CitationRepo());
+const FeatruredUc = new FeatruredUC(new FeatruredRepo());
 
 class Application {
   public app: Express;
@@ -85,6 +93,8 @@ class Application {
       req.UserUC = UserUc;
       req.RoleUC = RoleUc;
       req.AuthUC = AuthUc;
+      req.CitationUC = CitationUc;
+      req.FeatruredUC = FeatruredUc;
       next();
     });
 

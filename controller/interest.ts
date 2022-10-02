@@ -3,122 +3,80 @@ import ErrorHandler from "../helper/errorHandler";
 import validation from "../validation";
 
 export default {
-  searchByElastic: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      let size: any = 10;
+  allInterests: async (req: Request, res: Response, next: NextFunction) => {
+    let interests = await req.InterestUC.allInterests();
 
-      let { search, from } = req.query;
-
-      if (
-        typeof req.query["size"] != "undefined" ||
-        req.query["size"] != null
-      ) {
-        size = req.query["size"];
-      }
-
-      let interests = await req.InterestUC.searchByElastic({
-        name: search,
-        size: size,
-        from: from,
-      });
-
-      if (interests == null) {
-        interests = [];
-      }
-
-      res.status(200).json({
-        status: "success",
-        total: interests["hits"]["total"]["value"],
-        interests: interests["hits"]["hits"],
-        currentPage: from ? +from : 0,
-        countPage: Math.ceil(interests["hits"]["total"]["value"] / size),
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (interests == null) {
+      interests = [];
     }
+
+    res.json({
+      status: "success",
+      total: interests.count,
+      interests: interests.rows,
+    });
   },
 
   interestById: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const interestId = req.params["interestId"];
+    const interestId = req.params["interestId"];
 
-      let interest = await req.InterestUC.interestById(interestId);
+    let interest = await req.InterestUC.interestById(interestId);
 
-      if (!interest) {
-        return next(new ErrorHandler("Interest not found", 404));
-      }
-
-      res.status(200).json({
-        status: "success",
-        interest: interest,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (!interest) {
+      return next(new ErrorHandler("Interest not found", 404));
     }
+
+    res.json({
+      status: "success",
+      interest: interest,
+    });
   },
   createInterest: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { error } = validation.interest(req.body);
+    const { error } = validation.interest(req.body);
 
-      if (error)
-        return next(new ErrorHandler(error["details"][0].message, 400));
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let interest = await req.InterestUC.createInterest(req.body);
+    let interest = await req.InterestUC.createInterest(req.body);
 
-      res.status(201).json({
-        status: "success",
-        interest: interest,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
+    res.json({
+      status: "success",
+      interest: interest,
+    });
   },
   updateInterest: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const interestId = req.params["interestId"];
+    const interestId = req.params["interestId"];
 
-      let checkInterest = await req.InterestUC.interestById(interestId);
+    let checkInterest = await req.InterestUC.interestById(interestId);
 
-      if (!checkInterest) {
-        return next(new ErrorHandler("Interest not found", 404));
-      }
-
-      const { error } = validation.interest(req.body);
-
-      if (error)
-        return next(new ErrorHandler(error["details"][0].message, 400));
-
-      let interest = await req.InterestUC.updateInterest(
-        checkInterest["id"],
-        req.body
-      );
-
-      res.status(200).json({
-        status: "success",
-        message: `Successfully deleted interest ${checkInterest["name"]}`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (!checkInterest) {
+      return next(new ErrorHandler("Interest not found", 404));
     }
+
+    const { error } = validation.interest(req.body);
+
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.InterestUC.updateInterest(interestId, req.body);
+
+    res.json({
+      status: "success",
+      message: `Successfully deleted interest`,
+    });
   },
   deleteInterest: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const interestId = req.params["interestId"];
+    const interestId = req.params["interestId"];
 
-      let checkInterest = await req.InterestUC.interestById(interestId);
+    let checkInterest = await req.InterestUC.interestById(interestId);
 
-      if (!checkInterest) {
-        return next(new ErrorHandler("Interest not found", 404));
-      }
-
-      await req.InterestUC.deleteInterest(checkInterest["id"]);
-
-      res.status(200).json({
-        status: "success",
-        message: `Successfully deleted interest ${checkInterest["name"]}`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (!checkInterest) {
+      return next(new ErrorHandler("Interest not found", 404));
     }
+
+    await req.InterestUC.deleteInterest(interestId);
+
+    res.json({
+      status: "success",
+      message: `Successfully deleted interest`,
+    });
   },
 };

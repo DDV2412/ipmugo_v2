@@ -3,13 +3,13 @@ import Article from "../models/article";
 import Author from "../models/author";
 import Interest from "../models/interest";
 import Journal from "../models/journal";
-import ElasticRepo from "./elastic";
 import { IncludeOptions } from "sequelize";
 import ArticleInterest from "../models/article_interest";
 import loggerWinston from "../helper/logger-winston";
 import User from "../models/user";
 import Citation from "../models/citation";
 import ScopusMetric from "../models/scopus_metric";
+import RequestPagination from "../helper/requestPagination";
 
 class ArticleRepo {
   Article: typeof Article;
@@ -19,7 +19,6 @@ class ArticleRepo {
   ArticleInterest: typeof ArticleInterest;
   Citation: typeof Citation;
   ScopusMetric: typeof ScopusMetric;
-  Elastic: any;
   User: typeof User;
   constructor() {
     this.Article = Article;
@@ -27,14 +26,19 @@ class ArticleRepo {
     this.Interest = Interest;
     this.Journal = Journal;
     this.ArticleInterest = ArticleInterest;
-    this.Elastic = new ElasticRepo();
     this.User = User;
     this.Citation = Citation;
     this.ScopusMetric = ScopusMetric;
   }
 
-  allArticles = async () => {
+  allArticles = async (
+    page: number,
+    size: number,
+    filters: Record<string, string>
+  ) => {
     try {
+      const { limit, offset } = new RequestPagination(page, size);
+
       let articles = await db.transaction(async (transaction) => {
         return await this.Article.findAndCountAll({
           include: [
@@ -65,83 +69,19 @@ class ArticleRepo {
               transaction,
             } as IncludeOptions,
           ],
+          limit: limit,
+          offset: offset,
           distinct: true,
           transaction,
         });
       });
 
-      return articles;
-    } catch (error) {
-      loggerWinston.error(error);
-      return null;
-    }
-  };
-
-  searchByElastic = async (filters: {}) => {
-    try {
-      const _search = filters["search"]
-        ? {
-            from: filters["from"] ? filters["from"] - 1 : 0,
-            size: filters["size"],
-            query: {
-              bool: {
-                should: [
-                  {
-                    term: { id: filters["search"] },
-                  },
-                  {
-                    term: { title: filters["search"] },
-                  },
-                  {
-                    term: { topic: filters["search"] },
-                  },
-                  {
-                    term: { abstract: filters["search"] },
-                  },
-                  {
-                    term: { doi: filters["search"] },
-                  },
-                ],
-              },
-            },
-            sort: [
-              {
-                publishDate: {
-                  order: "desc",
-                  format: "strict_date_optional_time_nanos",
-                },
-              },
-            ],
-          }
-        : {
-            sort: [
-              {
-                publishDate: {
-                  order: "desc",
-                  format: "strict_date_optional_time_nanos",
-                },
-              },
-            ],
-            size: filters["size"] ? filters["size"] : 25,
-            query: {
-              match_all: {},
-            },
-          };
-
-      let articles = await this.Elastic.search("articles", _search);
-
-      return articles;
-    } catch (error) {
-      loggerWinston.error(error);
-      return null;
-    }
-  };
-
-  advancedByElastic = async (bodyQuery: {}) => {
-    try {
-      let articles = await this.Elastic.search("articles", bodyQuery);
-
-      return articles;
+      return {
+        total: articles.count,
+        currentPage: page ? +page : 0,
+        countPage: Math.ceil(articles.count / limit),
+        articles: articles.rows,
+      };
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -150,7 +90,7 @@ class ArticleRepo {
 
   articleById = async (id: string) => {
     try {
-      let journal = await db.transaction(async (transaction) => {
+      let article = await db.transaction(async (transaction) => {
         return await this.Article.findOne({
           where: {
             id: id,
@@ -176,7 +116,7 @@ class ArticleRepo {
         });
       });
 
-      return journal;
+      return article;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -241,20 +181,16 @@ class ArticleRepo {
         articleData["interests"].length != 0
       ) {
         await articleData["interests"].map(async (interest: any) => {
-          const check = await this.Elastic.search("interests", {
-            from: 0,
-            size: 1,
-            query: {
-              match: {
-                name: interest["name"],
-              },
+          const check = await this.Interest.findOne({
+            where: {
+              name: interest["name"],
             },
           });
 
-          if (check["hits"]["total"]["value"] != 0) {
+          if (check != null) {
             await this.ArticleInterest.create({
               article_id: article["id"],
-              interest_id: check["hits"]["hits"][0]["_id"],
+              interest_id: check["id"],
             });
           }
         });
@@ -267,7 +203,10 @@ class ArticleRepo {
     }
   };
 
-  updateArticle = async (article_id: string, articleData: any) => {
+  updateArticle = async (
+    article_id: string,
+    articleData: Record<string, any>
+  ) => {
     try {
       let update = await db.transaction(async (transaction) => {
         return await this.Article.update(articleData, {
@@ -284,28 +223,24 @@ class ArticleRepo {
         articleData["interests"].length != 0
       ) {
         await articleData["interests"].map(async (interest: any) => {
-          const check = await this.Elastic.search("interests", {
-            from: 0,
-            size: 1,
-            query: {
-              match: {
-                name: interest["name"],
-              },
+          const check = await this.Interest.findOne({
+            where: {
+              name: interest["name"],
             },
           });
 
-          if (check["hits"]["total"]["value"] != 0) {
+          if (check != null) {
             const isExists = await this.ArticleInterest.findOne({
               where: {
                 article_id: article_id,
-                interest_id: check["hits"]["hits"][0]["_id"],
+                interest_id: check["id"],
               },
             });
 
             if (!isExists) {
               await this.ArticleInterest.create({
                 article_id: article_id,
-                interest_id: check["hits"]["hits"][0]["_id"],
+                interest_id: check["id"],
               });
             }
           }
@@ -365,7 +300,7 @@ class ArticleRepo {
     }
   };
 
-  citations = async (article_id: string, citationData: {}) => {
+  citations = async (article_id: string, citationData: Record<string, any>) => {
     try {
       return await db.transaction(async (transaction) => {
         let citation = await this.Citation.findOne({

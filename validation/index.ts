@@ -1,7 +1,7 @@
 import joi from "joi";
 
 export default {
-  journal: (body: {}) => {
+  journal: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -61,7 +61,7 @@ export default {
       })
       .validate(body);
   },
-  article: (body: {}) => {
+  article: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -167,7 +167,7 @@ export default {
       .validate(body);
   },
 
-  interest: (body: {}) => {
+  interest: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -179,7 +179,7 @@ export default {
       .validate(body);
   },
 
-  register: (body: {}) => {
+  register: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -214,7 +214,7 @@ export default {
       .validate(body);
   },
 
-  login: (body: {}) => {
+  login: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -240,7 +240,7 @@ export default {
       .validate(body);
   },
 
-  user: (body: {}) => {
+  user: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -292,7 +292,7 @@ export default {
       .validate(body);
   },
 
-  profileUpdate: (body: {}) => {
+  profileUpdate: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -327,7 +327,7 @@ export default {
       .validate(body);
   },
 
-  forgotPass: (body: {}) => {
+  forgotPass: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -340,7 +340,7 @@ export default {
       .validate(body);
   },
 
-  resetPassword: (body: {}) => {
+  resetPassword: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
@@ -362,13 +362,126 @@ export default {
       .validate(body);
   },
 
-  role: (body: {}) => {
+  role: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
         role_name: joi.string().required().messages({
           "string.empty": "Role name cannot be an empty field",
           "any.required": "Role name is required field",
+        }),
+      })
+      .validate(body);
+  },
+
+  bookmarks: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        bookmarks: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                article_id: joi.string().required().messages({
+                  "string.empty": "Article ID cannot be an empty field",
+                  "any.required": "Article ID is required field",
+                }),
+              })
+          ),
+      })
+      .validate(body);
+  },
+
+  assignAuthor: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        authors: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                article_id: joi.string().required().messages({
+                  "string.empty": "Article ID cannot be an empty field",
+                  "any.required": "Article ID is required field",
+                }),
+                author_id: joi.string().required().messages({
+                  "string.empty": "Author ID cannot be an empty field",
+                  "any.required": "Author ID is required field",
+                }),
+              })
+          ),
+      })
+      .validate(body);
+  },
+
+  assignEditor: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        editors: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                journal_id: joi.string().required().messages({
+                  "string.empty": "Journal ID cannot be an empty field",
+                  "any.required": "Journal ID is required field",
+                }),
+                editor_id: joi.string().required().messages({
+                  "string.empty": "Editor ID cannot be an empty field",
+                  "any.required": "Editor ID is required field",
+                }),
+              })
+          ),
+      })
+      .validate(body);
+  },
+
+  citations: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        citations: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                doi: joi.string().required().messages({
+                  "string.empty": "DOI cannot be an empty field",
+                  "any.required": "DOI is required field",
+                }),
+              })
+          ),
+      })
+      .validate(body);
+  },
+
+  citationFormater: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .required()
+      .keys({
+        doi: joi.string().required().messages({
+          "string.empty": "DOI cannot be an empty field",
+          "any.required": "DOI is required field",
+        }),
+        formatType: joi.string().required().messages({
+          "string.empty": "Format type cannot be an empty field",
+          "any.required": "Format type is required field",
         }),
       })
       .validate(body);

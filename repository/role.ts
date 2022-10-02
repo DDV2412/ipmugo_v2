@@ -54,12 +54,12 @@ class RoleRepo {
     }
   };
 
-  updateRole = async (role_id: string, roleData: {}) => {
+  updateRole = async (roleName: string, roleData: Record<string, any>) => {
     try {
       let update = await db.transaction(async (transaction) => {
         return await this.Role.update(roleData, {
           where: {
-            id: role_id,
+            role_name: roleName,
           },
           transaction,
         });
@@ -72,12 +72,12 @@ class RoleRepo {
     }
   };
 
-  deleteRole = async (role_id: string) => {
+  deleteRole = async (roleName: string) => {
     try {
       return await db.transaction(async (transaction) => {
         return await this.Role.destroy({
           where: {
-            id: role_id,
+            role_name: roleName,
           },
           transaction,
         });

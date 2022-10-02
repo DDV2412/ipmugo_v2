@@ -10,7 +10,7 @@ export default {
       roles = [];
     }
 
-    res.status(200).json({
+    res.json({
       status: "success",
       total: roles.count,
       roles: roles.rows,
@@ -26,7 +26,7 @@ export default {
       return next(new ErrorHandler("Role not found", 404));
     }
 
-    res.status(200).json({
+    res.json({
       status: "success",
       role: role,
     });
@@ -39,7 +39,7 @@ export default {
 
     let role = await req.RoleUC.createRole(req.body);
 
-    res.status(201).json({
+    res.json({
       status: "success",
       role: role,
     });
@@ -57,11 +57,11 @@ export default {
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
-    await req.RoleUC.updateRole(checkrole["id"], req.body);
+    await req.RoleUC.updateRole(roleName, req.body);
 
-    res.status(200).json({
+    res.json({
       status: "success",
-      message: `Successfully updated role ${checkrole["role_name"]}`,
+      message: `Successfully updated role`,
     });
   },
   deleteRole: async (req: Request, res: Response, next: NextFunction) => {
@@ -73,11 +73,11 @@ export default {
       return next(new ErrorHandler("Role not found", 404));
     }
 
-    await req.RoleUC.deleteRole(checkrole["id"]);
+    await req.RoleUC.deleteRole(roleName);
 
-    res.status(200).json({
+    res.json({
       status: "success",
-      message: `Successfully deleted role ${checkrole["role_name"]}`,
+      message: `Successfully deleted role`,
     });
   },
 };

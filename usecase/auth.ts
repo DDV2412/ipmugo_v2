@@ -5,12 +5,23 @@ class AuthUC {
   constructor(User: any) {
     this.User = User;
   }
-  accessToken = async (userData: {}) => {
+  accessToken = async (userData: Record<string, any>) => {
     let user = {
       id: userData["id"],
+      salutation: userData["salutation"],
       username: userData["username"],
+      name: userData["name"],
+      photoProfile: userData["photoProfile"],
+      password: userData["password"],
+      googleScholar: userData["googleScholar"],
+      scopusId: userData["scopusId"],
+      orcid: userData["orcid"],
+      biograph: userData["biograph"],
+      affiliation: userData["affiliation"],
+      verified: userData["verified"],
       roles: userData["roles"],
       bookmarks: userData["bookmarks"],
+      publish_articles: userData["publish_articles"],
     };
     let payload = {
       user: user,
@@ -25,10 +36,10 @@ class AuthUC {
       tokenAccess: token,
     };
   };
-  register = async (userData: {}) => {
+  register = async (userData: Record<string, any>) => {
     return await this.User.register(userData);
   };
-  login = async (userData: {}) => {
+  login = async (userData: Record<string, any>) => {
     let user = await this.User.login(userData);
 
     if (!user) {

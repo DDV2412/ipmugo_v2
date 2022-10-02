@@ -1,18 +1,20 @@
 import { NextFunction, Request, Response } from "express";
-const errorMiddleware = (
-  err: any,
+const errororMiddleware = (
+  error: any,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  err.message = err.message || "Internal server error";
+  error.message = error.message || "Internal server erroror";
 
-  err.statusCode = err.statusCode || 500;
+  error.statusCode = error.statusCode || 500;
 
-  res.status(err.statusCode).json({
+  res.status = error.statusCode;
+
+  res.json({
     status: "error",
-    message: err.message,
+    message: error.message,
   });
 };
 
-export default errorMiddleware;
+export default errororMiddleware;

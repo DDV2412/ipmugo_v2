@@ -5,150 +5,132 @@ import bcryptjs from "bcryptjs";
 
 export default {
   allUsers: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      let { search } = req.query;
+    const { page, size, filters } = req.query;
 
-      let users = await req.UserUC.allUsers({
-        name: search,
-      });
+    let users = await req.UserUC.allUsers(page, size, filters);
 
-      if (users == null) {
-        users = [];
-      }
-
-      res.status(200).json({
-        status: "success",
-        total: users.count,
-        users: users.rows,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (users == null) {
+      users = [];
     }
+
+    res.json({
+      status: "success",
+      total: users.total,
+      currentPage: users.currentPage,
+      countPage: users.countPage,
+      users: users.users || users,
+    });
   },
 
   getUserById: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      let { userId } = req.params;
+    const { userId } = req.params;
 
-      let user = await req.UserUC.getUserById(userId);
+    let user = await req.UserUC.getUserById(userId);
 
-      if (!user) {
-        return next(new ErrorHandler("User not found", 404));
-      }
-
-      res.status(200).json({
-        status: "success",
-        user: user,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
     }
+
+    res.json({
+      status: "success",
+      user: user,
+    });
   },
   createUser: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { error } = validation.user(req.body);
+    const { error } = validation.user(req.body);
 
-      if (error)
-        return next(new ErrorHandler(error["details"][0].message, 400));
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
-      let roles: any = [];
-      req.body["roles"].map(async (role: {}) => {
-        const check = await req.RoleUC.roleByName(role["role_name"]);
+    let roles: any = [];
+    req.body["roles"].map(async (role: {}) => {
+      const check = await req.RoleUC.roleByName(role["role_name"]);
 
-        if (!check) return next(new ErrorHandler("Role not found", 404));
+      if (!check) return next(new ErrorHandler("Role not found", 404));
 
-        roles.push(check);
-      });
+      roles.push(check);
+    });
 
-      req.body["role"] = roles;
+    req.body["role"] = roles;
 
-      req.body["password"] = bcryptjs.hashSync(req.body["password"], 12);
+    req.body["password"] = bcryptjs.hashSync(req.body["password"], 12);
 
-      let user = await req.UserUC.createUser(req.body);
+    let user = await req.UserUC.createUser(req.body);
 
-      if (!user) {
-        return next(new ErrorHandler("Username or email not available", 400));
-      }
-
-      res.status(201).json({
-        status: "success",
-        user: user,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (!user) {
+      return next(new ErrorHandler("Username or email not available", 400));
     }
+
+    res.json({
+      status: "success",
+      user: user,
+    });
   },
   updateUser: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId = req.params["userId"];
+    const userId = req.params["userId"];
 
-      let checkuser = await req.UserUC.getUserById(userId);
+    let checkuser = await req.UserUC.getUserById(userId);
 
-      if (!checkuser) {
-        return next(new ErrorHandler("User not found", 404));
-      }
-
-      const { error } = validation.user(req.body);
-
-      if (error)
-        return next(new ErrorHandler(error["details"][0].message, 400));
-
-      let roles: any = [];
-      req.body["roles"].map(async (role: {}) => {
-        const check = await req.RoleUC.roleByName(role["role_name"]);
-
-        if (!check) return next(new ErrorHandler("Role not found", 404));
-
-        roles.push(check);
-      });
-
-      req.body["role"] = roles;
-
-      if (
-        typeof req.body["password"] != "undefined" &&
-        req.body["password"] != null
-      ) {
-        req.body["password"] = bcryptjs.hashSync(req.body["password"], 12);
-      }
-      let user = await req.UserUC.updateUser(checkuser["id"], req.body);
-
-      res.status(200).json({
-        status: "success",
-        message: `Successfully updated user ${checkuser["name"]}`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (!checkuser) {
+      return next(new ErrorHandler("User not found", 404));
     }
+
+    const { error } = validation.user(req.body);
+
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    let roles: any = [];
+    req.body["roles"].map(async (role: {}) => {
+      const check = await req.RoleUC.roleByName(role["role_name"]);
+
+      if (!check) return next(new ErrorHandler("Role not found", 404));
+
+      roles.push(check);
+    });
+
+    req.body["role"] = roles;
+
+    if (
+      typeof req.body["password"] != "undefined" &&
+      req.body["password"] != null
+    ) {
+      req.body["password"] = bcryptjs.hashSync(req.body["password"], 12);
+    }
+    await req.UserUC.updateUser(userId, req.body);
+
+    res.json({
+      status: "success",
+      message: `Successfully updated user`,
+    });
   },
   deleteUser: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId = req.params["userId"];
+    const userId = req.params["userId"];
 
-      let checkuser = await req.UserUC.getUserById(userId);
+    let checkuser = await req.UserUC.getUserById(userId);
 
-      if (!checkuser) {
-        return next(new ErrorHandler("User not found", 404));
-      }
-
-      await req.UserUC.deleteUser(checkuser["id"]);
-
-      res.status(200).json({
-        status: "success",
-        message: `Successfully deleted user ${checkuser["name"]}`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
+    if (!checkuser) {
+      return next(new ErrorHandler("User not found", 404));
     }
+
+    await req.UserUC.deleteUser(userId);
+
+    res.json({
+      status: "success",
+      message: `Successfully deleted user`,
+    });
   },
 
   saveBookmark: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      if (!req.User) {
-        return next(new ErrorHandler("Unauthorized", 401));
-      }
-      const { article_id } = req.params;
+    if (!req.User) {
+      return next(new ErrorHandler("Unauthorized", 401));
+    }
+    const { error } = validation.bookmarks(req.body);
 
-      let checkArticle = await req.ArticleUC.articleById(article_id);
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.body["bookmarks"].map(async (bookmark: []) => {
+      let checkArticle = await req.ArticleUC.articleById(
+        bookmark["article_id"]
+      );
 
       if (!checkArticle) {
         return next(new ErrorHandler("Article not found", 404));
@@ -156,157 +138,163 @@ export default {
 
       await req.UserUC.saveBookmark({
         user_id: req.User["id"],
-        article_id: checkArticle["id"],
+        article_id: bookmark["article_id"],
       });
+    });
 
-      res.status(200).json({
-        status: "success",
-        message: `Successfully saved bookmark ${checkArticle["title"]}`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
+    res.json({
+      status: "success",
+      message: `Successfully saved bookmark`,
+    });
   },
 
   deleteBookmark: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      if (!req.User) {
-        return next(new ErrorHandler("Unauthorized", 401));
-      }
+    if (!req.User) {
+      return next(new ErrorHandler("Unauthorized", 401));
+    }
 
-      const { article_id } = req.params;
+    const { error } = validation.bookmarks(req.body);
+
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.body["bookmarks"].map(async (bookmark: []) => {
+      let checkArticle = await req.ArticleUC.articleById(
+        bookmark["article_id"]
+      );
+
+      if (!checkArticle) {
+        return next(new ErrorHandler("Article not found", 404));
+      }
 
       await req.UserUC.deleteBookmark({
         user_id: req.User["id"],
-        article_id: article_id,
+        article_id: bookmark["article_id"],
       });
+    });
 
-      res.status(200).json({
-        status: "success",
-        message: `Successfully deleted bookmark`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
+    res.json({
+      status: "success",
+      message: `Successfully deleted bookmark`,
+    });
   },
 
   assignAuthor: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { author_id, article_id } = req.body;
+    const { error } = validation.assignAuthor(req.body);
 
-      let checkUser = await req.UserUC.getUserById(author_id);
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.body["authors"].map(async (author: {}) => {
+      let checkUser = await req.UserUC.getUserById(author["author_id"]);
 
       if (!checkUser) {
         return next(new ErrorHandler("User not found", 404));
       }
 
-      let checkArticle = await req.ArticleUC.articleById(article_id);
+      let checkArticle = await req.ArticleUC.articleById(author["article_id"]);
 
       if (!checkArticle) {
         return next(new ErrorHandler("Article not found", 404));
       }
 
       await req.UserUC.assignAuthor({
-        author_id: checkUser["id"],
-        article_id: checkArticle["id"],
+        author_id: author["author_id"],
+        article_id: author["article_id"],
       });
+    });
 
-      res.status(200).json({
-        status: "success",
-        message: `Successfully added author ${checkArticle["title"]}`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
+    res.json({
+      status: "success",
+      message: `Successfully added author`,
+    });
   },
 
   deleteAuthor: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { author_id, article_id } = req.body;
+    const { error } = validation.assignAuthor(req.body);
 
-      let checkUser = await req.UserUC.getUserById(author_id);
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.body["authors"].map(async (author: {}) => {
+      let checkUser = await req.UserUC.getUserById(author["author_id"]);
 
       if (!checkUser) {
         return next(new ErrorHandler("User not found", 404));
       }
 
-      let checkArticle = await req.ArticleUC.articleById(article_id);
+      let checkArticle = await req.ArticleUC.articleById(author["article_id"]);
 
       if (!checkArticle) {
         return next(new ErrorHandler("Article not found", 404));
       }
 
       await req.UserUC.deleteAuthor({
-        author_id: checkUser["id"],
-        article_id: checkArticle["id"],
+        author_id: author["author_id"],
+        article_id: author["article_id"],
       });
+    });
 
-      res.status(200).json({
-        status: "success",
-        message: `Successfully deleted author`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
+    res.json({
+      status: "success",
+      message: `Successfully deleted author`,
+    });
   },
 
   assignEditor: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { editor_id, journal_id } = req.body;
+    const { error } = validation.assignEditor(req.body);
 
-      let checkUser = await req.UserUC.getUserById(editor_id);
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.body["editors"].map(async (editor: {}) => {
+      let checkUser = await req.UserUC.getUserById(editor["editor_id"]);
 
       if (!checkUser) {
         return next(new ErrorHandler("User not found", 404));
       }
 
-      let checkJournal = await req.JournalUC.journalById(journal_id);
+      let checkJournal = await req.JournalUC.journalById(editor["journal_id"]);
 
       if (!checkJournal) {
         return next(new ErrorHandler("Journal not found", 404));
       }
 
       await req.UserUC.assignEditor({
-        author_id: checkUser["id"],
-        article_id: checkJournal["id"],
+        editor_id: editor["editor_id"],
+        journal_id: editor["journal_id"],
       });
+    });
 
-      res.status(200).json({
-        status: "success",
-        message: `Successfully added editor ${checkJournal["name"]}`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
+    res.json({
+      status: "success",
+      message: `Successfully added editor`,
+    });
   },
 
   deleteEditor: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { editor_id, journal_id } = req.body;
+    const { error } = validation.assignEditor(req.body);
 
-      let checkUser = await req.UserUC.getUserById(editor_id);
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.body["editors"].map(async (editor: {}) => {
+      let checkUser = await req.UserUC.getUserById(editor["editor_id"]);
 
       if (!checkUser) {
         return next(new ErrorHandler("User not found", 404));
       }
 
-      let checkJournal = await req.JournalUC.journalById(journal_id);
+      let checkJournal = await req.JournalUC.journalById(editor["journal_id"]);
 
       if (!checkJournal) {
         return next(new ErrorHandler("Journal not found", 404));
       }
 
       await req.UserUC.deleteEditor({
-        author_id: checkUser["id"],
-        article_id: checkJournal["id"],
+        editor_id: editor["editor_id"],
+        journal_id: editor["journal_id"],
       });
+    });
 
-      res.status(200).json({
-        status: "success",
-        message: `Successfully deleted editor`,
-      });
-    } catch (err: any) {
-      return next(new ErrorHandler(err["message"], 500));
-    }
+    res.json({
+      status: "success",
+      message: `Successfully deleted editor`,
+    });
   },
 };

@@ -4,27 +4,30 @@ import Interest from "../models/interest";
 import { IncludeOptions, Op } from "sequelize";
 import JournalInterest from "../models/journal_interest";
 import loggerWinston from "../helper/logger-winston";
-import ElasticRepo from "./elastic";
 import User from "../models/user";
 import ScopusMetric from "../models/scopus_metric";
+import RequestPagination from "../helper/requestPagination";
 
 class JournalRepo {
   Journal: typeof Journal;
   Interest: typeof Interest;
   JournalInterest: typeof JournalInterest;
-  Elastic: any;
   ScopusMetric: typeof ScopusMetric;
   User: typeof User;
   constructor() {
     this.Journal = Journal;
     this.Interest = Interest;
     this.JournalInterest = JournalInterest;
-    this.Elastic = new ElasticRepo();
     this.User = User;
     this.ScopusMetric = ScopusMetric;
   }
-  allJournals = async () => {
+  allJournals = async (
+    page: number,
+    size: number,
+    filters: Record<string, string>
+  ) => {
     try {
+      const { limit, offset } = new RequestPagination(page, size);
       let journals = await db.transaction(async (transaction) => {
         return await this.Journal.findAndCountAll({
           include: [
@@ -44,56 +47,19 @@ class JournalRepo {
               as: "scopus_metric",
             } as IncludeOptions,
           ],
+          limit: limit,
+          offset: offset,
           distinct: true,
           transaction,
         });
       });
 
-      return journals;
-    } catch (error) {
-      loggerWinston.error(error);
-      return null;
-    }
-  };
-
-  searchByElastic = async (filters: {}) => {
-    try {
-      const _search = filters["search"]
-        ? {
-            from: filters["from"] ? filters["from"] - 1 : 0,
-            size: filters["size"],
-            query: {
-              bool: {
-                should: [
-                  {
-                    term: { id: filters["search"] },
-                  },
-                  {
-                    term: { name: filters["search"] },
-                  },
-                  {
-                    term: { issn: filters["search"] },
-                  },
-                  {
-                    term: { description: filters["search"] },
-                  },
-                  {
-                    term: { e_issn: filters["search"] },
-                  },
-                ],
-              },
-            },
-          }
-        : {
-            size: filters["size"] ? filters["size"] : 25,
-            query: {
-              match_all: {},
-            },
-          };
-
-      let articles = await this.Elastic.search("journals", _search);
-
-      return articles;
+      return {
+        total: journals.count,
+        currentPage: page ? +page : 0,
+        countPage: Math.ceil(journals.count / limit),
+        journals: journals.rows,
+      };
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -153,7 +119,10 @@ class JournalRepo {
     }
   };
 
-  updateJournal = async (journal_id: string, journalData: any) => {
+  updateJournal = async (
+    journal_id: string,
+    journalData: Record<string, any>
+  ) => {
     try {
       let update = await db.transaction(async (transaction) => {
         return await this.Journal.update(journalData, {
@@ -166,7 +135,8 @@ class JournalRepo {
 
       if (
         journalData["interests"] != undefined &&
-        journalData["interests"] != null
+        journalData["interests"] != null &&
+        journalData["interests"].length != 0
       ) {
         await journalData["interests"].map(async (interest: any) => {
           const check = await this.Interest.findOne({
@@ -218,7 +188,10 @@ class JournalRepo {
     }
   };
 
-  scopusMetric = async (journal_id: string, metricData: {}) => {
+  scopusMetric = async (
+    journal_id: string,
+    metricData: Record<string, any>
+  ) => {
     try {
       return await db.transaction(async (transaction) => {
         let scopusMetric = await this.ScopusMetric.findOne({

@@ -4,18 +4,21 @@ class InterestUC {
     this.Interest = Interest;
   }
 
-  searchByElastic = async (filters: {}) => {
-    return await this.Interest.searchByElastic(filters);
+  allInterests = async (id: string) => {
+    return await this.Interest.allInterests(id);
   };
 
   interestById = async (id: string) => {
     return await this.Interest.interestById(id);
   };
-  createInterest = async (interestData: {}) => {
+  createInterest = async (interestData: Record<string, any>) => {
     return await this.Interest.createInterest(interestData);
   };
 
-  updateInterest = async (interest_id: string, interestData: {}) => {
+  updateInterest = async (
+    interest_id: string,
+    interestData: Record<string, any>
+  ) => {
     return await this.Interest.updateInterest(interest_id, interestData);
   };
 

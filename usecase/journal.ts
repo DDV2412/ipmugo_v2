@@ -4,21 +4,25 @@ class JournalUC {
     this.Journal = Journal;
   }
 
-  allJournals = async () => {
-    return await this.Journal.allJournals();
+  allJournals = async (
+    page: number,
+    size: number,
+    filters: Record<string, string>
+  ) => {
+    return await this.Journal.allJournals(page, size, filters);
   };
 
-  searchByElastic = async (filters: {}) => {
-    return await this.Journal.searchByElastic(filters);
-  };
   journalById = async (id: string) => {
     return await this.Journal.journalById(id);
   };
-  createJournal = async (journalData: {}) => {
+  createJournal = async (journalData: any) => {
     return await this.Journal.createJournal(journalData);
   };
 
-  updateJournal = async (journal_id: string, journalData: {}) => {
+  updateJournal = async (
+    journal_id: string,
+    journalData: Record<string, any>
+  ) => {
     return await this.Journal.updateJournal(journal_id, journalData);
   };
 

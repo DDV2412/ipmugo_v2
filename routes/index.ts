@@ -9,6 +9,8 @@ import User from "../controller/user";
 import Role from "../controller/role";
 import Auth from "../controller/auth";
 import AuthMiddleware from "../middleware/auth";
+import Citation from "../controller/citation";
+import Featured from "../controller/featured";
 
 class Router {
   router: express.Router;
@@ -37,7 +39,6 @@ class Router {
      */
 
     this.router.get("/journals", Journal.allJournals);
-    this.router.get("/journals/_search", Journal.searchByElastic);
     this.router.get("/journal/:journalId", Journal.journalById);
     this.router.post("/journal", Journal.createJournal);
     this.router.put("/journal/:journalId", Journal.updateJournal);
@@ -48,8 +49,6 @@ class Router {
      */
 
     this.router.get("/articles", Article.allArticles);
-    this.router.get("/articles/_search", Article.searchByElastic);
-    this.router.get("/articles/_advanced", Article.advancedByElastic);
     this.router.get("/article/:articleId", Article.articleById);
     this.router.post("/article", Article.createArticle);
     this.router.put("/article/:articleId", Article.updateArticle);
@@ -59,7 +58,7 @@ class Router {
      * Interest
      */
 
-    this.router.get("/interests", Interest.searchByElastic);
+    this.router.get("/interests", Interest.allInterests);
     this.router.get("/interest/:interestId", Interest.interestById);
     this.router.post("/interest", Interest.createInterest);
     this.router.put("/interest/:interestId", Interest.updateInterest);
@@ -76,12 +75,12 @@ class Router {
     this.router.delete("/user/:userId", User.deleteUser);
 
     this.router.post(
-      "/bookmark/:article_id",
+      "/bookmark",
       AuthMiddleware.authenticate,
       User.saveBookmark
     );
     this.router.delete(
-      "/delete-bookmark/:article_id",
+      "/delete-bookmark",
       AuthMiddleware.authenticate,
       User.deleteBookmark
     );
@@ -91,6 +90,10 @@ class Router {
 
     this.router.post("/assign-editor", User.assignEditor);
     this.router.delete("/assign-editor", User.deleteEditor);
+
+    this.router.post("/citation", Citation.citationExport);
+
+    this.router.post("/citation-formater", Citation.citationFormater);
     /**
      * Role
      */
@@ -104,6 +107,11 @@ class Router {
      * Auth
      */
     this.router.post("/login", Auth.login);
+
+    /**
+     * Features
+     */
+    this.router.get("/search", Featured.search);
   }
 }
 

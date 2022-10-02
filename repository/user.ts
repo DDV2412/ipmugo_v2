@@ -9,6 +9,8 @@ import Article from "../models/article";
 import bcryptjs from "bcryptjs";
 import AssignAuthor from "../models/assign_author";
 import AssignEditor from "../models/assign_editor";
+import Journal from "../models/journal";
+import RequestPagination from "../helper/requestPagination";
 
 class UserRepo {
   User: typeof User;
@@ -16,6 +18,7 @@ class UserRepo {
   UserRole: typeof UserRole;
   Bookmark: typeof Bookmark;
   Article: typeof Article;
+  Journal: typeof Journal;
   AssignAuthor: typeof AssignAuthor;
   AssignEditor: typeof AssignEditor;
   constructor() {
@@ -24,20 +27,21 @@ class UserRepo {
     this.UserRole = UserRole;
     this.Bookmark = Bookmark;
     this.Article = Article;
+    this.Journal = Journal;
     this.AssignAuthor = AssignAuthor;
     this.AssignEditor = AssignEditor;
   }
 
-  allUsers = async (filters: {}) => {
+  allUsers = async (
+    page: number,
+    size: number,
+    filters: Record<string, string>
+  ) => {
     try {
-      let where = filters["name"]
-        ? {
-            name: filters["name"],
-          }
-        : {};
+      const { limit, offset } = new RequestPagination(page, size);
+
       let users = await db.transaction(async (transaction) => {
         return await this.User.findAndCountAll({
-          where: where,
           transaction,
           include: [
             {
@@ -50,12 +54,29 @@ class UserRepo {
               as: "bookmarks",
               transaction,
             } as IncludeOptions,
+            {
+              model: this.Article,
+              as: "publish_articles",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Journal,
+              as: "journals",
+              transaction,
+            } as IncludeOptions,
           ],
+          limit: limit,
+          offset: offset,
           distinct: true,
         });
       });
 
-      return users;
+      return {
+        total: users.count,
+        currentPage: page ? +page : 0,
+        countPage: Math.ceil(users.count / limit),
+        users: users.rows,
+      };
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -155,7 +176,7 @@ class UserRepo {
     }
   };
 
-  updateUser = async (user_id: string, userData: {}) => {
+  updateUser = async (user_id: string, userData: Record<string, any>) => {
     try {
       let update = await db.transaction(async (transaction) => {
         return await this.User.update(userData, {
@@ -203,7 +224,7 @@ class UserRepo {
     }
   };
 
-  saveBookmark = async (userData: {}) => {
+  saveBookmark = async (userData: Record<string, any>) => {
     try {
       return await db.transaction(async (transaction) => {
         return await this.Bookmark.create(userData);
@@ -214,22 +235,16 @@ class UserRepo {
     }
   };
 
-  deleteBookmark = async (options: {}) => {
+  deleteBookmark = async (options: Record<string, any>) => {
     try {
       return await db.transaction(async (transaction) => {
-        let bookmark = await this.Bookmark.findOne({
+        return await this.Bookmark.destroy({
           where: {
             user_id: options["user_id"],
             article_id: options["article_id"],
           },
           transaction,
         });
-
-        if (!bookmark) {
-          return null;
-        }
-
-        return await bookmark.destroy();
       });
     } catch (error) {
       loggerWinston.error(error);
@@ -237,7 +252,7 @@ class UserRepo {
     }
   };
 
-  assignAuthor = async (userData: {}) => {
+  assignAuthor = async (userData: Record<string, any>) => {
     try {
       return await db.transaction(async (transaction) => {
         return await this.AssignAuthor.create(userData);
@@ -248,22 +263,16 @@ class UserRepo {
     }
   };
 
-  deleteAuthor = async (options: {}) => {
+  deleteAuthor = async (options: Record<string, any>) => {
     try {
       return await db.transaction(async (transaction) => {
-        let author = await this.AssignAuthor.findOne({
+        return await this.AssignAuthor.destroy({
           where: {
             author_id: options["author_id"],
             article_id: options["article_id"],
           },
           transaction,
         });
-
-        if (!author) {
-          return null;
-        }
-
-        return await author.destroy();
       });
     } catch (error) {
       loggerWinston.error(error);
@@ -271,7 +280,7 @@ class UserRepo {
     }
   };
 
-  assignEditor = async (userData: {}) => {
+  assignEditor = async (userData: Record<string, any>) => {
     try {
       return await db.transaction(async (transaction) => {
         return await this.AssignEditor.create(userData);
@@ -282,22 +291,16 @@ class UserRepo {
     }
   };
 
-  deleteEditor = async (options: {}) => {
+  deleteEditor = async (options: Record<string, any>) => {
     try {
       return await db.transaction(async (transaction) => {
-        let author = await this.AssignEditor.findOne({
+        return await this.AssignEditor.destroy({
           where: {
             editor_id: options["editor_id"],
             journal_id: options["journal_id"],
           },
           transaction,
         });
-
-        if (!author) {
-          return null;
-        }
-
-        return await author.destroy();
       });
     } catch (error) {
       loggerWinston.error(error);

@@ -4,16 +4,12 @@ class ArticleUC {
     this.Article = Article;
   }
 
-  allArticles = async () => {
-    return await this.Article.allArticles();
-  };
-
-  searchByElastic = async (filters: {}) => {
-    return await this.Article.searchByElastic(filters);
-  };
-
-  advancedByElastic = async (bodyQuery: {}) => {
-    return await this.Article.advancedByElastic(bodyQuery);
+  allArticles = async (
+    page: number,
+    size: number,
+    filters: Record<string, string>
+  ) => {
+    return await this.Article.allArticles(page, size, filters);
   };
 
   articleById = async (id: string) => {
@@ -23,11 +19,14 @@ class ArticleUC {
   articleByDOI = async (doi: string) => {
     return await this.Article.articleByDOI(doi);
   };
-  createArticle = async (articleData: {}) => {
+  createArticle = async (articleData: any) => {
     return await this.Article.createArticle(articleData);
   };
 
-  updateArticle = async (article_id: string, articleData: {}) => {
+  updateArticle = async (
+    article_id: string,
+    articleData: Record<string, any>
+  ) => {
     return await this.Article.updateArticle(article_id, articleData);
   };
 
