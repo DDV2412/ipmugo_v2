@@ -1,4 +1,5 @@
 import ArticleController from "../controller/article";
+import ErrorHandler from "../helper/errorHandler";
 
 let mockArticleUC = {
   allArticles: jest.fn().mockReturnValue(null),
@@ -62,6 +63,10 @@ describe("Article Return null Testing", () => {
 
     expect(mockArticleUC.articleById).toBeCalledWith(req.params["articleId"]);
 
-    expect(null);
+    expect(
+      jest.fn().mockImplementation(() => {
+        throw new ErrorHandler("Article not found", 404);
+      })
+    );
   });
 });
