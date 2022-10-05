@@ -8,7 +8,7 @@ import Article from "./article";
 import ScopusMetric from "./scopus_metric";
 
 const Journal = db.define<Journal>(
-  "Journal",
+  "journal",
   {
     id: {
       type: DataTypes.UUID,

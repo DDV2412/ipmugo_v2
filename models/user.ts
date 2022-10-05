@@ -15,7 +15,7 @@ import Interest from "./interest";
 import UserInterst from "./user_interest";
 
 const User = db.define<User>(
-  "User",
+  "user",
   {
     id: {
       type: DataTypes.UUID,
@@ -85,23 +85,19 @@ User.beforeCreate(async (user: User) => {
 User.belongsToMany(Role, {
   through: UserRole.tableName,
   foreignKey: "user_id",
-  as: "roles",
 });
 Role.belongsToMany(User, {
   through: UserRole.tableName,
   foreignKey: "role_id",
-  as: "users",
 });
 
 User.belongsToMany(Article, {
   through: Bookmark.tableName,
   foreignKey: "user_id",
-  as: "bookmarks",
 });
 Article.belongsToMany(User, {
   through: Bookmark.tableName,
   foreignKey: "article_id",
-  as: "bookmarks",
 });
 
 User.belongsToMany(Article, {
@@ -112,13 +108,11 @@ User.belongsToMany(Article, {
 Article.belongsToMany(User, {
   through: AssignAuthor.tableName,
   foreignKey: "article_id",
-  as: "assign_authors",
 });
 
 User.belongsToMany(Journal, {
   through: AssignEditor.tableName,
   foreignKey: "editor_id",
-  as: "journals",
 });
 Journal.belongsToMany(User, {
   through: AssignEditor.tableName,
@@ -129,12 +123,10 @@ Journal.belongsToMany(User, {
 User.belongsToMany(Interest, {
   through: UserInterst.tableName,
   foreignKey: "user_id",
-  as: "interests",
 });
 Interest.belongsToMany(User, {
   through: UserInterst.tableName,
   foreignKey: "interest_id",
-  as: "users",
 });
 
 export default User;

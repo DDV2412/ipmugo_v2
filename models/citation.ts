@@ -6,7 +6,7 @@ import { journal } from "../types/models/journal";
 import Citation = journal.Citation;
 
 const Citation = db.define<Citation>(
-  "Citation",
+  "citation",
   {
     id: {
       type: DataTypes.UUID,

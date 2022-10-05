@@ -6,7 +6,7 @@ import { journal } from "../types/models/journal";
 import ScopusMetric = journal.ScopusMetric;
 
 const ScopusMetric = db.define<ScopusMetric>(
-  "Scopus_Metric",
+  "scopus_metric",
   {
     id: {
       type: DataTypes.UUID,

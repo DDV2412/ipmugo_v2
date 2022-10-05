@@ -6,7 +6,7 @@ import { user } from "../types/models/user";
 import UserRole = user.UserRole;
 
 const UserRole = db.define<UserRole>(
-  "User_Role",
+  "user_role",
   {
     id: {
       type: DataTypes.UUID,

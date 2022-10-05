@@ -6,7 +6,7 @@ import { IncludeOptions } from "sequelize";
 import UserRole from "../models/user_role";
 import Bookmark from "../models/bookmark";
 import Article from "../models/article";
-import bcryptjs from "bcryptjs";
+import { compareSync, hashSync } from "bcryptjs";
 import AssignAuthor from "../models/assign_author";
 import AssignEditor from "../models/assign_editor";
 import Journal from "../models/journal";
@@ -46,12 +46,10 @@ class UserRepo {
           include: [
             {
               model: this.Role,
-              as: "roles",
               transaction,
             } as IncludeOptions,
             {
               model: this.Article,
-              as: "bookmarks",
               transaction,
             } as IncludeOptions,
             {
@@ -61,7 +59,6 @@ class UserRepo {
             } as IncludeOptions,
             {
               model: this.Journal,
-              as: "journals",
               transaction,
             } as IncludeOptions,
           ],
@@ -93,12 +90,10 @@ class UserRepo {
           include: [
             {
               model: Role,
-              as: "roles",
               transaction,
             } as IncludeOptions,
             {
               model: this.Article,
-              as: "bookmarks",
               transaction,
             } as IncludeOptions,
           ],
@@ -121,7 +116,7 @@ class UserRepo {
         return null;
       }
 
-      if (!bcryptjs.compareSync(userData["password"], user["password"])) {
+      if (!compareSync(userData["password"], user["password"])) {
         return null;
       }
 
@@ -132,16 +127,32 @@ class UserRepo {
     }
   };
 
-  register = async (userData: {}) => {
+  register = async (userData: Record<string, string>) => {
     try {
-      let user = await this.userByUsername(userData["username"]);
+      userData["password"] = hashSync(userData["password"], 12);
 
-      if (!user) {
-        return null;
-      }
+      let user = await db.transaction(async (transaction) => {
+        return await this.User.create({
+          username: userData["username"],
+          name: userData["name"],
+          email: userData["email"],
+          password: userData["password"],
+        });
+      });
 
-      if (!bcryptjs.compareSync(userData["password"], user["password"])) {
-        return null;
+      let role = await db.transaction(async (transaction) => {
+        return await this.Role.findOne({
+          where: {
+            role_name: "reader",
+          },
+        });
+      });
+
+      if (role != null) {
+        await this.UserRole.create({
+          user_id: user["id"],
+          role_id: role["id"],
+        });
       }
 
       return user;

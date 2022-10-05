@@ -6,7 +6,7 @@ import { journal } from "../types/models/journal";
 import JournalInterest = journal.JournalInterest;
 
 const JournalInterest = db.define<JournalInterest>(
-  "Journal_Interest",
+  "journal_interest",
   {
     id: {
       type: DataTypes.UUID,

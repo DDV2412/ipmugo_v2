@@ -128,14 +128,6 @@ export default {
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
     await req.body["bookmarks"].map(async (bookmark: []) => {
-      let checkArticle = await req.ArticleUC.articleById(
-        bookmark["article_id"]
-      );
-
-      if (!checkArticle) {
-        return next(new ErrorHandler("Article not found", 404));
-      }
-
       await req.UserUC.saveBookmark({
         user_id: req.User["id"],
         article_id: bookmark["article_id"],
@@ -157,15 +149,7 @@ export default {
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
-    await req.body["bookmarks"].map(async (bookmark: []) => {
-      let checkArticle = await req.ArticleUC.articleById(
-        bookmark["article_id"]
-      );
-
-      if (!checkArticle) {
-        return next(new ErrorHandler("Article not found", 404));
-      }
-
+    await req.body["bookmarks"].map(async (bookmark: {}) => {
       await req.UserUC.deleteBookmark({
         user_id: req.User["id"],
         article_id: bookmark["article_id"],
@@ -184,18 +168,6 @@ export default {
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
     await req.body["authors"].map(async (author: {}) => {
-      let checkUser = await req.UserUC.getUserById(author["author_id"]);
-
-      if (!checkUser) {
-        return next(new ErrorHandler("User not found", 404));
-      }
-
-      let checkArticle = await req.ArticleUC.articleById(author["article_id"]);
-
-      if (!checkArticle) {
-        return next(new ErrorHandler("Article not found", 404));
-      }
-
       await req.UserUC.assignAuthor({
         author_id: author["author_id"],
         article_id: author["article_id"],
@@ -214,18 +186,6 @@ export default {
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
     await req.body["authors"].map(async (author: {}) => {
-      let checkUser = await req.UserUC.getUserById(author["author_id"]);
-
-      if (!checkUser) {
-        return next(new ErrorHandler("User not found", 404));
-      }
-
-      let checkArticle = await req.ArticleUC.articleById(author["article_id"]);
-
-      if (!checkArticle) {
-        return next(new ErrorHandler("Article not found", 404));
-      }
-
       await req.UserUC.deleteAuthor({
         author_id: author["author_id"],
         article_id: author["article_id"],
@@ -244,18 +204,6 @@ export default {
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
     await req.body["editors"].map(async (editor: {}) => {
-      let checkUser = await req.UserUC.getUserById(editor["editor_id"]);
-
-      if (!checkUser) {
-        return next(new ErrorHandler("User not found", 404));
-      }
-
-      let checkJournal = await req.JournalUC.journalById(editor["journal_id"]);
-
-      if (!checkJournal) {
-        return next(new ErrorHandler("Journal not found", 404));
-      }
-
       await req.UserUC.assignEditor({
         editor_id: editor["editor_id"],
         journal_id: editor["journal_id"],
@@ -274,18 +222,6 @@ export default {
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
     await req.body["editors"].map(async (editor: {}) => {
-      let checkUser = await req.UserUC.getUserById(editor["editor_id"]);
-
-      if (!checkUser) {
-        return next(new ErrorHandler("User not found", 404));
-      }
-
-      let checkJournal = await req.JournalUC.journalById(editor["journal_id"]);
-
-      if (!checkJournal) {
-        return next(new ErrorHandler("Journal not found", 404));
-      }
-
       await req.UserUC.deleteEditor({
         editor_id: editor["editor_id"],
         journal_id: editor["journal_id"],

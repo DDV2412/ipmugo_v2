@@ -34,7 +34,6 @@ class JournalRepo {
             {
               model: this.Interest,
               transaction,
-              as: "interests",
             } as IncludeOptions,
             {
               model: this.User,

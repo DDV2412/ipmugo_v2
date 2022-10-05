@@ -76,6 +76,8 @@ export namespace journal {
     > {
     id: CreationOptional<string>;
     name: string;
+    createdAt?: CreationOptional<Date>;
+    updatedAt?: CreationOptional<Date>;
     Journals: NonAttribute<Journal[]>;
     Articles: NonAttribute<Article[]>;
   }

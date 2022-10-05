@@ -33,11 +33,17 @@ class AuthUC {
 
     return {
       user: user,
-      tokenAccess: token,
+      token: token,
     };
   };
   register = async (userData: Record<string, any>) => {
-    return await this.User.register(userData);
+    let user = await this.User.register(userData);
+
+    if (!user) {
+      return null;
+    }
+
+    return await this.accessToken(user);
   };
   login = async (userData: Record<string, any>) => {
     let user = await this.User.login(userData);

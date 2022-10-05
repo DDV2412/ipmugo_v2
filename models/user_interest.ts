@@ -6,7 +6,7 @@ import { user } from "../types/models/user";
 import UserInterst = user.UserInterst;
 
 const UserInterst = db.define<UserInterst>(
-  "User_Interst",
+  "user_interst",
   {
     id: {
       type: DataTypes.UUID,

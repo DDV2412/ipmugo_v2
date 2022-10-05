@@ -17,7 +17,7 @@ export default {
     res.json({
       status: "success",
       user: user["user"],
-      tokenAccess: user["tokenAccess"],
+      token: user["token"],
     });
   },
 
@@ -28,14 +28,10 @@ export default {
 
     let user = await req.AuthUC.register(req.body);
 
-    if (!user) {
-      return next(new ErrorHandler("Incorrect username or password", 403));
-    }
-
     res.json({
       status: "success",
       user: user["user"],
-      tokenAccess: user["tokenAccess"],
+      token: user["token"],
     });
   },
 };

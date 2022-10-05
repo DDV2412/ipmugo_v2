@@ -6,7 +6,7 @@ import { user } from "../types/models/user";
 import AssignEditor = user.EditorInJournal;
 
 const AssignEditor = db.define<AssignEditor>(
-  "Assign_Editor",
+  "assign_editor",
   {
     id: {
       type: DataTypes.UUID,

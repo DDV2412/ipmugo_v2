@@ -2,10 +2,8 @@ import apm from "elastic-apm-node";
 
 apm.start({
   serviceName: process.env.ELASTIC_SERVERNAME,
-  serverUrl:
-    "https://5d337c58575542468125d5b1f152fc1b.apm.us-central1.gcp.cloud.es.io:443",
-  secretToken: "rbTt6cERt8IkTJSsXC",
   environment: process.env.NODE_ENV,
+  serverUrl: "http://localhost:8200",
 });
 
 import express, {

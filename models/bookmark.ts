@@ -6,7 +6,7 @@ import { user } from "../types/models/user";
 import Bookmark = user.Bookmark;
 
 const Bookmark = db.define<Bookmark>(
-  "Bookmark",
+  "bookmark",
   {
     id: {
       type: DataTypes.UUID,

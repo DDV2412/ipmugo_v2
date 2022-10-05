@@ -6,7 +6,7 @@ import { user } from "../types/models/user";
 import AssignAuthor = user.AuthorATArticle;
 
 const AssignAuthor = db.define<AssignAuthor>(
-  "Assign_Author",
+  "assign_author",
   {
     id: {
       type: DataTypes.UUID,

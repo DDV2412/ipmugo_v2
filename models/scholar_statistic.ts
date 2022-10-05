@@ -6,7 +6,7 @@ import { user } from "../types/models/user";
 import ScholarStatistic = user.ScholarStatistic;
 
 const ScholarStatistic = db.define<ScholarStatistic>(
-  "Scholar_Statistic",
+  "scholar_statistic",
   {
     id: {
       type: DataTypes.UUID,

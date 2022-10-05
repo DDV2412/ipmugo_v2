@@ -55,17 +55,14 @@ class ArticleRepo {
             } as IncludeOptions,
             {
               model: this.Interest,
-              as: "interests",
               transaction,
             } as IncludeOptions,
             {
               model: this.User,
-              as: "assign_authors",
               transaction,
             } as IncludeOptions,
             {
               model: this.Citation,
-              as: "citations",
               transaction,
             } as IncludeOptions,
           ],

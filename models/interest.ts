@@ -10,7 +10,7 @@ import Article from "./article";
 import ArticleInterest from "./article_interest";
 
 const Interest = db.define<Interest>(
-  "Interest",
+  "interest",
   {
     id: {
       type: DataTypes.UUID,
@@ -26,7 +26,7 @@ const Interest = db.define<Interest>(
       unique: true,
     },
   },
-  { timestamps: false }
+  { timestamps: true }
 );
 
 Interest.beforeCreate(async (interest: Interest) => {

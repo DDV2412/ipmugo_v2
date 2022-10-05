@@ -8,7 +8,7 @@ import Author from "./author";
 import Citation from "./citation";
 
 const Article = db.define<Article>(
-  "Article",
+  "articles",
   {
     id: {
       type: DataTypes.UUID,
@@ -102,7 +102,6 @@ Author.belongsTo(Article, {
 });
 
 Article.hasMany(Citation, {
-  as: "citations",
   foreignKey: "article_id",
 });
 
