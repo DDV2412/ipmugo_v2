@@ -36,8 +36,8 @@ export namespace journal {
     e_issn: string;
     description: string;
     base_url: string;
-    createdAt?: CreationOptional<Date>;
-    updatedAt?: CreationOptional<Date>;
+    created_at?: CreationOptional<Date>;
+    updated_at?: CreationOptional<Date>;
     articles?: Article;
     Interests: NonAttribute<Interest[]>;
     ScopusMetric: NonAttribute<ScopusMetric>;
@@ -62,8 +62,8 @@ export namespace journal {
     articleParsing: string;
     keywords: string;
     dateModify?: string;
-    createdAt?: CreationOptional<Date>;
-    updatedAt?: CreationOptional<Date>;
+    created_at?: CreationOptional<Date>;
+    updated_at?: CreationOptional<Date>;
     Authors?: NonAttribute<Author[]>;
     Interests: NonAttribute<Interest[]>;
     Citations: NonAttribute<Citation[]>;
@@ -76,8 +76,8 @@ export namespace journal {
     > {
     id: CreationOptional<string>;
     name: string;
-    createdAt?: CreationOptional<Date>;
-    updatedAt?: CreationOptional<Date>;
+    created_at?: CreationOptional<Date>;
+    updated_at?: CreationOptional<Date>;
     Journals: NonAttribute<Journal[]>;
     Articles: NonAttribute<Article[]>;
   }

@@ -26,7 +26,7 @@ const Interest = db.define<Interest>(
       unique: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, underscored: true }
 );
 
 Interest.beforeCreate(async (interest: Interest) => {

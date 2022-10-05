@@ -58,7 +58,7 @@ const Journal = db.define<Journal>(
       unique: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, underscored: true }
 );
 
 Journal.beforeCreate(async (journal: Journal) => {

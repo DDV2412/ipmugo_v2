@@ -43,8 +43,8 @@ export namespace user {
     biograph?: string;
     affiliation?: string;
     verified?: string;
-    createdAt?: CreationOptional<Date>;
-    updatedAt?: CreationOptional<Date>;
+    created_at?: CreationOptional<Date>;
+    updated_at?: CreationOptional<Date>;
     Interests: NonAttribute<Interest[]>;
     Roles: NonAttribute<Role[]>;
     Articles: NonAttribute<Article[]>;
@@ -69,8 +69,8 @@ export namespace user {
     id: CreationOptional<string>;
     user_id: ForeignKey<User["id"]>;
     article_id: ForeignKey<Article["id"]>;
-    createdAt?: CreationOptional<Date>;
-    updatedAt?: CreationOptional<Date>;
+    created_at?: CreationOptional<Date>;
+    updated_at?: CreationOptional<Date>;
   }
 
   export interface ScholarProfile

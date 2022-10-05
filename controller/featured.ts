@@ -34,7 +34,7 @@ export default {
             },
           ],
         },
-        sort: [{ createdAt: { order: "asc" } }],
+        sort: [{ created_at: { order: "asc" } }],
         aggs: {},
       },
     });

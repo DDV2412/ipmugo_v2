@@ -85,7 +85,7 @@ const Article = db.define<Article>(
       type: DataTypes.DATE,
     },
   },
-  { timestamps: true }
+  { timestamps: true, underscored: true }
 );
 
 Article.beforeCreate(async (article: Article) => {

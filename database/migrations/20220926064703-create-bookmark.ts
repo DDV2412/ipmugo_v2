@@ -40,11 +40,11 @@ module.exports = {
             onDelete: "CASCADE",
             onUpdate: "CASCADE",
           },
-          createdAt: {
+          created_at: {
             allowNull: false,
             type: DataTypes.DATE,
           },
-          updatedAt: {
+          updated_at: {
             allowNull: false,
             type: DataTypes.DATE,
           },

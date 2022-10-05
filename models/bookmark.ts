@@ -24,7 +24,7 @@ const Bookmark = db.define<Bookmark>(
       allowNull: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true, underscored: true }
 );
 
 Bookmark.beforeCreate(async (user: Bookmark) => {
