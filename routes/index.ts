@@ -107,7 +107,7 @@ class Router {
      * Auth
      */
     this.router.post("/login", Auth.login);
-
+    this.router.post("/register", Auth.register);
     /**
      * Features
      */

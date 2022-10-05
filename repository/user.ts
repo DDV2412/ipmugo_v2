@@ -131,6 +131,26 @@ class UserRepo {
       return null;
     }
   };
+
+  register = async (userData: {}) => {
+    try {
+      let user = await this.userByUsername(userData["username"]);
+
+      if (!user) {
+        return null;
+      }
+
+      if (!bcryptjs.compareSync(userData["password"], user["password"])) {
+        return null;
+      }
+
+      return user;
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
   getUserById = async (id: string) => {
     try {
       let user = await db.transaction(async (transaction) => {

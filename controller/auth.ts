@@ -20,4 +20,22 @@ export default {
       tokenAccess: user["tokenAccess"],
     });
   },
+
+  register: async (req: Request, res: Response, next: NextFunction) => {
+    const { error } = validation.register(req.body);
+
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    let user = await req.AuthUC.register(req.body);
+
+    if (!user) {
+      return next(new ErrorHandler("Incorrect username or password", 403));
+    }
+
+    res.json({
+      status: "success",
+      user: user["user"],
+      tokenAccess: user["tokenAccess"],
+    });
+  },
 };
