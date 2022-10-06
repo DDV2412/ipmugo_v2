@@ -113,4 +113,5 @@ logs/*
 build/
 
 # Static
-static/
+static/thumbnail
+static/cover

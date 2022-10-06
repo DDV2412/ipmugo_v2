@@ -49,7 +49,7 @@ describe("Article Return null Testing", () => {
       total: undefined,
       currentPage: undefined,
       countPage: undefined,
-      articles: [],
+      articles: undefined,
     });
   });
 
