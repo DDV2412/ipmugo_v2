@@ -31,7 +31,7 @@ module.exports = {
             type: DataTypes.STRING(96),
             allowNull: false,
           },
-          photoProfile: {
+          photo_profile: {
             type: DataTypes.STRING,
             allowNull: true,
           },
@@ -44,11 +44,11 @@ module.exports = {
             type: DataTypes.STRING,
             allowNull: false,
           },
-          googleScholar: {
+          google_scholar: {
             type: DataTypes.STRING(16),
             allowNull: true,
           },
-          scopusId: {
+          scopus_id: {
             type: DataTypes.STRING(26),
             allowNull: true,
           },

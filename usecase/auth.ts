@@ -11,7 +11,7 @@ class AuthUC {
       salutation: userData["salutation"],
       username: userData["username"],
       name: userData["name"],
-      photoProfile: userData["photoProfile"],
+      photo_profile: userData["photo_profile"],
       password: userData["password"],
       googleScholar: userData["googleScholar"],
       scopusId: userData["scopusId"],

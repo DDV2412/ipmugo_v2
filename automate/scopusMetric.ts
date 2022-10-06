@@ -10,9 +10,9 @@ class Metric {
 
   getMetric = async () => {
     try {
-      const journals = await this.Journal.allJournals();
+      const journals = await this.Journal.GetJournals();
 
-      for await (const journal of journals.rows) {
+      for await (const journal of journals.journals) {
         const metric = await scopusMetric.getMetric(journal["issn"]);
 
         if (metric != null) {

@@ -89,9 +89,9 @@ export default {
           "string.empty": "Abstract cannot be an empty field",
           "any.required": "Abstract is required",
         }),
-        year: joi.string().required().messages({
-          "string.empty": "Year cannot be an empty field",
-          "any.required": "Year is required",
+        publish_year: joi.string().required().messages({
+          "string.empty": "Publish year cannot be an empty field",
+          "any.required": "Publish year is required",
         }),
         resources: joi.string().required().messages({
           "string.empty": "Resources cannot be an empty field",

@@ -3,39 +3,16 @@ import ErrorHandler from "../helper/errorHandler";
 
 export default {
   search: async (req: Request, res: Response, next: NextFunction) => {
-    const { search } = req.query;
+    const { search, page, size } = req.query;
 
     let articles = await req.FeatruredUC.search({
       indexName: "articles",
       body: {
-        size: 25,
-        from: 0,
+        from: page ? +page : 0,
+        size: size ? size : 15,
         query: {
-          should: [
-            {
-              term: {
-                title: search,
-              },
-            },
-            {
-              term: {
-                topic: search,
-              },
-            },
-            {
-              term: {
-                abstract: search,
-              },
-            },
-            {
-              term: {
-                keywords: search,
-              },
-            },
-          ],
+          match_all: {},
         },
-        sort: [{ created_at: { order: "asc" } }],
-        aggs: {},
       },
     });
 

@@ -44,13 +44,11 @@ class ArticleRepo {
           include: [
             {
               model: this.Journal,
-              as: "journal",
-              include: [{ model: this.ScopusMetric, as: "scopus_metric" }],
+              include: [this.ScopusMetric],
               transaction,
             } as IncludeOptions,
             {
               model: this.Author,
-              as: "authors",
               transaction,
             } as IncludeOptions,
             {
@@ -59,6 +57,7 @@ class ArticleRepo {
             } as IncludeOptions,
             {
               model: this.User,
+              as: "assign_author",
               transaction,
             } as IncludeOptions,
             {
@@ -85,6 +84,49 @@ class ArticleRepo {
     }
   };
 
+  GetArticles = async () => {
+    try {
+      let articles = await db.transaction(async (transaction) => {
+        return await this.Article.findAndCountAll({
+          include: [
+            {
+              model: this.Journal,
+              include: [this.ScopusMetric],
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Author,
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Interest,
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.User,
+              as: "assign_author",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Citation,
+              transaction,
+            } as IncludeOptions,
+          ],
+          distinct: true,
+          transaction,
+        });
+      });
+
+      return {
+        total: articles.count,
+        articles: articles.rows,
+      };
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
   articleById = async (id: string) => {
     try {
       let article = await db.transaction(async (transaction) => {
@@ -95,17 +137,24 @@ class ArticleRepo {
           include: [
             {
               model: this.Journal,
-              as: "journal",
+              include: [this.ScopusMetric],
               transaction,
             } as IncludeOptions,
             {
               model: this.Author,
-              as: "authors",
               transaction,
             } as IncludeOptions,
             {
               model: this.Interest,
-              as: "interests",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.User,
+              as: "assign_author",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Citation,
               transaction,
             } as IncludeOptions,
           ],

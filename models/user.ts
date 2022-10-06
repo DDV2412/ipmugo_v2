@@ -37,7 +37,7 @@ const User = db.define<User>(
       type: DataTypes.STRING(96),
       allowNull: false,
     },
-    photoProfile: {
+    photo_profile: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -50,11 +50,11 @@ const User = db.define<User>(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    googleScholar: {
+    google_scholar: {
       type: DataTypes.STRING(16),
       allowNull: true,
     },
-    scopusId: {
+    scopus_id: {
       type: DataTypes.STRING(26),
       allowNull: true,
     },
@@ -94,20 +94,23 @@ Role.belongsToMany(User, {
 User.belongsToMany(Article, {
   through: Bookmark.tableName,
   foreignKey: "user_id",
+  as: "bookmark",
 });
 Article.belongsToMany(User, {
   through: Bookmark.tableName,
   foreignKey: "article_id",
+  as: "saved_bookmark",
 });
 
 User.belongsToMany(Article, {
   through: AssignAuthor.tableName,
   foreignKey: "author_id",
-  as: "publish_articles",
+  as: "article_published",
 });
 Article.belongsToMany(User, {
   through: AssignAuthor.tableName,
   foreignKey: "article_id",
+  as: "assign_author",
 });
 
 User.belongsToMany(Journal, {
@@ -117,7 +120,7 @@ User.belongsToMany(Journal, {
 Journal.belongsToMany(User, {
   through: AssignEditor.tableName,
   foreignKey: "journal_id",
-  as: "editorials",
+  as: "editorial",
 });
 
 User.belongsToMany(Interest, {

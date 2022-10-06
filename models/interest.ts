@@ -36,25 +36,21 @@ Interest.beforeCreate(async (interest: Interest) => {
 Interest.belongsToMany(Journal, {
   through: JournalInterest.tableName,
   foreignKey: "interest_id",
-  as: "journals",
 });
 
 Journal.belongsToMany(Interest, {
   through: JournalInterest.tableName,
   foreignKey: "journal_id",
-  as: "interests",
 });
 
 Interest.belongsToMany(Article, {
   through: ArticleInterest.tableName,
   foreignKey: "interest_id",
-  as: "articles",
 });
 
 Article.belongsToMany(Interest, {
   through: ArticleInterest.tableName,
   foreignKey: "article_id",
-  as: "interests",
 });
 
 export default Interest;

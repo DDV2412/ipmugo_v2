@@ -50,11 +50,12 @@ class UserRepo {
             } as IncludeOptions,
             {
               model: this.Article,
+              as: "article_published",
               transaction,
             } as IncludeOptions,
             {
               model: this.Article,
-              as: "publish_articles",
+              as: "bookmark",
               transaction,
             } as IncludeOptions,
             {
@@ -94,6 +95,12 @@ class UserRepo {
             } as IncludeOptions,
             {
               model: this.Article,
+              as: "article_published",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Article,
+              as: "bookmark",
               transaction,
             } as IncludeOptions,
           ],

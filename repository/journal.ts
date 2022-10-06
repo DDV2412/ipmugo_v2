@@ -37,13 +37,12 @@ class JournalRepo {
             } as IncludeOptions,
             {
               model: this.User,
+              as: "editorial",
               transaction,
-              as: "editorials",
             } as IncludeOptions,
             {
               model: this.ScopusMetric,
               transaction,
-              as: "scopus_metric",
             } as IncludeOptions,
           ],
           limit: limit,
@@ -65,6 +64,40 @@ class JournalRepo {
     }
   };
 
+  GetJournals = async () => {
+    try {
+      let journals = await db.transaction(async (transaction) => {
+        return await this.Journal.findAndCountAll({
+          include: [
+            {
+              model: this.Interest,
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.User,
+              as: "editorial",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.ScopusMetric,
+              transaction,
+            } as IncludeOptions,
+          ],
+          distinct: true,
+          transaction,
+        });
+      });
+
+      return {
+        total: journals.count,
+        journals: journals.rows,
+      };
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
   journalById = async (id: string) => {
     try {
       let journal = await db.transaction(async (transaction) => {
@@ -76,7 +109,15 @@ class JournalRepo {
             {
               model: this.Interest,
               transaction,
-              as: "interests",
+            } as IncludeOptions,
+            {
+              model: this.User,
+              as: "editorial",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.ScopusMetric,
+              transaction,
             } as IncludeOptions,
           ],
           transaction,

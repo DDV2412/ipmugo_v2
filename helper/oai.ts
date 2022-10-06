@@ -168,13 +168,13 @@ class OAI {
         let publishDate =
           dc.getElementsByTagName("dc:date")[0]?.firstChild?.nodeValue;
 
-        let year = null;
+        let publish_year = null;
 
         if (typeof publishDate != "undefined" || publishDate != null) {
-          year = publishDate.split("-")[0];
+          publish_year = publishDate.split("-")[0];
         }
 
-        let language =
+        let publish_language =
           dc.getElementsByTagName("dc:language")[0]?.firstChild?.nodeValue;
 
         let fileDownload = dc
@@ -220,8 +220,8 @@ class OAI {
           title: title,
           abstract: abstract,
           doi: doi,
-          year: year,
-          language: language,
+          publish_year: publish_year,
+          publish_language: publish_language,
           file: fileDownload,
           format: format,
           resources: resources,

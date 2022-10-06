@@ -17,7 +17,7 @@ export default {
       total: articles.total,
       currentPage: articles.currentPage,
       countPage: articles.countPage,
-      articles: articles.articles || articles,
+      articles: articles.articles,
     });
   },
 

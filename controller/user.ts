@@ -18,7 +18,7 @@ export default {
       total: users.total,
       currentPage: users.currentPage,
       countPage: users.countPage,
-      users: users.users || users,
+      users: users.users,
     });
   },
 

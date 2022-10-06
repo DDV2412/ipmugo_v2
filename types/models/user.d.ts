@@ -34,11 +34,11 @@ export namespace user {
     salutation?: string;
     username: string;
     name: string;
-    photoProfile?: string;
+    photo_profile?: string;
     email: string;
     password: string;
-    googleScholar?: string;
-    scopusId?: string;
+    google_scholar?: string;
+    scopus_id?: string;
     orcid?: string;
     biograph?: string;
     affiliation?: string;

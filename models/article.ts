@@ -25,7 +25,7 @@ const Article = db.define<Article>(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    publishDate: {
+    publish_date: {
       type: DataTypes.DATE,
       allowNull: false,
     },
@@ -46,7 +46,7 @@ const Article = db.define<Article>(
       allowNull: false,
       defaultValue: "application/pdf",
     },
-    year: {
+    publish_year: {
       type: DataTypes.STRING(4),
       allowNull: true,
     },
@@ -63,7 +63,7 @@ const Article = db.define<Article>(
       allowNull: false,
       unique: true,
     },
-    language: {
+    publish_language: {
       type: DataTypes.STRING(6),
       allowNull: false,
       defaultValue: "eng",
@@ -72,7 +72,7 @@ const Article = db.define<Article>(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    articleParsing: {
+    article_parsing: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -80,7 +80,7 @@ const Article = db.define<Article>(
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    dateModify: {
+    date_modify: {
       allowNull: true,
       type: DataTypes.DATE,
     },
@@ -93,11 +93,9 @@ Article.beforeCreate(async (article: Article) => {
 });
 
 Article.hasMany(Author, {
-  as: "authors",
   foreignKey: "article_id",
 });
 Author.belongsTo(Article, {
-  as: "authors",
   foreignKey: "article_id",
 });
 
@@ -106,7 +104,6 @@ Article.hasMany(Citation, {
 });
 
 Citation.belongsTo(Article, {
-  as: "article",
   foreignKey: "article_id",
 });
 

@@ -11,9 +11,9 @@ class Citation {
 
   getCitation = async () => {
     try {
-      const articles = await this.Article.allArticles();
+      const articles = await this.Article.GetArticles();
 
-      for await (const article of articles.rows) {
+      for await (const article of articles.articles) {
         const crossRef = await citationCrossRef.citation(article["doi"]);
 
         if (crossRef != null) {

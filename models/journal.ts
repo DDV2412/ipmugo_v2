@@ -65,16 +65,14 @@ Journal.beforeCreate(async (journal: Journal) => {
   journal["id"] = uuidv4();
 });
 
-Article.belongsTo(Journal, { foreignKey: "journal_id", as: "journal" });
-Journal.hasMany(Article, { foreignKey: "journal_id", as: "articles" });
+Article.belongsTo(Journal, { foreignKey: "journal_id" });
+Journal.hasMany(Article, { foreignKey: "journal_id" });
 Journal.hasOne(ScopusMetric, {
   foreignKey: "journal_id",
-  as: "scopus_metric",
 });
 
 ScopusMetric.belongsTo(Journal, {
   foreignKey: "journal_id",
-  as: "journal",
 });
 
 export default Journal;

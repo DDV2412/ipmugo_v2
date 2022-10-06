@@ -16,7 +16,7 @@ export default {
       total: journals.total,
       currentPage: journals.currentPage,
       countPage: journals.countPage,
-      journals: journals.journals || journals,
+      journals: journals.journals,
     });
   },
 

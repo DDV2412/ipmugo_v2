@@ -1,3 +1,10 @@
+import apm from "elastic-apm-node";
+apm.start({
+  serviceName: process.env.ELASTIC_SERVERNAME,
+  environment: process.env.NODE_ENV,
+  serverUrl: "http://localhost:8200",
+});
+
 import ArticleRepo from "../repository/article";
 import JournalRepo from "../repository/journal";
 import OAI from "../helper/oai";
@@ -13,9 +20,9 @@ class ArticleAuto {
 
   getArticles = async () => {
     try {
-      const journals = await this.Journal.allJournals({});
+      const journals = await this.Journal.GetJournals();
 
-      for await (const journal of journals.rows) {
+      for await (const journal of journals.journals) {
         const results = await OAI.getHarvest(
           journal["base_url"],
           journal["abbreviation"],
@@ -52,20 +59,20 @@ class ArticleAuto {
               const inputArticle = await this.Article.createArticle({
                 journal_id: journal["id"],
                 identifier: result["identifier"],
-                dateModify: result["date_modify"],
+                date_modify: result["date_modify"],
                 topic: result["topic"],
                 title: result["title"],
                 abstract: result["abstract"],
                 doi: result["doi"],
-                year: result["year"],
-                language: result["language"],
+                publish_year: result["publish_year"],
+                publish_language: result["publish_language"],
                 file: result["fileDownload"],
                 format: result["format"],
                 resources: result["resources"],
                 pages: result["pages"],
                 keywords: result["keywords"],
                 interests: interests,
-                publishDate: result["publishDate"],
+                publish_date: result["publishDate"],
                 authors: result["authors"],
               });
 
@@ -81,8 +88,8 @@ class ArticleAuto {
                 title: result["title"],
                 abstract: result["abstract"],
                 doi: result["doi"],
-                year: result["year"],
-                language: result["language"],
+                publish_year: result["publish_year"],
+                publish_language: result["publish_language"],
                 file: result["fileDownload"],
                 format: result["format"],
                 resources: result["resources"],
