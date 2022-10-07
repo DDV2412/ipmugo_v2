@@ -112,6 +112,7 @@ class Router {
      * Features
      */
     this.router.get("/search", Featured.search);
+    this.router.post("/advanced", Featured.advanced);
   }
 }
 

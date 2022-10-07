@@ -13,31 +13,6 @@ class Synchronize {
     this.Elastic = new Elastic();
   }
 
-  bulkInterest = async () => {
-    const interest = await this.Interest.allInterests();
-
-    const dataSet: Array<Record<string, string>> = [];
-
-    interest.rows.map((interest: {}) => {
-      dataSet.push({
-        id: interest["id"],
-        name: interest["name"],
-        created_at: interest["createdAt"],
-        updated_at: interest["updatedAt"],
-      });
-    });
-
-    await this.Elastic.bulk(dataSet, {
-      indexName: "interests",
-      properties: {
-        id: { type: "keyword" },
-        name: { type: "text" },
-        created_at: { type: "date" },
-        updated_at: { type: "date" },
-      },
-    });
-  };
-
   bulkArticles = async () => {
     const article = await this.Article.GetArticles();
 
@@ -79,7 +54,7 @@ class Synchronize {
         journal_id: { type: "keyword" },
         identifier: { type: "keyword" },
         publish_date: { type: "date" },
-        topic: { type: "text" },
+        topic: { type: "keyword" },
         title: { type: "text" },
         abstract: { type: "text" },
         format: { type: "text" },
@@ -98,7 +73,7 @@ class Synchronize {
           type: "object",
           properties: {
             id: { type: "keyword" },
-            name: { type: "text" },
+            name: { type: "keyword" },
             abbreviation: { type: "keyword" },
             publisher: { type: "text" },
             thumbnail: { type: "keyword" },
@@ -133,4 +108,4 @@ class Synchronize {
   };
 }
 
-new Synchronize().bulkInterest();
+new Synchronize().bulkArticles();

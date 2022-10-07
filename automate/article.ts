@@ -1,10 +1,3 @@
-import apm from "elastic-apm-node";
-apm.start({
-  serviceName: process.env.ELASTIC_SERVERNAME,
-  environment: process.env.NODE_ENV,
-  serverUrl: "http://localhost:8200",
-});
-
 import ArticleRepo from "../repository/article";
 import JournalRepo from "../repository/journal";
 import OAI from "../helper/oai";
@@ -80,8 +73,7 @@ class ArticleAuto {
                 `Successfully add new article ${inputArticle["title"]}`
               );
             } else {
-              const update = await this.Article.updateArticle(article, {
-                journal_id: journal["id"],
+              const update = await this.Article.updateArticle(article["id"], {
                 identifier: result["identifier"],
                 dateModify: result["date_modify"],
                 topic: result["topic"],

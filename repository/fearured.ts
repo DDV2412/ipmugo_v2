@@ -78,10 +78,15 @@ class FeatruredRepo {
   };
 
   search = async (search: {}) => {
-    return await this.client.search<ElasticType>({
-      index: search["indexName"],
-      body: search["body"],
-    });
+    try {
+      return await this.client.search<ElasticType>({
+        index: search["indexName"],
+        body: search["body"],
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
   };
 }
 

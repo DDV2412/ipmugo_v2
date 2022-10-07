@@ -104,7 +104,6 @@ export namespace user {
     id: CreationOptional<string>;
     scholar_profile_id: ForeignKey<ScholarProfile["id"]>;
     name: string;
-    email?: string;
     affiliation?: string;
   }
 

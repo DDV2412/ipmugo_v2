@@ -486,4 +486,15 @@ export default {
       })
       .validate(body);
   },
+
+  advancedSearch: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        searchDefault: joi.object().required().messages({
+          "any.required": "Search is required field",
+        }),
+      })
+      .validate(body);
+  },
 };

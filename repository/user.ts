@@ -81,6 +81,25 @@ class UserRepo {
     }
   };
 
+  GetUsers = async () => {
+    try {
+      let users = await db.transaction(async (transaction) => {
+        return await this.User.findAndCountAll({
+          transaction,
+          distinct: true,
+        });
+      });
+
+      return {
+        total: users.count,
+        users: users.rows,
+      };
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
   userByUsername = async (username: string) => {
     try {
       let user = await db.transaction(async (transaction) => {
