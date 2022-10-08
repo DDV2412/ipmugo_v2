@@ -26,6 +26,10 @@ export default {
 
     let article = await req.ArticleUC.articleById(articleId);
 
+    if (!article) {
+      return next(new ErrorHandler("Article not found", 404));
+    }
+
     let release = await req.FeatruredUC.search({
       indexName: "articles",
       body: {
@@ -51,10 +55,6 @@ export default {
         },
       },
     });
-
-    if (!article) {
-      return next(new ErrorHandler("Article not found", 404));
-    }
 
     res.json({
       status: "success",
