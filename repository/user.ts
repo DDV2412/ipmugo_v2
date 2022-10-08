@@ -10,6 +10,9 @@ import { compareSync, hashSync } from "bcryptjs";
 import AssignAuthor from "../models/assign_author";
 import AssignEditor from "../models/assign_editor";
 import Journal from "../models/journal";
+import ScholarProfile from "../models/scholar_profile";
+import ScholarStatistic from "../models/scholar_statistic";
+import ScholarCOAuthor from "../models/scholar_co_author";
 import RequestPagination from "../helper/requestPagination";
 
 class UserRepo {
@@ -21,6 +24,9 @@ class UserRepo {
   Journal: typeof Journal;
   AssignAuthor: typeof AssignAuthor;
   AssignEditor: typeof AssignEditor;
+  ScholarProfile: typeof ScholarProfile;
+  ScholarStatistic: typeof ScholarStatistic;
+  ScholarCOAuthor: typeof ScholarCOAuthor;
   constructor() {
     this.User = User;
     this.Role = Role;
@@ -30,6 +36,9 @@ class UserRepo {
     this.Journal = Journal;
     this.AssignAuthor = AssignAuthor;
     this.AssignEditor = AssignEditor;
+    this.ScholarProfile = ScholarProfile;
+    this.ScholarStatistic = ScholarStatistic;
+    this.ScholarCOAuthor = ScholarCOAuthor;
   }
 
   allUsers = async (
@@ -60,6 +69,11 @@ class UserRepo {
             } as IncludeOptions,
             {
               model: this.Journal,
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.ScholarProfile,
+              include: [{ model: this.ScholarStatistic }],
               transaction,
             } as IncludeOptions,
           ],
@@ -120,6 +134,14 @@ class UserRepo {
             {
               model: this.Article,
               as: "bookmark",
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.ScholarProfile,
+              include: [
+                { model: this.ScholarStatistic },
+                { model: this.ScholarCOAuthor },
+              ],
               transaction,
             } as IncludeOptions,
           ],
@@ -311,6 +333,21 @@ class UserRepo {
 
   assignAuthor = async (userData: Record<string, any>) => {
     try {
+      const user = await this.getUserById(userData["author_id"]);
+
+      const role = await this.Role.findOne({
+        where: {
+          role_name: "author",
+        },
+      });
+
+      if (user && role) {
+        await this.UserRole.create({
+          user_id: user["id"],
+          role_id: role["id"],
+        });
+      }
+
       return await db.transaction(async (transaction) => {
         return await this.AssignAuthor.create(userData);
       });
@@ -339,6 +376,21 @@ class UserRepo {
 
   assignEditor = async (userData: Record<string, any>) => {
     try {
+      const user = await this.getUserById(userData["editor_id"]);
+
+      const role = await this.Role.findOne({
+        where: {
+          role_name: "editor",
+        },
+      });
+
+      if (user && role) {
+        await this.UserRole.create({
+          user_id: user["id"],
+          role_id: role["id"],
+        });
+      }
+
       return await db.transaction(async (transaction) => {
         return await this.AssignEditor.create(userData);
       });
@@ -358,6 +410,157 @@ class UserRepo {
           },
           transaction,
         });
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  synchronizeScholar = async (options: Record<string, any>) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        const profile = await this.ScholarProfile.findOne({
+          where: {
+            user_id: options["user_id"],
+          },
+        });
+
+        if (!profile) {
+          const profile = await this.ScholarProfile.create({
+            user_id: options["user_id"],
+            document_count: options["scholar"]["statistic"]["total"],
+            h_index: options["scholar"]["statistic"]["h_index"],
+            i10_index: options["scholar"]["statistic"]["i10_index"],
+          });
+
+          options["scholar"]["citedBy"].map(async (data: any) => {
+            const cited = await this.ScholarStatistic.findOne({
+              where: {
+                scholar_profile_id: profile["id"],
+              },
+            });
+            if (!cited) {
+              await this.ScholarStatistic.create({
+                scholar_profile_id: profile["id"],
+                year: data["year"],
+                count: data["data"],
+              });
+            } else {
+              await this.ScholarStatistic.update(
+                {
+                  year: data["year"],
+                  count: data["data"],
+                },
+                {
+                  where: {
+                    scholar_profile_id: profile["id"],
+                  },
+                }
+              );
+            }
+          });
+
+          options["scholar"]["coAuthors"].map(async (data: any) => {
+            const coAuthor = await this.ScholarCOAuthor.findOne({
+              where: {
+                scholar_profile_id: profile["id"],
+              },
+            });
+
+            if (!coAuthor) {
+              await this.ScholarCOAuthor.create({
+                scholar_profile_id: profile["id"],
+                name: data["name"],
+                affiliation: data["aff"],
+              });
+            } else {
+              await this.ScholarCOAuthor.update(
+                {
+                  name: data["name"],
+                  affiliation: data["aff"],
+                },
+                {
+                  where: {
+                    scholar_profile_id: profile["id"],
+                  },
+                }
+              );
+            }
+          });
+
+          return profile;
+        } else {
+          const update = await this.ScholarProfile.update(
+            {
+              document_count: options["scholar"]["statistic"]["total"],
+              h_index: options["scholar"]["statistic"]["h_index"],
+              i10_index: options["scholar"]["statistic"]["i10_index"],
+            },
+            {
+              where: {
+                id: profile["id"],
+              },
+            }
+          );
+
+          options["scholar"]["citedBy"].map(async (data: any) => {
+            const cited = await this.ScholarStatistic.findOne({
+              where: {
+                scholar_profile_id: update["id"],
+              },
+            });
+            if (!cited) {
+              await this.ScholarStatistic.create({
+                scholar_profile_id: update["id"],
+                year: data["year"],
+                count: data["data"],
+              });
+            } else {
+              await this.ScholarStatistic.update(
+                {
+                  year: data["year"],
+                  count: data["data"],
+                },
+                {
+                  where: {
+                    scholar_profile_id: update["id"],
+                  },
+                }
+              );
+            }
+          });
+
+          options["scholar"]["coAuthors"].map(async (data: any) => {
+            const coAuthor = await this.ScholarCOAuthor.findOne({
+              where: {
+                scholar_profile_id: update["id"],
+              },
+            });
+
+            if (!coAuthor) {
+              await this.ScholarCOAuthor.create({
+                scholar_profile_id: update["id"],
+                name: data["name"],
+                affiliation: data["aff"],
+              });
+            } else {
+              await this.ScholarCOAuthor.update(
+                {
+                  name: data["name"],
+                  affiliation: data["aff"],
+                },
+                {
+                  where: {
+                    scholar_profile_id: update["id"],
+                  },
+                }
+              );
+            }
+          });
+
+          return update;
+        }
       });
     } catch (error) {
       loggerWinston.error(error);

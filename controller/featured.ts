@@ -8,7 +8,10 @@ export default {
       search,
       page,
       size,
-      sortBy,
+      sortByDate,
+      sortByTitle,
+      sortByRelevance,
+      sortByCited,
       range,
       filterByTopic,
       filterByJournal,
@@ -41,6 +44,47 @@ export default {
       });
     }
 
+    const sort: any = [];
+
+    if (typeof sortByDate !== "undefined") {
+      sort.push({
+        publish_date: {
+          order: sortByDate,
+          format: "strict_date_optional_time_nanos",
+        },
+      });
+    }
+
+    if (typeof sortByTitle !== "undefined") {
+      sort.push({
+        title: {
+          order: sortByTitle,
+        },
+      });
+    }
+
+    if (typeof sortByCited !== "undefined") {
+      sort.push({
+        "citations.count": {
+          order: "desc",
+          nested: {
+            path: "citations",
+            filter: {
+              match: {
+                "citations.source": "Scopus",
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (typeof sortByRelevance !== "undefined") {
+      sort.push({
+        _score: { order: "desc" },
+      });
+    }
+
     const query =
       typeof search != "undefined"
         ? {
@@ -68,14 +112,14 @@ export default {
         from: page ? +page : 0,
         size: size ? size : 15,
         sort:
-          typeof sortBy != "undefined" && sortBy != "relevance"
-            ? {
+          sort.length != 0
+            ? sort
+            : {
                 publish_date: {
-                  order: sortBy,
+                  order: "desc",
                   format: "strict_date_optional_time_nanos",
                 },
-              }
-            : { _score: { order: "desc" } },
+              },
         query: query,
         aggs: {
           topic: {
@@ -99,12 +143,69 @@ export default {
       articles: articles,
     });
   },
+
+  featuredArticles: async (req: Request, res: Response, next: NextFunction) => {
+    let articles = await req.FeatruredUC.search({
+      indexName: "articles",
+      body: {
+        sort: {
+          "citations.count": {
+            order: "desc",
+            nested: {
+              path: "citations",
+              filter: {
+                match: {
+                  "citations.source": "Scopus",
+                },
+              },
+            },
+          },
+        },
+        query: {
+          match_all: {},
+        },
+      },
+    });
+
+    res.json({
+      status: "success",
+      articles: articles,
+    });
+  },
+
+  featuredAuthors: async (req: Request, res: Response, next: NextFunction) => {
+    let articles = await req.FeatruredUC.search({
+      indexName: "articles",
+      body: {
+        sort: {
+          "assign_author.scholar_profile.h_index": {
+            order: "desc",
+            nested: {
+              path: "assign_author",
+            },
+          },
+        },
+        query: {
+          match_all: {},
+        },
+      },
+    });
+
+    res.json({
+      status: "success",
+      articles: articles,
+    });
+  },
+
   advanced: async (req: Request, res: Response, next: NextFunction) => {
     const {
       searchDefault,
       page,
       size,
-      sortBy,
+      sortByDate,
+      sortByTitle,
+      sortByRelevance,
+      sortByCited,
       range,
       filterByTopic,
       filterByJournal,
@@ -217,20 +318,61 @@ export default {
       });
     }
 
+    const sort: any = [];
+
+    if (typeof sortByDate !== "undefined") {
+      sort.push({
+        publish_date: {
+          order: sortByDate,
+          format: "strict_date_optional_time_nanos",
+        },
+      });
+    }
+
+    if (typeof sortByTitle !== "undefined") {
+      sort.push({
+        title: {
+          order: sortByTitle,
+        },
+      });
+    }
+
+    if (typeof sortByCited !== "undefined") {
+      sort.push({
+        "citations.count": {
+          order: "desc",
+          nested: {
+            path: "citations",
+            filter: {
+              match: {
+                "citations.source": "Scopus",
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (typeof sortByRelevance !== "undefined") {
+      sort.push({
+        _score: { order: "desc" },
+      });
+    }
+
     let articles = await req.FeatruredUC.search({
       indexName: "articles",
       body: {
         from: page ? +page : 0,
         size: size ? size : 15,
         sort:
-          typeof sortBy != "undefined" && sortBy != "relevance"
-            ? {
+          sort.length != 0
+            ? sort
+            : {
                 publish_date: {
-                  order: sortBy,
+                  order: "desc",
                   format: "strict_date_optional_time_nanos",
                 },
-              }
-            : { _score: { order: "desc" } },
+              },
         query: {
           bool: {
             must: must.length != 0 ? must : { match_all: {} },

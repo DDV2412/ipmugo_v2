@@ -73,6 +73,11 @@ class Router {
     this.router.post("/user", User.createUser);
     this.router.put("/user/:userId", User.updateUser);
     this.router.delete("/user/:userId", User.deleteUser);
+    this.router.get(
+      "/synchronize/:scholarId",
+      AuthMiddleware.authenticate,
+      User.synchronizeScholar
+    );
 
     this.router.post(
       "/bookmark",
@@ -113,6 +118,8 @@ class Router {
      */
     this.router.get("/search", Featured.search);
     this.router.post("/advanced", Featured.advanced);
+    this.router.get("/featured/articles", Featured.featuredArticles);
+    this.router.get("/featured/authors", Featured.featuredAuthors);
   }
 }
 

@@ -26,6 +26,32 @@ export default {
 
     let article = await req.ArticleUC.articleById(articleId);
 
+    let release = await req.FeatruredUC.search({
+      indexName: "articles",
+      body: {
+        from: 0,
+        size: 5,
+        sort:
+          article["keyword"] != null
+            ? { _score: { order: "desc" } }
+            : {
+                publish_date: {
+                  order: "desc",
+                  format: "strict_date_optional_time_nanos",
+                },
+              },
+        query: {
+          bool: {
+            must: [
+              article["keyword"] != null
+                ? { match_phrase: { keyword: article["keyword"] } }
+                : { match_all: {} },
+            ],
+          },
+        },
+      },
+    });
+
     if (!article) {
       return next(new ErrorHandler("Article not found", 404));
     }
@@ -33,6 +59,7 @@ export default {
     res.json({
       status: "success",
       article: article,
+      release: release,
     });
   },
 

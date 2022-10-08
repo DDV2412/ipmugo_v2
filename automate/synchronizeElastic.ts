@@ -1,6 +1,7 @@
 import ArticleRepo from "../repository/article";
 import InterestRepo from "../repository/interest";
 import Elastic from "../repository/fearured";
+require("events").EventEmitter.defaultMaxListeners = 0;
 
 class Synchronize {
   Article: any;
@@ -59,7 +60,7 @@ class Synchronize {
         abstract: { type: "text" },
         format: { type: "text" },
         publish_year: { type: "keyword" },
-        resources: { type: "text" },
+        resources: { type: "keyword" },
         pages: { type: "text" },
         doi: { type: "keyword" },
         publish_language: { type: "keyword" },
@@ -101,8 +102,23 @@ class Synchronize {
         },
         authors: { type: "nested" },
         interests: { type: "nested" },
-        assign_author: { type: "nested" },
-        citations: { type: "nested" },
+        assign_author: {
+          type: "nested",
+          properties: {
+            scholar_profile: {
+              type: "object",
+              properties: {
+                count: { type: "integer" },
+              },
+            },
+          },
+        },
+        citations: {
+          type: "nested",
+          properties: {
+            count: { type: "integer" },
+          },
+        },
       },
     });
   };

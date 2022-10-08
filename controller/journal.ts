@@ -22,6 +22,18 @@ export default {
 
   journalById: async (req: Request, res: Response, next: NextFunction) => {
     const journalId = req.params["journalId"];
+    const {
+      search,
+      page,
+      size,
+      sortByDate,
+      sortByTitle,
+      sortByRelevance,
+      sortByCited,
+      range,
+      filterByTopic,
+      filterByIssue,
+    } = req.query;
 
     let journal = await req.JournalUC.journalById(journalId);
 
@@ -29,9 +41,137 @@ export default {
       return next(new ErrorHandler("Journal not found", 404));
     }
 
+    const filter: any = [];
+
+    filter.push({
+      range: {
+        publish_year: {
+          gte: range ? (range as string).split("-")[0] : "2000",
+          lt: range ? (range as string).split("-")[1] : "now",
+        },
+      },
+    });
+
+    if (typeof filterByTopic != "undefined" && filterByTopic != null) {
+      filter.push({
+        term: {
+          topic: filterByTopic,
+        },
+      });
+    }
+
+    if (typeof filterByIssue != "undefined" && filterByIssue != null) {
+      filter.push({
+        term: {
+          resources: filterByIssue,
+        },
+      });
+    }
+
+    const sort: any = [];
+
+    if (typeof sortByDate !== "undefined") {
+      sort.push({
+        publish_date: {
+          order: sortByDate,
+          format: "strict_date_optional_time_nanos",
+        },
+      });
+    }
+
+    if (typeof sortByTitle !== "undefined") {
+      sort.push({
+        title: {
+          order: sortByTitle,
+        },
+      });
+    }
+
+    if (typeof sortByCited !== "undefined") {
+      sort.push({
+        "citations.count": {
+          order: "desc",
+          nested: {
+            path: "citations",
+            filter: {
+              match: {
+                "citations.source": "Scopus",
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (typeof sortByRelevance !== "undefined") {
+      sort.push({
+        _score: { order: "desc" },
+      });
+    }
+    const query =
+      typeof search != "undefined"
+        ? {
+            bool: {
+              must: {
+                match: {
+                  "journal.id": journalId,
+                },
+              },
+              should: [
+                { match_phrase: { title: search } },
+                { match_phrase: { abstract: search } },
+                { match_phrase: { keywords: search } },
+              ],
+              filter: filter,
+            },
+          }
+        : {
+            bool: {
+              must: {
+                match: {
+                  "journal.id": journalId,
+                },
+              },
+              filter: filter,
+            },
+          };
+
+    let articles = await req.FeatruredUC.search({
+      indexName: "articles",
+      body: {
+        from: page ? +page : 0,
+        size: size ? size : 15,
+        sort:
+          sort.length != 0
+            ? sort
+            : {
+                publish_date: {
+                  order: "desc",
+                  format: "strict_date_optional_time_nanos",
+                },
+              },
+        query: query,
+        aggs: {
+          topic: {
+            terms: {
+              field: "topic",
+            },
+          },
+          issues: {
+            terms: {
+              field: "resources",
+            },
+          },
+          min_year: { min: { field: "publish_date", format: "yyyy" } },
+          max_year: { max: { field: "publish_date", format: "yyyy" } },
+        },
+      },
+    });
+
     res.json({
       status: "success",
       journal: journal,
+      articles: articles,
     });
   },
   createJournal: async (req: Request, res: Response, next: NextFunction) => {

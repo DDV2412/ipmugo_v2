@@ -2,6 +2,7 @@ import ArticleRepo from "../repository/article";
 import JournalRepo from "../repository/journal";
 import OAI from "../helper/oai";
 import loggerWinston from "../helper/logger-winston";
+require("events").EventEmitter.defaultMaxListeners = 0;
 
 class ArticleAuto {
   Journal: any;

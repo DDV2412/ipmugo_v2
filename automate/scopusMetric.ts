@@ -1,6 +1,7 @@
 import JournalRepo from "../repository/journal";
 import loggerWinston from "../helper/logger-winston";
 import scopusMetric from "../helper/scopusMetric";
+require("events").EventEmitter.defaultMaxListeners = 0;
 
 class Metric {
   Journal: any;

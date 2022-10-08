@@ -49,6 +49,10 @@ class UserUC {
   deleteEditor = async (options: Record<string, any>) => {
     return await this.User.deleteEditor(options);
   };
+
+  synchronizeScholar = async (options: Record<string, any>) => {
+    return await this.User.synchronizeScholar(options);
+  };
 }
 
 export default UserUC;

@@ -2,6 +2,7 @@ import ArticleRepo from "../repository/article";
 import loggerWinston from "../helper/logger-winston";
 import citationScopus from "../helper/citationScopus";
 import citationCrossRef from "../helper/citationCrossRef";
+require("events").EventEmitter.defaultMaxListeners = 0;
 
 class Citation {
   Article: any;

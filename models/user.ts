@@ -13,6 +13,7 @@ import Journal from "./journal";
 import AssignEditor from "./assign_editor";
 import Interest from "./interest";
 import UserInterst from "./user_interest";
+import ScholarProfile from "./scholar_profile";
 
 const User = db.define<User>(
   "user",
@@ -130,6 +131,14 @@ User.belongsToMany(Interest, {
 Interest.belongsToMany(User, {
   through: UserInterst.tableName,
   foreignKey: "interest_id",
+});
+
+User.hasOne(ScholarProfile, {
+  foreignKey: "user_id",
+});
+
+ScholarProfile.belongsTo(User, {
+  foreignKey: "user_id",
 });
 
 export default User;

@@ -10,6 +10,8 @@ import User from "../models/user";
 import Citation from "../models/citation";
 import ScopusMetric from "../models/scopus_metric";
 import RequestPagination from "../helper/requestPagination";
+import ScholarProfile from "../models/scholar_profile";
+import ScholarStatistic from "../models/scholar_statistic";
 
 class ArticleRepo {
   Article: typeof Article;
@@ -20,6 +22,8 @@ class ArticleRepo {
   Citation: typeof Citation;
   ScopusMetric: typeof ScopusMetric;
   User: typeof User;
+  ScholarProfile: typeof ScholarProfile;
+  ScholarStatistic: typeof ScholarStatistic;
   constructor() {
     this.Article = Article;
     this.Author = Author;
@@ -29,6 +33,8 @@ class ArticleRepo {
     this.User = User;
     this.Citation = Citation;
     this.ScopusMetric = ScopusMetric;
+    this.ScholarProfile = ScholarProfile;
+    this.ScholarStatistic = ScholarStatistic;
   }
 
   allArticles = async (
@@ -58,6 +64,13 @@ class ArticleRepo {
             {
               model: this.User,
               as: "assign_author",
+              include: [
+                {
+                  model: this.ScholarProfile,
+                  include: [{ model: this.ScholarStatistic }],
+                  transaction,
+                } as IncludeOptions,
+              ],
               transaction,
             } as IncludeOptions,
             {
@@ -105,6 +118,13 @@ class ArticleRepo {
             {
               model: this.User,
               as: "assign_author",
+              include: [
+                {
+                  model: this.ScholarProfile,
+                  include: [{ model: this.ScholarStatistic }],
+                  transaction,
+                } as IncludeOptions,
+              ],
               transaction,
             } as IncludeOptions,
             {
@@ -151,6 +171,13 @@ class ArticleRepo {
             {
               model: this.User,
               as: "assign_author",
+              include: [
+                {
+                  model: this.ScholarProfile,
+                  include: [{ model: this.ScholarStatistic }],
+                  transaction,
+                } as IncludeOptions,
+              ],
               transaction,
             } as IncludeOptions,
             {

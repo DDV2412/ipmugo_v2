@@ -3,6 +3,8 @@ import db from "./index";
 import { v4 as uuidv4 } from "uuid";
 
 import { user } from "../types/models/user";
+import ScholarStatistic from "./scholar_statistic";
+import ScholarCOAuthor from "./scholar_co_author";
 import ScholarProfile = user.ScholarProfile;
 
 const ScholarProfile = db.define<ScholarProfile>(
@@ -37,6 +39,22 @@ const ScholarProfile = db.define<ScholarProfile>(
 
 ScholarProfile.beforeCreate(async (scholar: ScholarProfile) => {
   scholar["id"] = uuidv4();
+});
+
+ScholarProfile.hasMany(ScholarStatistic, {
+  foreignKey: "scholar_profile_id",
+});
+
+ScholarStatistic.belongsTo(ScholarProfile, {
+  foreignKey: "scholar_profile_id",
+});
+
+ScholarProfile.hasMany(ScholarCOAuthor, {
+  foreignKey: "scholar_profile_id",
+});
+
+ScholarCOAuthor.belongsTo(ScholarProfile, {
+  foreignKey: "scholar_profile_id",
 });
 
 export default ScholarProfile;

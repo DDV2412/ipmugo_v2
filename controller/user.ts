@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import ErrorHandler from "../helper/errorHandler";
 import validation from "../validation";
 import bcryptjs from "bcryptjs";
+import scholarProfile from "../helper/scholarProfile";
 
 export default {
   allUsers: async (req: Request, res: Response, next: NextFunction) => {
@@ -231,6 +232,28 @@ export default {
     res.json({
       status: "success",
       message: `Successfully deleted editor`,
+    });
+  },
+
+  synchronizeScholar: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { scholarId } = req.params;
+
+    const scholar = await scholarProfile.getProfile(scholarId);
+
+    if (scholar != null) {
+      await req.UserUC.synchronizeScholar({
+        user_id: req.User["id"],
+        scholar: scholar,
+      });
+    }
+
+    res.json({
+      status: "success",
+      message: `Successfully synchronized scholar`,
     });
   },
 };
