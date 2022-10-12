@@ -27,8 +27,8 @@ const JournalInterest = db.define<JournalInterest>(
   { timestamps: false }
 );
 
-JournalInterest.beforeCreate(async (author: JournalInterest) => {
-  author["id"] = uuidv4();
+JournalInterest.beforeCreate(async (interest: JournalInterest) => {
+  interest["id"] = uuidv4();
 });
 
 export default JournalInterest;

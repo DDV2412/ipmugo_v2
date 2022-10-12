@@ -32,6 +32,9 @@ export = {
           role_name: "editor",
         },
         {
+          role_name: "author",
+        },
+        {
           role_name: "reviewer",
         },
         {

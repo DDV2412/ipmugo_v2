@@ -28,7 +28,7 @@ class AuthUC {
     };
 
     let token = jwt.sign(payload, process.env.JWT_SECRET || "", {
-      expiresIn: "15m",
+      expiresIn: "1h",
     });
 
     return {
@@ -57,11 +57,8 @@ class AuthUC {
   forgotPassword = async (email: string) => {
     return await this.User.forgotPassword(email);
   };
-  resetPassword = async (password: string) => {
-    return await this.User.resetPassword(password);
-  };
-  logout = async () => {
-    return await this.User.logout();
+  resetPassword = async (token: string, email: string, password: string) => {
+    return await this.User.resetPassword(token, email, password);
   };
 }
 

@@ -13,6 +13,9 @@ class UserUC {
   userByUsername = async (username: string) => {
     return await this.User.userByUsername(username);
   };
+  getUserByEmail = async (email: string) => {
+    return await this.User.getUserByEmail(email);
+  };
   getUserById = async (id: string) => {
     return await this.User.getUserById(id);
   };

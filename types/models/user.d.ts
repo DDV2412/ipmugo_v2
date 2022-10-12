@@ -133,6 +133,17 @@ export namespace user {
     role_name: string;
   }
 
+  export interface ResetToken
+    extends Model<
+      InferAttributes<ResetToken>,
+      InferCreationAttributes<ResetToken>
+    > {
+    id: CreationOptional<string>;
+    email: string;
+    expired: date;
+    reset_token: string;
+  }
+
   export interface UserRole
     extends Model<
       InferAttributes<UserRole>,

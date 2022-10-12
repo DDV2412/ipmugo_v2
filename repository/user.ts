@@ -1,4 +1,5 @@
 import db from "../models";
+import { Op, Sequelize } from "sequelize";
 import loggerWinston from "../helper/logger-winston";
 import User from "../models/user";
 import Role from "../models/role";
@@ -14,6 +15,9 @@ import ScholarProfile from "../models/scholar_profile";
 import ScholarStatistic from "../models/scholar_statistic";
 import ScholarCOAuthor from "../models/scholar_co_author";
 import RequestPagination from "../helper/requestPagination";
+import { mailService } from "../lib/nodemailer";
+import crypto from "crypto";
+import ResetPassword from "../models/reset_password";
 
 class UserRepo {
   User: typeof User;
@@ -27,6 +31,7 @@ class UserRepo {
   ScholarProfile: typeof ScholarProfile;
   ScholarStatistic: typeof ScholarStatistic;
   ScholarCOAuthor: typeof ScholarCOAuthor;
+  ResetPassword: typeof ResetPassword;
   constructor() {
     this.User = User;
     this.Role = Role;
@@ -39,6 +44,7 @@ class UserRepo {
     this.ScholarProfile = ScholarProfile;
     this.ScholarStatistic = ScholarStatistic;
     this.ScholarCOAuthor = ScholarCOAuthor;
+    this.ResetPassword = ResetPassword;
   }
 
   allUsers = async (
@@ -229,6 +235,154 @@ class UserRepo {
       });
 
       return user;
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  getUserByEmail = async (email: string) => {
+    try {
+      let user = await db.transaction(async (transaction) => {
+        return await this.User.findOne({
+          where: {
+            email: email,
+          },
+          include: [
+            {
+              model: Role,
+              as: "roles",
+              transaction,
+            } as IncludeOptions,
+          ],
+          transaction,
+        });
+      });
+
+      return user;
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  forgotPassword = async (email: string) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        const token = await this.ResetPassword.findOne({
+          where: {
+            email: email,
+          },
+
+          transaction,
+        });
+
+        const fpSalt = crypto.randomBytes(64).toString("base64");
+
+        const expireDate = new Date(new Date().getTime() + 15 * 60 * 1000);
+
+        if (!token) {
+          await this.ResetPassword.create({
+            email: email,
+            expired: expireDate,
+            reset_token: fpSalt,
+          });
+        } else {
+          await this.ResetPassword.update(
+            {
+              expired: expireDate,
+              reset_token: fpSalt,
+            },
+            {
+              where: {
+                email: email,
+              },
+            }
+          );
+        }
+
+        await mailService({
+          to: email,
+          subject: `Password Reset Request for IPMUGO Digital Library`,
+          message:
+            "To reset your password, please click the link below.\n\n" +
+            "http://localhost:5000" +
+            "\n" +
+            "/api/reset-password?token=" +
+            encodeURIComponent(fpSalt) +
+            "&email=" +
+            email,
+        });
+
+        return token;
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  resetPassword = async (token: string, email: string, password: string) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        await this.ResetPassword.destroy({
+          where: {
+            expired: {
+              [Op.lte]: Sequelize.fn(
+                "date_trunc",
+                "day",
+                Sequelize.col("expired")
+              ),
+            },
+          },
+        });
+
+        const resetToken = await this.ResetPassword.findOne({
+          where: {
+            email: email,
+            reset_token: token,
+            expired: {
+              [Op.gte]: Sequelize.fn(
+                "date_trunc",
+                "day",
+                Sequelize.col("expired")
+              ),
+            },
+          },
+
+          transaction,
+        });
+
+        if (!resetToken) {
+          return null;
+        }
+
+        const user = await this.User.findOne({
+          where: {
+            email: resetToken.email,
+          },
+        });
+
+        let newPass = await hashSync(password, 12);
+
+        if (!user) {
+          return null;
+        }
+
+        user.password = newPass;
+
+        await user.save();
+
+        await this.ResetPassword.destroy({ force: true });
+
+        await mailService({
+          to: user.email,
+          subject: `IPMUGO Digital Library Password Changed`,
+          message: `We've channeled our psionic energy to change your Discord account password. Gonna go get a seltzer to calm down.`,
+        });
+
+        return user;
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;
