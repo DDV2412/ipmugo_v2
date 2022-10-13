@@ -4,11 +4,7 @@ class JournalUC {
     this.Journal = Journal;
   }
 
-  allJournals = async (
-    page: number,
-    size: number,
-    filters: Record<string, string>
-  ) => {
+  allJournals = async (page: number, size: number, filters: string) => {
     return await this.Journal.allJournals(page, size, filters);
   };
 

@@ -3,7 +3,7 @@ import Article from "../models/article";
 import Author from "../models/author";
 import Interest from "../models/interest";
 import Journal from "../models/journal";
-import { IncludeOptions } from "sequelize";
+import { IncludeOptions, Op } from "sequelize";
 import ArticleInterest from "../models/article_interest";
 import loggerWinston from "../helper/logger-winston";
 import User from "../models/user";
@@ -37,16 +37,24 @@ class ArticleRepo {
     this.ScholarStatistic = ScholarStatistic;
   }
 
-  allArticles = async (
-    page: number,
-    size: number,
-    filters: Record<string, string>
-  ) => {
+  allArticles = async (page: number, size: number, filters: string) => {
     try {
       const { limit, offset } = new RequestPagination(page, size);
 
+      let where =
+        typeof filters != "undefined"
+          ? {
+              [Op.or]: {
+                title: { [Op.like]: `%${filters}%` },
+                abstract: { [Op.like]: `%${filters}%` },
+                doi: { [Op.like]: `%${filters}%` },
+              },
+            }
+          : {};
+
       let articles = await db.transaction(async (transaction) => {
         return await this.Article.findAndCountAll({
+          where: where,
           include: [
             {
               model: this.Journal,

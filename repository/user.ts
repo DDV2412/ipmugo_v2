@@ -15,7 +15,6 @@ import ScholarProfile from "../models/scholar_profile";
 import ScholarStatistic from "../models/scholar_statistic";
 import ScholarCOAuthor from "../models/scholar_co_author";
 import RequestPagination from "../helper/requestPagination";
-import { mailService } from "../lib/nodemailer";
 import crypto from "crypto";
 import ResetPassword from "../models/reset_password";
 
@@ -47,17 +46,24 @@ class UserRepo {
     this.ResetPassword = ResetPassword;
   }
 
-  allUsers = async (
-    page: number,
-    size: number,
-    filters: Record<string, string>
-  ) => {
+  allUsers = async (page: number, size: number, filters: string) => {
     try {
       const { limit, offset } = new RequestPagination(page, size);
 
+      let where =
+        typeof filters != "undefined"
+          ? {
+              [Op.or]: {
+                name: { [Op.like]: `%${filters}%` },
+                email: { [Op.like]: `%${filters}%` },
+                username: { [Op.like]: `%${filters}%` },
+                affiliation: { [Op.like]: `%${filters}%` },
+              },
+            }
+          : {};
       let users = await db.transaction(async (transaction) => {
         return await this.User.findAndCountAll({
-          transaction,
+          where: where,
           include: [
             {
               model: this.Role,
@@ -86,6 +92,7 @@ class UserRepo {
           limit: limit,
           offset: offset,
           distinct: true,
+          transaction,
         });
       });
 
@@ -181,17 +188,12 @@ class UserRepo {
     }
   };
 
-  register = async (userData: Record<string, string>) => {
+  register = async (userData: any) => {
     try {
       userData["password"] = hashSync(userData["password"], 12);
 
       let user = await db.transaction(async (transaction) => {
-        return await this.User.create({
-          username: userData["username"],
-          name: userData["name"],
-          email: userData["email"],
-          password: userData["password"],
-        });
+        return await this.User.create(userData);
       });
 
       let role = await db.transaction(async (transaction) => {
@@ -301,20 +303,7 @@ class UserRepo {
           );
         }
 
-        await mailService({
-          to: email,
-          subject: `Password Reset Request for IPMUGO Digital Library`,
-          message:
-            "To reset your password, please click the link below.\n\n" +
-            "http://localhost:5000" +
-            "\n" +
-            "/api/reset-password?token=" +
-            encodeURIComponent(fpSalt) +
-            "&email=" +
-            email,
-        });
-
-        return token;
+        return fpSalt;
       });
     } catch (error) {
       loggerWinston.error(error);
@@ -357,32 +346,86 @@ class UserRepo {
           return null;
         }
 
-        const user = await this.User.findOne({
-          where: {
-            email: resetToken.email,
-          },
-        });
-
         let newPass = await hashSync(password, 12);
 
-        if (!user) {
-          return null;
-        }
-
-        user.password = newPass;
-
-        await user.save();
-
-        await this.ResetPassword.destroy({ force: true });
-
-        await mailService({
-          to: user.email,
-          subject: `IPMUGO Digital Library Password Changed`,
-          message: `We've channeled our psionic energy to change your Discord account password. Gonna go get a seltzer to calm down.`,
+        await this.ResetPassword.destroy({
+          where: {
+            email: email,
+          },
+          force: true,
         });
 
-        return user;
+        return await this.User.update(
+          {
+            password: newPass,
+          },
+          {
+            where: {
+              email: resetToken.email,
+            },
+          }
+        );
       });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
+  emailVerify = async (email: string) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        return await this.User.update(
+          {
+            verified: Date.now(),
+          },
+          {
+            where: {
+              email: email,
+            },
+          }
+        );
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+  updateProfile = async (username: string, userUpdate: {}) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        return await this.User.update(userUpdate, {
+          where: {
+            username: username,
+          },
+        });
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+  updatePassword = async (passwordData: {}) => {
+    try {
+      return await db.transaction(async (transaction) => {
+        return await this.User.update(
+          {
+            password: hashSync(passwordData["password"], 12),
+          },
+          {
+            where: {
+              email: passwordData["email"],
+            },
+          }
+        );
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+  deleteProfile = async () => {
+    try {
     } catch (error) {
       loggerWinston.error(error);
       return null;

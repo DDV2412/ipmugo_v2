@@ -403,4 +403,79 @@ export default {
       articles: articles,
     });
   },
+
+  contact: async (req: Request, res: Response, next: NextFunction) => {
+    const { error } = validation.contact(req.body);
+
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.FeatruredUC.contact(req.body);
+
+    res.json({
+      status: "success",
+      message: "Message sended successfully",
+    });
+  },
+
+  subscribe: async (req: Request, res: Response, next: NextFunction) => {
+    const { error } = validation.subscription(req.body);
+
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
+    await req.FeatruredUC.subscribe(req.body);
+
+    res.json({
+      status: "success",
+      message: "Subscription added successfully",
+    });
+  },
+
+  subscribeList: async (req: Request, res: Response, next: NextFunction) => {
+    const { page, size, filters } = req.query;
+
+    let subscribe = await req.FeatruredUC.subscribeList(page, size, filters);
+
+    if (!subscribe) {
+      subscribe = [];
+    }
+
+    res.json({
+      status: "success",
+      total: subscribe.total,
+      currentPage: subscribe.currentPage,
+      countPage: subscribe.countPage,
+      subscribe: subscribe.subscribe,
+    });
+  },
+  contactList: async (req: Request, res: Response, next: NextFunction) => {
+    const { page, size, filters } = req.query;
+
+    let contact = await req.FeatruredUC.contactList(page, size, filters);
+
+    if (!contact) {
+      contact = [];
+    }
+
+    res.json({
+      status: "success",
+      total: contact.total,
+      currentPage: contact.currentPage,
+      countPage: contact.countPage,
+      contact: contact.contact,
+    });
+  },
+  contactDetail: async (req: Request, res: Response, next: NextFunction) => {
+    const contactId = req.params["contactId"];
+
+    let contact = await req.FeatruredUC.contactDetail(contactId);
+
+    if (!contact) {
+      return next(new ErrorHandler("Contact not found", 404));
+    }
+
+    res.json({
+      status: "success",
+      contact: contact,
+    });
+  },
 };

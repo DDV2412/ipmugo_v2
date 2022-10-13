@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+import passport from "passport";
+import GoogleStrategy from "passport-google-oauth20";
 
 class AuthUC {
   User: any;
@@ -59,6 +61,26 @@ class AuthUC {
   };
   resetPassword = async (token: string, email: string, password: string) => {
     return await this.User.resetPassword(token, email, password);
+  };
+
+  emailVerify = async (email: string) => {
+    return await this.User.emailVerify(email);
+  };
+
+  updateProfile = async (username: string, updateData: {}) => {
+    return await this.User.updateProfile(username, updateData);
+  };
+
+  updatePassword = async (passwordData: {}) => {
+    return await this.User.updatePassword(passwordData);
+  };
+
+  deleteProfile = async (id: string) => {
+    return await this.User.deleteProfile(id);
+  };
+
+  loginGoogle = async (user: {}) => {
+    return await this.accessToken(user);
   };
 }
 

@@ -167,6 +167,52 @@ class Router {
 
     this.router.post("/reset-password", Auth.resetPassword);
 
+    this.router.post("/request-verify", Auth.requestEmailVerify);
+
+    this.router.get("/verify-email", Auth.emailVerify);
+
+    this.router.delete(
+      "/profile",
+      AuthMiddleware.authenticate,
+      Auth.deleteProfile
+    );
+
+    this.router.get("/login/google", AuthMiddleware.google, Auth.loginGoogle);
+
+    this.router.post("/contact", Featured.contact);
+
+    this.router.post("/subscribe", Featured.subscribe);
+
+    this.router.get(
+      "/contact",
+      AuthMiddleware.authenticate,
+      Featured.contactList
+    );
+
+    this.router.get(
+      "/contact/:contactId",
+      AuthMiddleware.authenticate,
+      Featured.contactDetail
+    );
+
+    this.router.get(
+      "/subscribe",
+      AuthMiddleware.authenticate,
+      Featured.subscribeList
+    );
+
+    this.router.patch(
+      "/profile/update",
+      AuthMiddleware.authenticate,
+      Auth.updateProfile
+    );
+
+    this.router.patch(
+      "/profile/password",
+      AuthMiddleware.authenticate,
+      Auth.updatePassword
+    );
+
     this.router.post(
       "/assign-author",
       AuthMiddleware.authenticate,

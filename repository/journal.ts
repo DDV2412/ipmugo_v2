@@ -21,15 +21,24 @@ class JournalRepo {
     this.User = User;
     this.ScopusMetric = ScopusMetric;
   }
-  allJournals = async (
-    page: number,
-    size: number,
-    filters: Record<string, string>
-  ) => {
+  allJournals = async (page: number, size: number, filters: string) => {
     try {
       const { limit, offset } = new RequestPagination(page, size);
+      let where =
+        typeof filters != "undefined"
+          ? {
+              [Op.or]: {
+                name: { [Op.like]: `%${filters}%` },
+                description: { [Op.like]: `%${filters}%` },
+                issn: { [Op.like]: `%${filters}%` },
+                e_issn: { [Op.like]: `%${filters}%` },
+              },
+            }
+          : {};
+
       let journals = await db.transaction(async (transaction) => {
         return await this.Journal.findAndCountAll({
+          where: where,
           include: [
             {
               model: this.Interest,

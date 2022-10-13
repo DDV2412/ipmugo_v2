@@ -292,24 +292,11 @@ export default {
       .validate(body);
   },
 
-  profileUpdate: (body: Record<string, string>) => {
+  updatePassword: (body: Record<string, string>) => {
     return joi
       .object()
       .keys({
-        username: joi.string().required().messages({
-          "string.empty": "Username cannot be an empty field",
-          "any.required": "Username is required field",
-        }),
-        name: joi.string().required().messages({
-          "string.empty": "Name cannot be an empty field",
-          "any.required": "Name is required field",
-        }),
-        email: joi.string().required().email().messages({
-          "string.empty": "Email cannot be an empty field",
-          "any.required": `Email is a required field`,
-          "string.email": `Please insert a valid email address'`,
-        }),
-        password: joi
+        currentPassword: joi
           .string()
           .required()
           .min(8)
@@ -317,11 +304,39 @@ export default {
             new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
           )
           .messages({
-            "string.empty": "Password cannot be an empty field",
+            "string.empty": "Current password cannot be an empty field",
             "string.pattern.base":
-              "Invalid password, alphanumeric and characters",
-            "string.min": `Password should have a minimum length of {#limit}`,
-            "any.required": `Password is a required field`,
+              "Invalid current password, alphanumeric and characters",
+            "string.min": `Current password should have a minimum length of {#limit}`,
+            "any.required": `Current password is a required field`,
+          }),
+        newPassword: joi
+          .string()
+          .required()
+          .min(8)
+          .pattern(
+            new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
+          )
+          .messages({
+            "string.empty": "New password cannot be an empty field",
+            "string.pattern.base":
+              "Invalid new password, alphanumeric and characters",
+            "string.min": `New password should have a minimum length of {#limit}`,
+            "any.required": `New password is a required field`,
+          }),
+        confirmPassword: joi
+          .string()
+          .required()
+          .min(8)
+          .pattern(
+            new RegExp("^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$")
+          )
+          .messages({
+            "string.empty": "Confirm Password cannot be an empty field",
+            "string.pattern.base":
+              "Invalid confirm password, alphanumeric and characters",
+            "string.min": `Confirm Password should have a minimum length of {#limit}`,
+            "any.required": `Confirm Password is a required field`,
           }),
       })
       .validate(body);
@@ -507,6 +522,61 @@ export default {
       .keys({
         searchDefault: joi.object().required().messages({
           "any.required": "Search is required field",
+        }),
+      })
+      .validate(body);
+  },
+
+  contact: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        name: joi.string().required().messages({
+          "string.empty": "Name cannot be an empty field",
+          "any.required": "Name is required field",
+        }),
+        email: joi.string().required().email().messages({
+          "string.empty": "Email cannot be an empty field",
+          "any.required": `Email is a required field`,
+          "string.email": `Please insert a valid email address'`,
+        }),
+        subject: joi.string().required().messages({
+          "string.empty": "Subject cannot be an empty field",
+          "any.required": "Subject is required field",
+        }),
+        message: joi.string().required().messages({
+          "string.empty": "Message cannot be an empty field",
+          "any.required": "Message is required field",
+        }),
+      })
+      .validate(body);
+  },
+  subscription: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        name: joi.string().required().messages({
+          "string.empty": "Name cannot be an empty field",
+          "any.required": "Name is required field",
+        }),
+        email: joi.string().required().email().messages({
+          "string.empty": "Email cannot be an empty field",
+          "any.required": `Email is a required field`,
+          "string.email": `Please insert a valid email address'`,
+        }),
+
+        country: joi.string().required().messages({
+          "string.empty": "Country cannot be an empty field",
+          "any.required": "Country is required field",
+        }),
+
+        city: joi.string().required().messages({
+          "string.empty": "City cannot be an empty field",
+          "any.required": "City is required field",
+        }),
+        phone: joi.string().required().messages({
+          "string.empty": "Phone cannot be an empty field",
+          "any.required": "Phone is required field",
         }),
       })
       .validate(body);

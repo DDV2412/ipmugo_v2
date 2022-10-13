@@ -1,3 +1,4 @@
+import { User } from "./user";
 import {
   Sequelize,
   ModelDefined,
@@ -39,6 +40,7 @@ export namespace journal {
     created_at?: CreationOptional<Date>;
     updated_at?: CreationOptional<Date>;
     articles?: Article;
+    users?: User;
     Interests: NonAttribute<Interest[]>;
     ScopusMetric: NonAttribute<ScopusMetric>;
   }
@@ -46,7 +48,7 @@ export namespace journal {
   export interface Article
     extends Model<InferAttributes<Article>, InferCreationAttributes<Article>> {
     id: CreationOptional<string>;
-    journal_id: ForeignKey<Journal["id"]>;
+    journal_id: ForeignKey<Journal["id"]> | uuid;
     identifier: string;
     publish_date: string;
     topic: string;
@@ -88,8 +90,8 @@ export namespace journal {
       InferCreationAttributes<JournalInterest>
     > {
     id: CreationOptional<string>;
-    journal_id: ForeignKey<Journal["id"]>;
-    interest_id: ForeignKey<Interest["id"]>;
+    journal_id: ForeignKey<Journal["id"]> | uuid;
+    interest_id: ForeignKey<Interest["id"]> | uuid;
   }
 
   export interface ArticleInterest
@@ -98,14 +100,14 @@ export namespace journal {
       InferCreationAttributes<ArticleInterest>
     > {
     id: CreationOptional<string>;
-    article_id: ForeignKey<Article["id"]>;
-    interest_id: ForeignKey<Interest["id"]>;
+    article_id: ForeignKey<Article["id"]> | uuid;
+    interest_id: ForeignKey<Interest["id"]> | uuid;
   }
 
   export interface Author
     extends Model<InferAttributes<Author>, InferCreationAttributes<Author>> {
     id: CreationOptional<string>;
-    article_id: ForeignKey<Article["id"]>;
+    article_id: ForeignKey<Article["id"]> | uuid;
     firstname: string;
     lastname: string;
     email?: string;
@@ -119,7 +121,7 @@ export namespace journal {
       InferCreationAttributes<Citation>
     > {
     id: CreationOptional<string>;
-    article_id: ForeignKey<Article["id"]>;
+    article_id: ForeignKey<Article["id"]> | uuid;
     count: number;
     source: string;
   }
@@ -130,7 +132,7 @@ export namespace journal {
       InferCreationAttributes<ScopusMetric>
     > {
     id: CreationOptional<string>;
-    journal_id: ForeignKey<Journal["id"]>;
+    journal_id: ForeignKey<Journal["id"]> | uuid;
     sjr: number;
     snip: number;
     citeScore: number;

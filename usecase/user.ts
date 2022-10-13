@@ -3,11 +3,7 @@ class UserUC {
   constructor(User: any) {
     this.User = User;
   }
-  allUsers = async (
-    page: number,
-    size: number,
-    filters: Record<string, string>
-  ) => {
+  allUsers = async (page: number, size: number, filters: string) => {
     return await this.User.allUsers(page, size, filters);
   };
   userByUsername = async (username: string) => {

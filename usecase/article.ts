@@ -4,11 +4,7 @@ class ArticleUC {
     this.Article = Article;
   }
 
-  allArticles = async (
-    page: number,
-    size: number,
-    filters: Record<string, string>
-  ) => {
+  allArticles = async (page: number, size: number, filters: string) => {
     return await this.Article.allArticles(page, size, filters);
   };
 

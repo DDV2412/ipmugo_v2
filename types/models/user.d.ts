@@ -42,7 +42,7 @@ export namespace user {
     orcid?: string;
     biograph?: string;
     affiliation?: string;
-    verified?: string;
+    verified?: date;
     created_at?: CreationOptional<Date>;
     updated_at?: CreationOptional<Date>;
     Interests: NonAttribute<Interest[]>;
@@ -57,8 +57,8 @@ export namespace user {
       InferCreationAttributes<UserInterst>
     > {
     id: CreationOptional<string>;
-    user_id: ForeignKey<User["id"]>;
-    interest_id: ForeignKey<Interest["id"]>;
+    user_id: ForeignKey<User["id"]> | uuid;
+    interest_id: ForeignKey<Interest["id"]> | uuid;
   }
 
   export interface Bookmark
@@ -67,8 +67,8 @@ export namespace user {
       InferCreationAttributes<Bookmark>
     > {
     id: CreationOptional<string>;
-    user_id: ForeignKey<User["id"]>;
-    article_id: ForeignKey<Article["id"]>;
+    user_id: ForeignKey<User["id"]> | uuid;
+    article_id: ForeignKey<Article["id"]> | uuid;
     created_at?: CreationOptional<Date>;
     updated_at?: CreationOptional<Date>;
   }
@@ -79,7 +79,7 @@ export namespace user {
       InferCreationAttributes<ScholarProfile>
     > {
     id: CreationOptional<string>;
-    user_id: ForeignKey<User["id"]>;
+    user_id: ForeignKey<User["id"]> | uuid;
     document_count: number;
     h_index: number;
     i10_index: number;
@@ -91,7 +91,7 @@ export namespace user {
       InferCreationAttributes<ScholarStatistic>
     > {
     id: CreationOptional<string>;
-    scholar_profile_id: ForeignKey<ScholarProfile["id"]>;
+    scholar_profile_id: ForeignKey<ScholarProfile["id"]> | uuid;
     count: number;
     year: number;
   }
@@ -102,7 +102,7 @@ export namespace user {
       InferCreationAttributes<ScholarCOAuthor>
     > {
     id: CreationOptional<string>;
-    scholar_profile_id: ForeignKey<ScholarProfile["id"]>;
+    scholar_profile_id: ForeignKey<ScholarProfile["id"]> | uuid;
     name: string;
     affiliation?: string;
   }
@@ -113,8 +113,8 @@ export namespace user {
       InferCreationAttributes<AuthorATArticle>
     > {
     id: CreationOptional<string>;
-    author_id: ForeignKey<User["id"]>;
-    article_id: ForeignKey<Article["id"]>;
+    author_id: ForeignKey<User["id"]> | uuid;
+    article_id: ForeignKey<Article["id"]> | uuid;
   }
 
   export interface EditorInJournal
@@ -123,14 +123,14 @@ export namespace user {
       InferCreationAttributes<EditorInJournal>
     > {
     id: CreationOptional<string>;
-    editor_id: ForeignKey<User["id"]>;
-    journal_id: ForeignKey<Journal["id"]>;
+    editor_id: ForeignKey<User["id"]> | uuid;
+    journal_id: ForeignKey<Journal["id"]> | uuid;
   }
 
   export interface Role
     extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
     id: CreationOptional<string>;
-    role_name: string;
+    role_name: string | any;
   }
 
   export interface ResetToken
@@ -150,7 +150,33 @@ export namespace user {
       InferCreationAttributes<UserRole>
     > {
     id: CreationOptional<string>;
-    user_id: ForeignKey<User["id"]>;
-    role_id: ForeignKey<Role["id"]>;
+    user_id: ForeignKey<User["id"]> | uuid;
+    role_id: ForeignKey<Role["id"]> | uuid;
+  }
+
+  export interface Contact
+    extends Model<InferAttributes<Contact>, InferCreationAttributes<Contact>> {
+    id: CreationAttributes<string>;
+    name: string;
+    email: string;
+    subject: string;
+    message: text;
+    created_at?: CreationOptional<Date>;
+    updated_at?: CreationOptional<Date>;
+  }
+
+  export interface Subscription
+    extends Model<
+      InferAttributes<Subscription>,
+      InferCreationAttributes<Subscription>
+    > {
+    id: CreationAttributes<string>;
+    name: string;
+    email: string;
+    country: string;
+    city: string;
+    phone: string;
+    created_at?: CreationOptional<Date>;
+    updated_at?: CreationOptional<Date>;
   }
 }
