@@ -157,7 +157,7 @@ class ArticleRepo {
 
   articleById = async (id: string) => {
     try {
-      let article = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Article.findOne({
           where: {
             id: id,
@@ -196,8 +196,6 @@ class ArticleRepo {
           transaction,
         });
       });
-
-      return article;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -206,7 +204,7 @@ class ArticleRepo {
 
   articleByDOI = async (doi: string) => {
     try {
-      let journal = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Article.findOne({
           where: {
             doi: doi,
@@ -231,8 +229,6 @@ class ArticleRepo {
           transaction,
         });
       });
-
-      return journal;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -241,43 +237,43 @@ class ArticleRepo {
 
   createArticle = async (articleData: any) => {
     try {
-      let article = await db.transaction(async (transaction) => {
-        return await this.Article.create(articleData);
-      });
+      return await db.transaction(async (transaction) => {
+        const article = await this.Article.create(articleData);
 
-      await articleData["authors"].map(async (author: any) => {
-        await this.Author.create({
-          article_id: article["id"],
-          firstname: author["firstname"],
-          lastname: author["lastname"],
-          email: author["email"] ? author["email"] : null,
-          affiliation: author["affiliation"] ? author["affiliation"] : null,
-          orcid: author["orcid"] ? author["orcid"] : null,
-        });
-      });
-
-      if (
-        typeof articleData["interests"] != "undefined" &&
-        articleData["interests"] != null &&
-        articleData["interests"].length != 0
-      ) {
-        await articleData["interests"].map(async (interest: any) => {
-          const check = await this.Interest.findOne({
-            where: {
-              name: interest["name"],
-            },
+        await articleData["authors"].map(async (author: any) => {
+          await this.Author.create({
+            article_id: article["id"],
+            firstname: author["firstname"],
+            lastname: author["lastname"],
+            email: author["email"] ? author["email"] : null,
+            affiliation: author["affiliation"] ? author["affiliation"] : null,
+            orcid: author["orcid"] ? author["orcid"] : null,
           });
-
-          if (check != null) {
-            await this.ArticleInterest.create({
-              article_id: article["id"],
-              interest_id: check["id"],
-            });
-          }
         });
-      }
 
-      return article;
+        if (
+          typeof articleData["interests"] != "undefined" &&
+          articleData["interests"] != null &&
+          articleData["interests"].length != 0
+        ) {
+          await articleData["interests"].map(async (interest: any) => {
+            const check = await this.Interest.findOne({
+              where: {
+                name: interest["name"],
+              },
+            });
+
+            if (check != null) {
+              await this.ArticleInterest.create({
+                article_id: article["id"],
+                interest_id: check["id"],
+              });
+            }
+          });
+        }
+
+        return article;
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -289,74 +285,76 @@ class ArticleRepo {
     articleData: Record<string, any>
   ) => {
     try {
-      let update = await db.transaction(async (transaction) => {
-        return await this.Article.update(articleData, {
+      return await db.transaction(async (transaction) => {
+        const update = await this.Article.update(articleData, {
           where: {
             id: article_id,
           },
           transaction,
         });
-      });
 
-      if (
-        typeof articleData["interests"] != "undefined" &&
-        articleData["interests"] != null &&
-        articleData["interests"].length != 0
-      ) {
-        await articleData["interests"].map(async (interest: any) => {
-          const check = await this.Interest.findOne({
-            where: {
-              name: interest["name"],
-            },
-          });
-
-          if (check != null) {
-            const isExists = await this.ArticleInterest.findOne({
+        if (
+          typeof articleData["interests"] != "undefined" &&
+          articleData["interests"] != null &&
+          articleData["interests"].length != 0
+        ) {
+          await articleData["interests"].map(async (interest: any) => {
+            const check = await this.Interest.findOne({
               where: {
-                article_id: article_id,
-                interest_id: check["id"],
+                name: interest["name"],
               },
             });
 
-            if (!isExists) {
-              await this.ArticleInterest.create({
-                article_id: article_id,
-                interest_id: check["id"],
+            if (check != null) {
+              const isExists = await this.ArticleInterest.findOne({
+                where: {
+                  article_id: article_id,
+                  interest_id: check["id"],
+                },
               });
+
+              if (!isExists) {
+                await this.ArticleInterest.create({
+                  article_id: article_id,
+                  interest_id: check["id"],
+                });
+              }
             }
-          }
-        });
-      }
-
-      if (
-        typeof articleData["authors"] != "undefined" &&
-        articleData["authors"] != null &&
-        articleData["authors"].length != 0
-      ) {
-        await articleData["authors"].map(async (author: any) => {
-          const authorCheck = await this.Author.findOne({
-            where: {
-              article_id: article_id,
-              firstname: author["firstname"],
-            },
           });
+        }
 
-          if (!authorCheck) {
-            await this.Author.create({
-              article_id: article_id,
-              firstname: author["firstname"],
-              lastname: author["lastname"],
-              email: author["email"] ? author["email"] : null,
-              affiliation: author["affiliation"] ? author["affiliation"] : null,
-              orcid: author["orcid"] ? author["orcid"] : null,
+        if (
+          typeof articleData["authors"] != "undefined" &&
+          articleData["authors"] != null &&
+          articleData["authors"].length != 0
+        ) {
+          await articleData["authors"].map(async (author: any) => {
+            const authorCheck = await this.Author.findOne({
+              where: {
+                article_id: article_id,
+                firstname: author["firstname"],
+              },
             });
-          } else {
-            await authorCheck.update(author);
-          }
-        });
-      }
 
-      return update;
+            if (!authorCheck) {
+              await this.Author.create({
+                article_id: article_id,
+                firstname: author["firstname"],
+                lastname: author["lastname"],
+                email: author["email"] ? author["email"] : null,
+                affiliation: author["affiliation"]
+                  ? author["affiliation"]
+                  : null,
+                orcid: author["orcid"] ? author["orcid"] : null,
+              });
+            } else {
+              await authorCheck.update(author);
+            }
+          });
+        }
+
+        return update;
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -365,7 +363,7 @@ class ArticleRepo {
 
   deleteArticle = async (article_id: string) => {
     try {
-      let results = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Article.destroy({
           where: {
             id: article_id,
@@ -373,8 +371,6 @@ class ArticleRepo {
           transaction,
         });
       });
-
-      return results;
     } catch (error) {
       loggerWinston.error(error);
       return null;

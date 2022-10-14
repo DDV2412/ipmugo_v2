@@ -118,9 +118,19 @@ class OAI {
         for (let x = 0; x < authorData.length; x++) {
           const author = authorData[x].firstChild?.nodeValue.split(", ");
 
+          let affiliation = null;
+
+          let firstname = author[1].trim();
+
+          if (author[1].trim().split(";").length > 1) {
+            affiliation = author[1].trim().split(";")[1];
+            firstname = author[1].trim().split(";")[0];
+          }
+
           authors.push({
             firstname: author[1].trim(),
             lastname: author[0].trim(),
+            affiliation: affiliation,
           });
         }
 
