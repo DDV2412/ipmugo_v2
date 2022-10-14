@@ -215,7 +215,7 @@ export default {
       return next(new ErrorHandler("Server not response", 501));
     }
 
-    if (req.body["newPassword"] !== req.body["confirmPassword"]) {
+    if (currentPassword !== confirmPassword) {
       return next(new ErrorHandler("Password not match", 400));
     }
 
@@ -233,7 +233,14 @@ export default {
       message: `Password updated successfully`,
     });
   },
-  deleteProfile: async (req: Request, res: Response, next: NextFunction) => {},
+  deleteProfile: async (req: Request, res: Response, next: NextFunction) => {
+    await req.AuthUC.deleteProfile(req.User["id"]);
+
+    res.json({
+      status: "success",
+      message: `Accound deleted successfully`,
+    });
+  },
 
   loginGoogle: async (req: Request, res: Response, next: NextFunction) => {
     let user = await req.AuthUC.loginGoogle(req.User);

@@ -418,8 +418,15 @@ class UserRepo {
       return null;
     }
   };
-  deleteProfile = async () => {
+  deleteProfile = async (id: string) => {
     try {
+      return await db.transaction(async (transaction) => {
+        return await this.User.destroy({
+          where: {
+            id: id,
+          },
+        });
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;
