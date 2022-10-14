@@ -10,13 +10,11 @@ class InterestRepo {
 
   allInterests = async () => {
     try {
-      let interests = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Interest.findAndCountAll({
           transaction,
         });
       });
-
-      return interests;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -25,7 +23,7 @@ class InterestRepo {
 
   interestById = async (id: string) => {
     try {
-      let interest = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Interest.findOne({
           where: {
             id: id,
@@ -33,8 +31,6 @@ class InterestRepo {
           transaction,
         });
       });
-
-      return interest;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -56,7 +52,7 @@ class InterestRepo {
 
   updateInterest = async (interest_id: string, interestData: any) => {
     try {
-      let update = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Interest.update(interestData, {
           where: {
             id: interest_id,
@@ -64,8 +60,6 @@ class InterestRepo {
           transaction,
         });
       });
-
-      return update;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -74,7 +68,7 @@ class InterestRepo {
 
   deleteInterest = async (interest_id: string) => {
     try {
-      let results = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Interest.destroy({
           where: {
             id: interest_id,
@@ -82,8 +76,6 @@ class InterestRepo {
           transaction,
         });
       });
-
-      return results;
     } catch (error) {
       loggerWinston.error(error);
       return null;

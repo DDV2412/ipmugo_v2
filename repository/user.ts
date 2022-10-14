@@ -129,7 +129,7 @@ class UserRepo {
 
   userByUsername = async (username: string) => {
     try {
-      let user = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.User.findOne({
           where: {
             username: username,
@@ -161,8 +161,6 @@ class UserRepo {
           transaction,
         });
       });
-
-      return user;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -220,7 +218,7 @@ class UserRepo {
 
   getUserById = async (id: string) => {
     try {
-      let user = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.User.findOne({
           where: {
             id: id,
@@ -235,8 +233,6 @@ class UserRepo {
           transaction,
         });
       });
-
-      return user;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -245,7 +241,7 @@ class UserRepo {
 
   getUserByEmail = async (email: string) => {
     try {
-      let user = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.User.findOne({
           where: {
             email: email,
@@ -260,8 +256,6 @@ class UserRepo {
           transaction,
         });
       });
-
-      return user;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -434,18 +428,18 @@ class UserRepo {
 
   createUser = async (userData: any) => {
     try {
-      let user = await db.transaction(async (transaction) => {
-        return await this.User.create(userData);
-      });
+      return await db.transaction(async (transaction) => {
+        const user = await this.User.create(userData);
 
-      userData["role"].map(async (role: any) => {
-        await this.UserRole.create({
-          user_id: user["id"],
-          role_id: role["id"],
+        userData["role"].map(async (role: any) => {
+          await this.UserRole.create({
+            user_id: user["id"],
+            role_id: role["id"],
+          });
         });
-      });
 
-      return user;
+        return user;
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -454,30 +448,30 @@ class UserRepo {
 
   updateUser = async (user_id: string, userData: Record<string, any>) => {
     try {
-      let update = await db.transaction(async (transaction) => {
-        return await this.User.update(userData, {
+      return await db.transaction(async (transaction) => {
+        const update = await this.User.update(userData, {
           where: {
             id: user_id,
           },
           transaction,
         });
-      });
 
-      userData["role"].map(async (role: any) => {
-        await this.UserRole.destroy({
-          where: {
+        userData["role"].map(async (role: any) => {
+          await this.UserRole.destroy({
+            where: {
+              user_id: user_id,
+            },
+            truncate: true,
+          });
+
+          await this.UserRole.create({
             user_id: user_id,
-          },
-          truncate: true,
+            role_id: role["id"],
+          });
         });
 
-        await this.UserRole.create({
-          user_id: user_id,
-          role_id: role["id"],
-        });
+        return update;
       });
-
-      return update;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -530,22 +524,22 @@ class UserRepo {
 
   assignAuthor = async (userData: Record<string, any>) => {
     try {
-      const user = await this.getUserById(userData["author_id"]);
-
-      const role = await this.Role.findOne({
-        where: {
-          role_name: "author",
-        },
-      });
-
-      if (user && role) {
-        await this.UserRole.create({
-          user_id: user["id"],
-          role_id: role["id"],
-        });
-      }
-
       return await db.transaction(async (transaction) => {
+        const user = await this.getUserById(userData["author_id"]);
+
+        const role = await this.Role.findOne({
+          where: {
+            role_name: "author",
+          },
+          transaction,
+        });
+
+        if (user && role) {
+          await this.UserRole.create({
+            user_id: user["id"],
+            role_id: role["id"],
+          });
+        }
         return await this.AssignAuthor.create(userData);
       });
     } catch (error) {
@@ -573,22 +567,23 @@ class UserRepo {
 
   assignEditor = async (userData: Record<string, any>) => {
     try {
-      const user = await this.getUserById(userData["editor_id"]);
-
-      const role = await this.Role.findOne({
-        where: {
-          role_name: "editor",
-        },
-      });
-
-      if (user && role) {
-        await this.UserRole.create({
-          user_id: user["id"],
-          role_id: role["id"],
-        });
-      }
-
       return await db.transaction(async (transaction) => {
+        const user = await this.getUserById(userData["editor_id"]);
+
+        const role = await this.Role.findOne({
+          where: {
+            role_name: "editor",
+          },
+          transaction,
+        });
+
+        if (user && role) {
+          await this.UserRole.create({
+            user_id: user["id"],
+            role_id: role["id"],
+          });
+        }
+
         return await this.AssignEditor.create(userData);
       });
     } catch (error) {

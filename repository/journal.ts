@@ -109,7 +109,7 @@ class JournalRepo {
 
   journalById = async (id: string) => {
     try {
-      let journal = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Journal.findOne({
           where: {
             id: id,
@@ -132,8 +132,6 @@ class JournalRepo {
           transaction,
         });
       });
-
-      return journal;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -142,26 +140,26 @@ class JournalRepo {
 
   createJournal = async (journalData: any) => {
     try {
-      let journal = await db.transaction(async () => {
-        return await this.Journal.create(journalData);
-      });
+      return await db.transaction(async () => {
+        const journal = await this.Journal.create(journalData);
 
-      await journalData["interests"].map(async (interest: any) => {
-        const check = await this.Interest.findOne({
-          where: {
-            name: interest["name"],
-          },
+        await journalData["interests"].map(async (interest: any) => {
+          const check = await this.Interest.findOne({
+            where: {
+              name: interest["name"],
+            },
+          });
+
+          if (check) {
+            await this.JournalInterest.create({
+              journal_id: journal["id"],
+              interest_id: check["id"],
+            });
+          }
         });
 
-        if (check) {
-          await this.JournalInterest.create({
-            journal_id: journal["id"],
-            interest_id: check["id"],
-          });
-        }
+        return journal;
       });
-
-      return journal;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -173,46 +171,46 @@ class JournalRepo {
     journalData: Record<string, any>
   ) => {
     try {
-      let update = await db.transaction(async (transaction) => {
-        return await this.Journal.update(journalData, {
+      return await db.transaction(async (transaction) => {
+        const update = await this.Journal.update(journalData, {
           where: {
             id: journal_id,
           },
           transaction,
         });
-      });
 
-      if (
-        journalData["interests"] != undefined &&
-        journalData["interests"] != null &&
-        journalData["interests"].length != 0
-      ) {
-        await journalData["interests"].map(async (interest: any) => {
-          const check = await this.Interest.findOne({
-            where: {
-              name: interest["name"],
-            },
-          });
-
-          if (check) {
-            const isExists = await this.JournalInterest.findOne({
+        if (
+          journalData["interests"] != undefined &&
+          journalData["interests"] != null &&
+          journalData["interests"].length != 0
+        ) {
+          await journalData["interests"].map(async (interest: any) => {
+            const check = await this.Interest.findOne({
               where: {
-                journal_id: journal_id,
-                interest_id: check["id"],
+                name: interest["name"],
               },
             });
 
-            if (!isExists) {
-              await this.JournalInterest.create({
-                journal_id: journal_id,
-                interest_id: check["id"],
+            if (check) {
+              const isExists = await this.JournalInterest.findOne({
+                where: {
+                  journal_id: journal_id,
+                  interest_id: check["id"],
+                },
               });
-            }
-          }
-        });
-      }
 
-      return update;
+              if (!isExists) {
+                await this.JournalInterest.create({
+                  journal_id: journal_id,
+                  interest_id: check["id"],
+                });
+              }
+            }
+          });
+        }
+
+        return update;
+      });
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -221,7 +219,7 @@ class JournalRepo {
 
   deleteJournal = async (journal_id: string) => {
     try {
-      let results = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Journal.destroy({
           where: {
             id: journal_id,
@@ -229,8 +227,6 @@ class JournalRepo {
           transaction,
         });
       });
-
-      return results;
     } catch (error) {
       loggerWinston.error(error);
       return null;

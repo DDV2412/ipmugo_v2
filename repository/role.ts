@@ -10,13 +10,11 @@ class RoleRepo {
 
   allRoles = async () => {
     try {
-      let roles = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Role.findAndCountAll({
           transaction,
         });
       });
-
-      return roles;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -25,7 +23,7 @@ class RoleRepo {
 
   roleByName = async (name: string) => {
     try {
-      let role = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Role.findOne({
           where: {
             role_name: name,
@@ -33,8 +31,6 @@ class RoleRepo {
           transaction,
         });
       });
-
-      return role;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -43,11 +39,9 @@ class RoleRepo {
 
   createRole = async (roleData: any) => {
     try {
-      let role = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Role.create(roleData);
       });
-
-      return role;
     } catch (error) {
       loggerWinston.error(error);
       return null;
@@ -56,7 +50,7 @@ class RoleRepo {
 
   updateRole = async (roleName: string, roleData: Record<string, any>) => {
     try {
-      let update = await db.transaction(async (transaction) => {
+      return await db.transaction(async (transaction) => {
         return await this.Role.update(roleData, {
           where: {
             role_name: roleName,
@@ -64,8 +58,6 @@ class RoleRepo {
           transaction,
         });
       });
-
-      return update;
     } catch (error) {
       loggerWinston.error(error);
       return null;
