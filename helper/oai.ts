@@ -122,13 +122,13 @@ class OAI {
 
           let firstname = author[1].trim();
 
-          if (author[1].trim().split(";").length > 1) {
-            affiliation = author[1].trim().split(";")[1];
-            firstname = author[1].trim().split(";")[0];
+          if (author[1].trim().split("; ").length > 1) {
+            affiliation = author[1].trim().split("; ")[1];
+            firstname = author[1].trim().split("; ")[0];
           }
 
           authors.push({
-            firstname: author[1].trim(),
+            firstname: firstname,
             lastname: author[0].trim(),
             affiliation: affiliation,
           });

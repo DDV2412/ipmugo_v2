@@ -346,6 +346,24 @@ class ArticleRepo {
                 affiliation: author["affiliation"],
                 orcid: author["orcid"] ? author["orcid"] : null,
               });
+            } else {
+              await this.Author.update(
+                {
+                  article_id: article_id,
+                  firstname: author["firstname"],
+                  lastname: author["lastname"],
+                  email: author["email"] ? author["email"] : null,
+                  affiliation: author["affiliation"],
+                  orcid: author["orcid"] ? author["orcid"] : null,
+                },
+                {
+                  where: {
+                    article_id: article_id,
+                    firstname: author["firstname"],
+                    lastname: author["lastname"],
+                  },
+                }
+              );
             }
           });
         }
