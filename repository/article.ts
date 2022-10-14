@@ -333,6 +333,7 @@ class ArticleRepo {
               where: {
                 article_id: article_id,
                 firstname: author["firstname"],
+                lastname: author["lastname"],
               },
             });
 
@@ -342,13 +343,9 @@ class ArticleRepo {
                 firstname: author["firstname"],
                 lastname: author["lastname"],
                 email: author["email"] ? author["email"] : null,
-                affiliation: author["affiliation"]
-                  ? author["affiliation"]
-                  : null,
+                affiliation: author["affiliation"],
                 orcid: author["orcid"] ? author["orcid"] : null,
               });
-            } else {
-              await authorCheck.update(author);
             }
           });
         }

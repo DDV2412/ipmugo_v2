@@ -26,7 +26,6 @@ class ArticleAuto {
 
         if (typeof results == "undefined" || results == null) {
           loggerWinston.error(journal["name"] + " Error for harvests");
-          process.exit(1);
         }
 
         for await (const result of results) {
@@ -50,7 +49,7 @@ class ArticleAuto {
               });
             }
             if (!article) {
-              const inputArticle = await this.Article.createArticle({
+              await this.Article.createArticle({
                 journal_id: journal["id"],
                 identifier: result["identifier"],
                 date_modify: result["date_modify"],
@@ -69,12 +68,8 @@ class ArticleAuto {
                 publish_date: result["publishDate"],
                 authors: result["authors"],
               });
-
-              loggerWinston.info(
-                `Successfully add new article ${inputArticle["title"]}`
-              );
             } else {
-              const update = await this.Article.updateArticle(article["id"], {
+              await this.Article.updateArticle(article["id"], {
                 identifier: result["identifier"],
                 dateModify: result["date_modify"],
                 topic: result["topic"],
@@ -92,10 +87,6 @@ class ArticleAuto {
                 publishDate: result["publishDate"],
                 authors: result["authors"],
               });
-
-              loggerWinston.info(
-                `Successfully update article ${update["title"]}`
-              );
             }
           }
         }
