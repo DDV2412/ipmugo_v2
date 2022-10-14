@@ -106,7 +106,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "typeRoots": ["./types"]
   },
-  "exclude": ["node_modules", "build", "__tests__", "jest.config.js"],
+  "exclude": ["node_modules", "__tests__", "jest.config.js"],
   "ts-node": {
     "transpileOnly": true,
     "files": true
