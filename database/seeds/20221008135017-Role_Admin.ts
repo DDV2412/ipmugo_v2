@@ -6,7 +6,7 @@ import { user } from "../../types/models/user";
 import UserType = user.User;
 import RoleType = user.Role;
 import UsrRoleType = user.UserRole;
-import { hashSync } from "bcryptjs";
+import { hashSync } from "bcrypt";
 
 export = {
   up: async (queryInterface: QueryInterface): Promise<void> => {

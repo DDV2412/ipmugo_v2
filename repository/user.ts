@@ -7,7 +7,7 @@ import { IncludeOptions } from "sequelize";
 import UserRole from "../models/user_role";
 import Bookmark from "../models/bookmark";
 import Article from "../models/article";
-import { compareSync, hashSync } from "bcryptjs";
+import { compareSync, hashSync } from "bcrypt";
 import AssignAuthor from "../models/assign_author";
 import AssignEditor from "../models/assign_editor";
 import Journal from "../models/journal";

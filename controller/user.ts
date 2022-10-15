@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import ErrorHandler from "../helper/errorHandler";
 import validation from "../validation";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcrypt";
 import scholarProfile from "../helper/scholarProfile";
 
 export default {
@@ -53,7 +53,7 @@ export default {
 
     req.body["role"] = roles;
 
-    req.body["password"] = bcryptjs.hashSync(req.body["password"], 12);
+    req.body["password"] = bcrypt.hashSync(req.body["password"], 12);
 
     let user = await req.UserUC.createUser(req.body);
 
@@ -94,7 +94,7 @@ export default {
       typeof req.body["password"] != "undefined" &&
       req.body["password"] != null
     ) {
-      req.body["password"] = bcryptjs.hashSync(req.body["password"], 12);
+      req.body["password"] = bcrypt.hashSync(req.body["password"], 12);
     }
     await req.UserUC.updateUser(userId, req.body);
 
