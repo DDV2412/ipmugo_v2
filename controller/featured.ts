@@ -125,11 +125,13 @@ export default {
           topic: {
             terms: {
               field: "topic",
+              size: 10000,
             },
           },
           journal: {
             terms: {
               field: "journal.name",
+              size: 10000,
             },
           },
           min_year: { min: { field: "publish_date", format: "yyyy" } },
@@ -400,11 +402,13 @@ export default {
           topic: {
             terms: {
               field: "topic",
+              size: 10000,
             },
           },
           journal: {
             terms: {
               field: "journal.name",
+              size: 10000,
             },
           },
           min_year: { min: { field: "publish_date", format: "yyyy" } },
