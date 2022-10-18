@@ -42,14 +42,17 @@ export default {
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
 
-    let roles: any = [];
-    req.body["roles"].map(async (role: {}) => {
-      const check = await req.RoleUC.roleByName(role["role_name"]);
+    const roles: any = [];
+
+    for (let i = 0; i < req.body["roles"].length; i++) {
+      const check = await req.RoleUC.roleByName(
+        req.body["roles"][i]["role_name"]
+      );
 
       if (!check) return next(new ErrorHandler("Role not found", 404));
 
-      roles.push(check);
-    });
+      roles.push({ id: check["id"] });
+    }
 
     req.body["role"] = roles;
 
@@ -69,24 +72,33 @@ export default {
   updateUser: async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params["userId"];
 
+    const { error } = validation.userUpdate({
+      username: req.body["username"],
+      name: req.body["name"],
+      email: req.body["email"],
+      roles: req.body["roles"],
+      interests: req.body["interests"],
+    });
+
+    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
+
     let checkuser = await req.UserUC.getUserById(userId);
 
     if (!checkuser) {
       return next(new ErrorHandler("User not found", 404));
     }
 
-    const { error } = validation.user(req.body);
+    const roles: any = [];
 
-    if (error) return next(new ErrorHandler(error["details"][0].message, 400));
-
-    let roles: any = [];
-    req.body["roles"].map(async (role: {}) => {
-      const check = await req.RoleUC.roleByName(role["role_name"]);
+    for (let i = 0; i < req.body["roles"].length; i++) {
+      const check = await req.RoleUC.roleByName(
+        req.body["roles"][i]["role_name"]
+      );
 
       if (!check) return next(new ErrorHandler("Role not found", 404));
 
-      roles.push(check);
-    });
+      roles.push({ id: check["id"] });
+    }
 
     req.body["role"] = roles;
 

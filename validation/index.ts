@@ -288,6 +288,79 @@ export default {
           .messages({
             "any.required": "Roles is required",
           }),
+        interests: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                name: joi.string().required().messages({
+                  "string.empty": "Interest name cannot be an empty field",
+                  "any.required": "Interest name is required",
+                }),
+              })
+          )
+          .messages({
+            "any.required": "Interest is required",
+          }),
+      })
+      .validate(body);
+  },
+
+  userUpdate: (body: Record<string, string>) => {
+    return joi
+      .object()
+      .keys({
+        username: joi.string().required().messages({
+          "string.empty": "Username cannot be an empty field",
+          "any.required": "Username is required field",
+        }),
+        name: joi.string().required().messages({
+          "string.empty": "Name cannot be an empty field",
+          "any.required": "Name is required field",
+        }),
+        email: joi.string().required().email().messages({
+          "string.empty": "Email cannot be an empty field",
+          "any.required": `Email is a required field`,
+          "string.email": `Please insert a valid email address'`,
+        }),
+
+        roles: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                role_name: joi.string().required().messages({
+                  "string.empty": "Role name cannot be an empty field",
+                  "any.required": "Role name is required field",
+                }),
+              })
+          )
+          .messages({
+            "any.required": "Roles is required",
+          }),
+        interests: joi
+          .array()
+          .required()
+          .items(
+            joi
+              .object()
+              .required()
+              .keys({
+                name: joi.string().required().messages({
+                  "string.empty": "Interest name cannot be an empty field",
+                  "any.required": "Interest name is required",
+                }),
+              })
+          )
+          .messages({
+            "any.required": "Interest is required",
+          }),
       })
       .validate(body);
   },

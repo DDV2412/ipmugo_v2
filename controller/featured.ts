@@ -148,6 +148,8 @@ export default {
     let articles = await req.FeatruredUC.search({
       indexName: "articles",
       body: {
+        from: 0,
+        size: 4,
         sort: {
           "citations.count": {
             order: "desc",
@@ -177,11 +179,24 @@ export default {
     let articles = await req.FeatruredUC.search({
       indexName: "articles",
       body: {
+        from: 0,
+        size: 25,
         sort: {
           "assign_author.scholar_profile.h_index": {
             order: "desc",
             nested: {
               path: "assign_author",
+            },
+          },
+          "citations.count": {
+            order: "desc",
+            nested: {
+              path: "citations",
+              filter: {
+                match: {
+                  "citations.source": "Scopus",
+                },
+              },
             },
           },
         },

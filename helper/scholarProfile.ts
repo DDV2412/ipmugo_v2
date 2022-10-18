@@ -7,7 +7,7 @@ class ScholarProfile {
     try {
       const { data, status } = await axios({
         method: "get",
-        url: `https://scholar.google.com/citations??hl=en&user=${scholarId}`,
+        url: `https://scholar.google.com/citations?hl=en&user=XuncvX4AAAAJ`,
         headers: {
           mode: "no-cors",
         },

@@ -17,6 +17,8 @@ import ScholarCOAuthor from "../models/scholar_co_author";
 import RequestPagination from "../helper/requestPagination";
 import crypto from "crypto";
 import ResetPassword from "../models/reset_password";
+import UserInterst from "../models/user_interest";
+import Interest from "../models/interest";
 
 class UserRepo {
   User: typeof User;
@@ -31,6 +33,8 @@ class UserRepo {
   ScholarStatistic: typeof ScholarStatistic;
   ScholarCOAuthor: typeof ScholarCOAuthor;
   ResetPassword: typeof ResetPassword;
+  UserInterst: typeof UserInterst;
+  Interest: typeof Interest;
   constructor() {
     this.User = User;
     this.Role = Role;
@@ -44,6 +48,8 @@ class UserRepo {
     this.ScholarStatistic = ScholarStatistic;
     this.ScholarCOAuthor = ScholarCOAuthor;
     this.ResetPassword = ResetPassword;
+    this.UserInterst = UserInterst;
+    this.Interest = Interest;
   }
 
   allUsers = async (page: number, size: number, filters: string) => {
@@ -67,6 +73,15 @@ class UserRepo {
           include: [
             {
               model: this.Role,
+              where: {
+                [Op.not]: {
+                  role_name: "admin",
+                },
+              },
+              transaction,
+            } as IncludeOptions,
+            {
+              model: this.Interest,
               transaction,
             } as IncludeOptions,
             {
@@ -385,14 +400,46 @@ class UserRepo {
       return null;
     }
   };
-  updateProfile = async (username: string, userUpdate: {}) => {
+  updateProfile = async (username: string, userUpdate: any) => {
     try {
       return await db.transaction(async (transaction) => {
-        return await this.User.update(userUpdate, {
+        const user = await this.User.update(userUpdate, {
           where: {
             username: username,
           },
         });
+
+        if (
+          typeof userUpdate["interests"] != "undefined" &&
+          userUpdate["interests"] != null &&
+          userUpdate["interests"].length != 0
+        ) {
+          await userUpdate["interests"].map(async (interest: any) => {
+            const check = await this.Interest.findOne({
+              where: {
+                name: interest["name"],
+              },
+            });
+
+            if (check) {
+              const isExists = await this.UserInterst.findOne({
+                where: {
+                  user_id: user["id"],
+                  interest_id: check["id"],
+                },
+              });
+
+              if (!isExists) {
+                await this.UserInterst.create({
+                  user_id: user["id"],
+                  interest_id: check["id"],
+                });
+              }
+            }
+          });
+        }
+
+        return user;
       });
     } catch (error) {
       loggerWinston.error(error);
@@ -445,6 +492,27 @@ class UserRepo {
           });
         });
 
+        if (
+          typeof userData["interests"] != "undefined" &&
+          userData["interests"] != null &&
+          userData["interests"].length != 0
+        ) {
+          await userData["interests"].map(async (interest: any) => {
+            const check = await this.Interest.findOne({
+              where: {
+                name: interest["name"],
+              },
+            });
+
+            if (check) {
+              await this.UserInterst.create({
+                user_id: user["id"],
+                interest_id: check["id"],
+              });
+            }
+          });
+        }
+
         return user;
       });
     } catch (error) {
@@ -464,18 +532,57 @@ class UserRepo {
         });
 
         userData["role"].map(async (role: any) => {
-          await this.UserRole.destroy({
-            where: {
-              user_id: user_id,
-            },
-            truncate: true,
+          const check = await this.UserRole.findOne({
+            where: { user_id: user_id, role_id: role["id"] },
           });
 
-          await this.UserRole.create({
-            user_id: user_id,
-            role_id: role["id"],
-          });
+          if (!check) {
+            await this.UserRole.create({
+              user_id: user_id,
+              role_id: role["id"],
+            });
+          } else {
+            await this.UserRole.update(
+              {
+                user_id: user_id,
+                role_id: role["id"],
+              },
+              {
+                where: { user_id: user_id, role_id: role["id"] },
+              }
+            );
+          }
         });
+
+        if (
+          typeof userData["interests"] != "undefined" &&
+          userData["interests"] != null &&
+          userData["interests"].length != 0
+        ) {
+          await userData["interests"].map(async (interest: any) => {
+            const check = await this.Interest.findOne({
+              where: {
+                name: interest["name"],
+              },
+            });
+
+            if (check) {
+              const isExists = await this.UserInterst.findOne({
+                where: {
+                  user_id: user_id,
+                  interest_id: check["id"],
+                },
+              });
+
+              if (!isExists) {
+                await this.UserInterst.create({
+                  user_id: user_id,
+                  interest_id: check["id"],
+                });
+              }
+            }
+          });
+        }
 
         return update;
       });
@@ -637,6 +744,7 @@ class UserRepo {
             const cited = await this.ScholarStatistic.findOne({
               where: {
                 scholar_profile_id: profile["id"],
+                year: data["year"],
               },
             });
             if (!cited) {
@@ -654,6 +762,7 @@ class UserRepo {
                 {
                   where: {
                     scholar_profile_id: profile["id"],
+                    year: data["year"],
                   },
                 }
               );
@@ -664,6 +773,8 @@ class UserRepo {
             const coAuthor = await this.ScholarCOAuthor.findOne({
               where: {
                 scholar_profile_id: profile["id"],
+                name: data["name"],
+                affiliation: data["aff"],
               },
             });
 
@@ -682,6 +793,8 @@ class UserRepo {
                 {
                   where: {
                     scholar_profile_id: profile["id"],
+                    name: data["name"],
+                    affiliation: data["aff"],
                   },
                 }
               );
@@ -706,12 +819,13 @@ class UserRepo {
           options["scholar"]["citedBy"].map(async (data: any) => {
             const cited = await this.ScholarStatistic.findOne({
               where: {
-                scholar_profile_id: update["id"],
+                scholar_profile_id: profile["id"],
+                year: data["year"],
               },
             });
             if (!cited) {
               await this.ScholarStatistic.create({
-                scholar_profile_id: update["id"],
+                scholar_profile_id: profile["id"],
                 year: data["year"],
                 count: data["data"],
               });
@@ -723,7 +837,8 @@ class UserRepo {
                 },
                 {
                   where: {
-                    scholar_profile_id: update["id"],
+                    scholar_profile_id: profile["id"],
+                    year: data["year"],
                   },
                 }
               );
@@ -733,13 +848,15 @@ class UserRepo {
           options["scholar"]["coAuthors"].map(async (data: any) => {
             const coAuthor = await this.ScholarCOAuthor.findOne({
               where: {
-                scholar_profile_id: update["id"],
+                scholar_profile_id: profile["id"],
+                name: data["name"],
+                affiliation: data["aff"],
               },
             });
 
             if (!coAuthor) {
               await this.ScholarCOAuthor.create({
-                scholar_profile_id: update["id"],
+                scholar_profile_id: profile["id"],
                 name: data["name"],
                 affiliation: data["aff"],
               });
@@ -751,7 +868,9 @@ class UserRepo {
                 },
                 {
                   where: {
-                    scholar_profile_id: update["id"],
+                    scholar_profile_id: profile["id"],
+                    name: data["name"],
+                    affiliation: data["aff"],
                   },
                 }
               );

@@ -1,6 +1,7 @@
 import db from "../models";
 import loggerWinston from "../helper/logger-winston";
 import Role from "../models/role";
+import { Op } from "sequelize";
 
 class RoleRepo {
   Role: typeof Role;
@@ -12,6 +13,11 @@ class RoleRepo {
     try {
       return await db.transaction(async (transaction) => {
         return await this.Role.findAndCountAll({
+          where: {
+            [Op.not]: {
+              role_name: "admin",
+            },
+          },
           transaction,
         });
       });
