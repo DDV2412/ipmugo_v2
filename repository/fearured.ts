@@ -99,6 +99,18 @@ class FeatruredRepo {
     }
   };
 
+  scroll = async (scroll_id: string) => {
+    try {
+      return await this.client.scroll({
+        scroll: "1m",
+        scroll_id: scroll_id,
+      });
+    } catch (error) {
+      loggerWinston.error(error);
+      return null;
+    }
+  };
+
   contact = async (contact: any) => {
     try {
       return await db.transaction(async (transaction) => {
