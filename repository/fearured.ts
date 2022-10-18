@@ -90,7 +90,6 @@ class FeatruredRepo {
     try {
       return await this.client.search<ElasticType>({
         index: search["indexName"],
-        scroll: "1m",
         body: search["body"],
       });
     } catch (error) {
