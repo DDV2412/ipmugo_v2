@@ -15,7 +15,6 @@ export default {
       range,
       filterByTopic,
       filterByJournal,
-      scroll_id,
     } = req.query;
 
     const filter: any = [];
@@ -141,9 +140,7 @@ export default {
       },
     });
 
-    if (scroll_id) {
-      articles = await req.FeatruredUC.scroll(scroll_id);
-    }
+
 
     res.json({
       status: "success",
@@ -231,7 +228,6 @@ export default {
       range,
       filterByTopic,
       filterByJournal,
-      scroll_id,
     } = req.body;
 
     const { error } = validation.advancedSearch({
@@ -423,9 +419,6 @@ export default {
       },
     });
 
-    if (scroll_id) {
-      articles = await req.FeatruredUC.scroll(scroll_id);
-    }
 
     res.json({
       status: "success",

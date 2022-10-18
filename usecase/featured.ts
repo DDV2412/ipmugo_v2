@@ -8,10 +8,6 @@ class FeatruredUC {
     return await this.featuredRepo.search(search);
   };
 
-  scroll = async (scroll_id: string) => {
-    return await this.featuredRepo.scroll(scroll_id);
-  };
-
   contact = async (message: {}) => {
     return this.featuredRepo.contact(message);
   };
