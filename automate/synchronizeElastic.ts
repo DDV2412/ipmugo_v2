@@ -56,7 +56,7 @@ class Synchronize {
         identifier: { type: "keyword" },
         publish_date: { type: "date" },
         topic: { type: "keyword" },
-        title: { type: "text" },
+        title: { type: "keyword" },
         abstract: { type: "text" },
         format: { type: "text" },
         publish_year: { type: "keyword" },
