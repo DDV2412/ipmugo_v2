@@ -88,10 +88,24 @@ class FeatruredRepo {
 
   search = async (search: {}) => {
     try {
-      return await this.client.search<ElasticType>({
+      const articles = await this.client.search<ElasticType>({
         index: search["indexName"],
         body: search["body"],
       });
+
+      const total = await this.client.count({
+        index: search["indexName"],
+        body: {
+          query: search["body"]["query"],
+        },
+      });
+
+      return {
+        total: total["count"],
+        currentPage: search["body"]["page"],
+        countPage: Math.ceil(total["count"] / search["body"]["size"]),
+        articles: articles.hits.hits,
+      };
     } catch (error) {
       loggerWinston.error(error);
       return null;

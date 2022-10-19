@@ -140,11 +140,12 @@ export default {
       },
     });
 
-
-
     res.json({
       status: "success",
-      articles: articles,
+      total: articles.total,
+      currentPage: articles.currentPage,
+      countPage: articles.countPage,
+      articles: articles.articles,
     });
   },
 
@@ -175,7 +176,10 @@ export default {
 
     res.json({
       status: "success",
-      articles: articles,
+      total: articles.total,
+      currentPage: articles.currentPage,
+      countPage: articles.countPage,
+      articles: articles.articles,
     });
   },
 
@@ -212,7 +216,10 @@ export default {
 
     res.json({
       status: "success",
-      articles: articles,
+      total: articles.total,
+      currentPage: articles.currentPage,
+      countPage: articles.countPage,
+      articles: articles.articles,
     });
   },
 
@@ -419,10 +426,12 @@ export default {
       },
     });
 
-
     res.json({
       status: "success",
-      articles: articles,
+      total: articles.total,
+      currentPage: articles.currentPage,
+      countPage: articles.countPage,
+      articles: articles.articles,
     });
   },
 
