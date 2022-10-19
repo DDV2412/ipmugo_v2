@@ -121,22 +121,6 @@ export default {
                 },
               },
         query: query,
-        aggs: {
-          topic: {
-            terms: {
-              field: "topic",
-              size: 10000,
-            },
-          },
-          journal: {
-            terms: {
-              field: "journal.name",
-              size: 10000,
-            },
-          },
-          min_year: { min: { field: "publish_date", format: "yyyy" } },
-          max_year: { max: { field: "publish_date", format: "yyyy" } },
-        },
       },
     });
 
@@ -146,6 +130,7 @@ export default {
       currentPage: articles.currentPage,
       countPage: articles.countPage,
       articles: articles.articles,
+      aggregations: articles.aggregations,
     });
   },
 
@@ -180,6 +165,7 @@ export default {
       currentPage: articles.currentPage,
       countPage: articles.countPage,
       articles: articles.articles,
+      aggregations: articles.aggregations,
     });
   },
 
@@ -220,6 +206,7 @@ export default {
       currentPage: articles.currentPage,
       countPage: articles.countPage,
       articles: articles.articles,
+      aggregations: articles.aggregations,
     });
   },
 
@@ -407,22 +394,6 @@ export default {
             filter: filter,
           },
         },
-        aggs: {
-          topic: {
-            terms: {
-              field: "topic",
-              size: 10000,
-            },
-          },
-          journal: {
-            terms: {
-              field: "journal.name",
-              size: 10000,
-            },
-          },
-          min_year: { min: { field: "publish_date", format: "yyyy" } },
-          max_year: { max: { field: "publish_date", format: "yyyy" } },
-        },
       },
     });
 
@@ -432,6 +403,7 @@ export default {
       currentPage: articles.currentPage,
       countPage: articles.countPage,
       articles: articles.articles,
+      aggregations: articles.aggregations,
     });
   },
 

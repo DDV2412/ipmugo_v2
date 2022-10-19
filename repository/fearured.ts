@@ -100,11 +100,41 @@ class FeatruredRepo {
         },
       });
 
+      const aggregations = await this.client.search<ElasticType>({
+        index: search["indexName"],
+        body: {
+          query: {
+            bool: {
+              must: {
+                match_all: {},
+              },
+            },
+          },
+          aggs: {
+            topic: {
+              terms: {
+                field: "topic",
+                size: 10000,
+              },
+            },
+            journal: {
+              terms: {
+                field: "journal.name",
+                size: 10000,
+              },
+            },
+            min_year: { min: { field: "publish_date", format: "yyyy" } },
+            max_year: { max: { field: "publish_date", format: "yyyy" } },
+          },
+        },
+      });
+
       return {
         total: total["count"],
         currentPage: search["body"]["page"],
         countPage: Math.ceil(total["count"] / search["body"]["size"]),
-        articles: articles.hits.hits,
+        articles: articles,
+        aggregations: aggregations["aggregations"],
       };
     } catch (error) {
       loggerWinston.error(error);
