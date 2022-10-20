@@ -16,6 +16,7 @@ export const mailService = async (options: any) => {
       to: options.to,
       replyTo: options.replyTo,
       subject: options.subject,
+      text: options.text,
       html: options.message,
     };
 

@@ -221,10 +221,10 @@ export default {
     }
 
     await mailService({
-      to: req.body["email"],
+      to: checkEmail["name"] + "<" + req.body.email + ">",
       subject: `Password Reset Request for IPMUGO Digital Library`,
-      message:
-        "To reset your password, please click the link below.\n\n" +
+      text:
+        "We have received your request to reset your password. Please click the link below to complete the reset:\n\n" +
         req.protocol +
         "://" +
         req.get("host") +
@@ -233,6 +233,209 @@ export default {
         encodeURIComponent(reset) +
         "&email=" +
         req.body["email"],
+      message: `<tbody>
+  <tr>
+    <td width="100%" valign="top" bgcolor="#ffffff" style="padding-top: 20px">
+      <table
+        width="580"
+        class="m_-5695989656555827937deviceWidth"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        align="center"
+        bgcolor="#ffffff"
+        style="border-collapse: collapse; margin: 0 auto"
+      >
+        <tbody>
+          <tr>
+            <td
+              valign="top"
+              align="center"
+              style="padding: 0"
+              bgcolor="#ffffff"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                style="width: 100px; color: #1d4ed8"
+                viewBox="0 0 125.533 64.114"
+                fill="currentColor"
+              >
+                <g transform="translate(-1927 -2183.497)">
+                  <path
+                    d="M1983.683,2198.985c-30.6,21.63-29.659,57.937-56.683,63.141C1950.136,2237.045,1956.845,2198.734,1983.683,2198.985Z"
+                    transform="translate(0 -14.515)"
+                  ></path>
+                  <path
+                    d="M2433.341,2192.369c-21.381,21.632-23.452,50.6-47.341,55.241,18.121-19.626,26.146-47.34,41.634-58.376,22.448-15.925,54.99,3.449,32.6,31.791l-9.217-1C2467.764,2203.782,2451.462,2174.123,2433.341,2192.369Z"
+                    transform="translate(-430.22)"
+                  ></path>
+                  <path
+                    d="M3141.716,2352c-.689,6.02-5.456,47.968-17.055,44.519-3.95-1.191-6.646-7.336-3.825-12.792l-9.908-1.316L3094,2402.6l11.161.689,7.147-9.28c23.075,14.735,33.734-1.818,34.047-21.068C3146.481,2365.983,3143.536,2358.207,3141.716,2352Z"
+                    transform="translate(-1093.827 -157.938)"
+                  ></path>
+                </g>
+              </svg>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                font-size: 13px;
+                color: #282828;
+                font-weight: normal;
+                text-align: left;
+                font-family: 'Open Sans', sans-serif;
+                line-height: 24px;
+                vertical-align: top;
+                padding: 15px 8px 10px 8px;
+              "
+              bgcolor="#ffffff"
+            >
+              <h1
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  margin: 30px 0 50px 0;
+                "
+              >
+                PASSWORD RESET REQUEST
+              </h1>
+              <p>Dear ${checkEmail["name"]},</p>
+              <p>
+                We have received your request to reset your password. Please
+                click the link below to complete the reset:
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom: 30px">
+              <a
+                href="${req.protocol}+"://"+${req.get(
+        "host"
+      )}+"/api/reset-password?token="+${encodeURIComponent(reset)}+"&email="+${
+        req.body["email"]
+      }"
+                style="
+                  padding: 10px;
+                  width: 300px;
+                  display: block;
+                  text-decoration: none;
+                  border: 1px solid #ff6c37;
+                  text-align: center;
+                  font-weight: bold;
+                  font-size: 14px;
+                  font-family: 'Open Sans', sans-serif;
+                  color: #ffffff;
+                  background: #ff6c37;
+                  border-radius: 5px;
+                  line-height: 17px;
+                  margin: 0 auto;
+                "
+                target="_blank"
+                data-saferedirecturl="#"
+              >
+                Reset My Password
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                font-family: 'Open Sans', sans-serif;
+                font-size: 13px;
+                padding: 0px 10px 0px 10px;
+                text-align: left;
+              "
+            >
+              <p>
+                If you need additional assistance, or you did not make this
+                change, please contact
+                <a
+                  href="mailto:help@ipmugo.com"
+                  style="
+                    color: #ff6c37;
+                    text-decoration: underline;
+                    font-weight: bold;
+                  "
+                  target="_blank"
+                  >help@ipmugo.com</a
+                >.
+              </p>
+              <p>Cheers,<br />The IPMUGo Team</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+</tbody>
+<table
+  width="100%"
+  border="0"
+  cellpadding="0"
+  cellspacing="0"
+  align="center"
+  style="border-collapse: collapse; margin: 0 auto"
+>
+  <tbody>
+    <tr>
+      <td
+        bgcolor="#ffffff"
+        style="
+          font-family: 'Open Sans', sans-serif;
+          line-height: 150%;
+          padding-top: 10px;
+          padding-left: 10px;
+          padding-right: 18px;
+          padding-bottom: 30px;
+          text-align: left;
+          border-bottom: 0;
+          font-size: 10px;
+          border-top: 0;
+        "
+      >
+        <table
+          width="100%"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          align="left"
+          style="border-collapse: collapse"
+        >
+          <tbody>
+            <tr>
+              <td
+                valign="top"
+                style="
+                  text-align: center;
+                  font-size: 11px;
+                  color: #282828;
+                  font-family: 'Open Sans', sans-serif;
+                  padding: 20px 0;
+                  padding-left: 0px;
+                "
+              >
+                This email was sent to
+                <a href="${req.body["email"]}"
+                  style="
+                    color: #ff6c37;
+                    text-decoration: none;
+                    font-weight: 600;
+                  "
+                  >${req.body["email"]}</a
+                >, which is associated with an IPMUGo account. <br />
+                <br />
+                © ${new Date().getFullYear()} PT IPMU, All Rights Reserved<br />
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`,
     });
 
     res.json({
@@ -319,12 +522,6 @@ export default {
       );
     }
 
-    await mailService({
-      to: req.query.email,
-      subject: `IPMUGO Digital Library Password Changed`,
-      message: `We've channeled our psionic energy to change your Discord account password. Gonna go get a seltzer to calm down.`,
-    });
-
     res.json({
       status: "success",
       message: `Password reset. Please login with your new password.`,
@@ -397,17 +594,221 @@ export default {
     );
 
     await mailService({
-      to: req.body.email,
+      to: checkEmail["name"] + "<" + req.body.email + ">",
       replyTo: process.env.SMTP_ADDRESS,
       subject: `IPMUGO Digital Library Verification Email`,
-      message:
-        "To verification email, please click the link below.\n\n" +
+      text:
+        "Thank you for registering. To activate your account please click this email verification link:.\n\n" +
         req.protocol +
         "://" +
         req.get("host") +
         "\n" +
         "/api/verify-email?token=" +
         verifyToken,
+      message: `<tbody>
+  <tr>
+    <td width="100%" valign="top" bgcolor="#ffffff" style="padding-top: 20px">
+      <table
+        width="580"
+        class="m_-5695989656555827937deviceWidth"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        align="center"
+        bgcolor="#ffffff"
+        style="border-collapse: collapse; margin: 0 auto"
+      >
+        <tbody>
+          <tr>
+            <td
+              valign="top"
+              align="center"
+              style="padding: 0"
+              bgcolor="#ffffff"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                style="width: 100px; color: #1d4ed8"
+                viewBox="0 0 125.533 64.114"
+                fill="currentColor"
+              >
+                <g transform="translate(-1927 -2183.497)">
+                  <path
+                    d="M1983.683,2198.985c-30.6,21.63-29.659,57.937-56.683,63.141C1950.136,2237.045,1956.845,2198.734,1983.683,2198.985Z"
+                    transform="translate(0 -14.515)"
+                  ></path>
+                  <path
+                    d="M2433.341,2192.369c-21.381,21.632-23.452,50.6-47.341,55.241,18.121-19.626,26.146-47.34,41.634-58.376,22.448-15.925,54.99,3.449,32.6,31.791l-9.217-1C2467.764,2203.782,2451.462,2174.123,2433.341,2192.369Z"
+                    transform="translate(-430.22)"
+                  ></path>
+                  <path
+                    d="M3141.716,2352c-.689,6.02-5.456,47.968-17.055,44.519-3.95-1.191-6.646-7.336-3.825-12.792l-9.908-1.316L3094,2402.6l11.161.689,7.147-9.28c23.075,14.735,33.734-1.818,34.047-21.068C3146.481,2365.983,3143.536,2358.207,3141.716,2352Z"
+                    transform="translate(-1093.827 -157.938)"
+                  ></path>
+                </g>
+              </svg>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                font-size: 13px;
+                color: #282828;
+                font-weight: normal;
+                text-align: left;
+                font-family: 'Open Sans', sans-serif;
+                line-height: 24px;
+                vertical-align: top;
+                padding: 15px 8px 10px 8px;
+              "
+              bgcolor="#ffffff"
+            >
+              <h1
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  margin: 30px 0 50px 0;
+                "
+              >
+                WELCOME TO IPMUGO
+              </h1>
+              <p>Dear ${checkEmail["name"]},</p>
+              <p>
+                Thank you for registering. To activate your account please click
+                this email verification link:
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom: 30px">
+              <a
+                href="${req.protocol} +
+        "://" +
+        ${req.get("host")}
+        +
+        "/api/verify-email?token=" +
+       ${verifyToken}"
+                style="
+                  padding: 10px;
+                  width: 300px;
+                  display: block;
+                  text-decoration: none;
+                  border: 1px solid #ff6c37;
+                  text-align: center;
+                  font-weight: bold;
+                  font-size: 14px;
+                  font-family: 'Open Sans', sans-serif;
+                  color: #ffffff;
+                  background: #ff6c37;
+                  border-radius: 5px;
+                  line-height: 17px;
+                  margin: 0 auto;
+                "
+                target="_blank"
+                data-saferedirecturl="#"
+              >
+                Verify Email
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                font-family: 'Open Sans', sans-serif;
+                font-size: 13px;
+                padding: 0px 10px 0px 10px;
+                text-align: left;
+              "
+            >
+              <p>
+                If you need additional assistance, or you did not make this
+                change, please contact
+                <a
+                  href="mailto:help@ipmugo.com"
+                  style="
+                    color: #ff6c37;
+                    text-decoration: underline;
+                    font-weight: bold;
+                  "
+                  target="_blank"
+                  >help@ipmugo.com</a
+                >.
+              </p>
+              <p>Cheers,<br />The IPMUGo Team</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+</tbody>
+<table
+  width="100%"
+  border="0"
+  cellpadding="0"
+  cellspacing="0"
+  align="center"
+  style="border-collapse: collapse; margin: 0 auto"
+>
+  <tbody>
+    <tr>
+      <td
+        bgcolor="#ffffff"
+        style="
+          font-family: 'Open Sans', sans-serif;
+          line-height: 150%;
+          padding-top: 10px;
+          padding-left: 10px;
+          padding-right: 18px;
+          padding-bottom: 30px;
+          text-align: left;
+          border-bottom: 0;
+          font-size: 10px;
+          border-top: 0;
+        "
+      >
+        <table
+          width="100%"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          align="left"
+          style="border-collapse: collapse"
+        >
+          <tbody>
+            <tr>
+              <td
+                valign="top"
+                style="
+                  text-align: center;
+                  font-size: 11px;
+                  color: #282828;
+                  font-family: 'Open Sans', sans-serif;
+                  padding: 20px 0;
+                  padding-left: 0px;
+                "
+              >
+                This email was sent to
+                <a href="${req.body.email}"
+                  style="
+                    color: #ff6c37;
+                    text-decoration: none;
+                    font-weight: 600;
+                  "
+                  >${req.body.email}</a
+                >, which is associated with an IPMUGo account. <br />
+                <br />
+                © ${new Date().getFullYear()} PT IPMU, All Rights Reserved<br />
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`,
     });
 
     res.json({
