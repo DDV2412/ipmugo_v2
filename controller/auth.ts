@@ -228,7 +228,6 @@ export default {
         req.protocol +
         "://" +
         req.get("host") +
-        "\n" +
         "/api/reset-password?token=" +
         encodeURIComponent(reset) +
         "&email=" +
@@ -310,9 +309,9 @@ export default {
           <tr>
             <td style="padding-bottom: 30px">
               <a
-                href="${req.protocol}+"://"+${req.get(
+                href="${req.protocol}://${req.get(
         "host"
-      )}+"/api/reset-password?token="+${encodeURIComponent(reset)}+"&email="+${
+      )}/api/reset-password?token=${encodeURIComponent(reset)}&email=${
         req.body["email"]
       }"
                 style="
@@ -602,7 +601,6 @@ export default {
         req.protocol +
         "://" +
         req.get("host") +
-        "\n" +
         "/api/verify-email?token=" +
         verifyToken,
       message: `<tbody>
@@ -682,13 +680,9 @@ export default {
           <tr>
             <td style="padding-bottom: 30px">
               <a
-                href="${req.protocol} +
-        "://" +
-        ${req.get("host")}
-        +
-        "/api/verify-email?token=" +
-       ${verifyToken}"
-                style="
+                href="${req.protocol}://${req.get(
+        "host"
+      )}/api/verify-email?token=${verifyToken}" style="
                   padding: 10px;
                   width: 300px;
                   display: block;
