@@ -107,7 +107,7 @@ export default {
           },
         #swagger.responses[201] = {
           description: 'Successfully added new article.',
-          schema: { $ref: '#/definitions/Articles' }
+          schema: { $ref: '#/definitions/Article' }
         }
         #swagger.responses[404] = {
           description: 'Journal by ID not found',
@@ -173,7 +173,7 @@ export default {
           },
         #swagger.responses[201] = {
           description: 'Successfully added new article.',
-          schema: { $ref: '#/definitions/Articles' }
+          schema: { $ref: '#/definitions/Article' }
         }
         #swagger.responses[404] = {
           description: 'Journal by ID not found',

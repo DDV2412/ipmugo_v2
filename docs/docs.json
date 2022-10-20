@@ -39,7 +39,7 @@
           {
             "name": "upload",
             "in": "formData",
-            "type": "single",
+            "type": "file",
             "required": true,
             "description": "Upload Thumbnail/Cover/photo_profile"
           }
@@ -634,7 +634,7 @@
           "201": {
             "description": "Successfully added new article.",
             "schema": {
-              "$ref": "#/definitions/Articles"
+              "$ref": "#/definitions/Article"
             }
           },
           "400": {
@@ -774,7 +774,7 @@
           "201": {
             "description": "Successfully added new article.",
             "schema": {
-              "$ref": "#/definitions/Articles"
+              "$ref": "#/definitions/Article"
             }
           },
           "400": {
@@ -2039,31 +2039,14 @@
             "name": "email",
             "in": "query",
             "description": "Authentication Reset Password",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "example": "dhyanputra24@gmail.com"
-                }
-              }
-            }
+            "type": "string"
           },
           {
             "name": "token",
             "in": "query",
             "description": "Authentication Reset Password",
             "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "token": {
-                  "type": "string",
-                  "example": "token"
-                }
-              }
-            }
+            "type": "string"
           },
           {
             "name": "obj",

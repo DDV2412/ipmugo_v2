@@ -451,18 +451,11 @@ export default {
         #swagger.parameters['email'] = {
             in: 'query',
             description: 'Authentication Reset Password',
-            required: true,
-            schema: {
-              "email": "dhyanputra24@gmail.com",
-            }
           },
           #swagger.parameters['token'] = {
             in: 'query',
             description: 'Authentication Reset Password',
             required: true,
-            schema: {
-              "token": "token",
-            }
           },
             #swagger.parameters['obj'] = {
             in: 'body',

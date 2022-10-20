@@ -12,7 +12,7 @@ export default {
         #swagger.description = 'Upload Thumbnail/Cover/photo_profile'
         #swagger.parameters['upload'] = {
             in: 'formData',
-            type: 'single',
+            type: 'file',
             required: true,
             description: 'Upload Thumbnail/Cover/photo_profile'
           },
