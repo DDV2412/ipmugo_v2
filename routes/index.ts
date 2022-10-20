@@ -39,16 +39,8 @@ class Router {
      * Journal
      */
 
-    this.router.get(
-      "/journals",
-      AuthMiddleware.authenticate,
-      Journal.allJournals
-    );
-    this.router.get(
-      "/journal/:journalId",
-      AuthMiddleware.authenticate,
-      Journal.journalById
-    );
+    this.router.get("/journals", Journal.allJournals);
+    this.router.get("/journal/:journalId", Journal.journalById);
     this.router.post(
       "/journal",
       AuthMiddleware.authenticate,
@@ -69,16 +61,8 @@ class Router {
      * Article
      */
 
-    this.router.get(
-      "/articles",
-      AuthMiddleware.authenticate,
-      Article.allArticles
-    );
-    this.router.get(
-      "/article/:articleId",
-      AuthMiddleware.authenticate,
-      Article.articleById
-    );
+    this.router.get("/articles", Article.allArticles);
+    this.router.get("/article/:articleId", Article.articleById);
     this.router.post(
       "/article",
       AuthMiddleware.authenticate,
@@ -99,16 +83,8 @@ class Router {
      * Interest
      */
 
-    this.router.get(
-      "/interests",
-      AuthMiddleware.authenticate,
-      Interest.allInterests
-    );
-    this.router.get(
-      "/interest/:interestId",
-      AuthMiddleware.authenticate,
-      Interest.interestById
-    );
+    this.router.get("/interests", Interest.allInterests);
+    this.router.get("/interest/:interestId", Interest.interestById);
     this.router.post(
       "/interest",
       AuthMiddleware.authenticate,

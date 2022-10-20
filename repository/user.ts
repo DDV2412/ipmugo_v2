@@ -355,7 +355,7 @@ class UserRepo {
           return null;
         }
 
-        let newPass = await hashSync(password, 12);
+        let newPass = hashSync(password, 12);
 
         await this.ResetPassword.destroy({
           where: {

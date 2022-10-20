@@ -4,6 +4,16 @@ import validation from "../validation";
 
 export default {
   allArticles: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+      #swagger.tags = ['Article']
+      #swagger.summary = 'Article list'
+      #swagger.description = 'Article list'
+      #swagger.responses[200] = {
+            description: 'Article successfully.',
+            schema: [{ $ref: '#/definitions/Article' }]
+      }
+
+      */
     const { page, size, filters } = req.query;
 
     let articles = await req.ArticleUC.allArticles(page, size, filters);
@@ -22,6 +32,24 @@ export default {
   },
 
   articleById: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+     #swagger.tags = ['Article']
+     #swagger.summary = 'Article by ID'
+     #swagger.description = 'Article by ID'
+     #swagger.responses[200] = {
+       description: 'Article successfully.',
+       schema: [{ $ref: '#/definitions/Article' }]
+     }
+     #swagger.responses[404] = {
+       description: 'Article not found',
+       schema: {
+         status: "error", 
+          message: "Article not found",
+       }
+     }
+       
+     */
+
     const articleId = req.params["articleId"];
 
     let article = await req.ArticleUC.articleById(articleId);
@@ -64,6 +92,49 @@ export default {
   },
 
   createArticle: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Article']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Create Article '
+        #swagger.description = 'Create Article '
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Add Article',
+            required: true,
+            schema: {
+              $ref: '#/definitions/InsertArticle'
+            }
+          },
+        #swagger.responses[201] = {
+          description: 'Successfully added new article.',
+          schema: { $ref: '#/definitions/Articles' }
+        }
+        #swagger.responses[404] = {
+          description: 'Journal by ID not found',
+          schema: {
+            status: "error", 
+            
+            message: "Journal not found"
+          }
+        }
+        #swagger.responses[400] = {
+          description: 'Validation error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { error } = validation.article(req.body);
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
@@ -85,7 +156,52 @@ export default {
       article: article,
     });
   },
+
   updateArticle: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+       #swagger.tags = ['Article']
+       #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Update Article by ID'
+        #swagger.description = 'Update Article by ID'
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Add Article',
+            required: true,
+            schema: {
+              $ref: '#/definitions/InsertArticle'
+            }
+          },
+        #swagger.responses[201] = {
+          description: 'Successfully added new article.',
+          schema: { $ref: '#/definitions/Articles' }
+        }
+        #swagger.responses[404] = {
+          description: 'Journal by ID not found',
+          schema: {
+            status: "error", 
+            
+            message: "Journal not found"
+          }
+        }
+        #swagger.responses[400] = {
+          description: 'Validation error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
+
     const articleId = req.params["articleId"];
 
     let checkArticle = await req.ArticleUC.articleById(articleId);
@@ -104,7 +220,27 @@ export default {
       message: `Successfully updated article`,
     });
   },
+
   deleteArticle: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Article']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Delete article by ID'
+        #swagger.description = 'Delete  article by ID'
+        #swagger.responses[200] = {
+          description: 'Successfully deleted article.',
+          schema: { $ref: '#/definitions/Article' }
+        }
+        #swagger.responses[404] = {
+          description: 'Article not found',
+          schema: {
+            status: "error", 
+            message: "Article not found",
+          }
+        }
+       
+       */
+
     const articleId = req.params["articleId"];
 
     let checkArticle = await req.ArticleUC.articleById(articleId);

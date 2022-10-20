@@ -4,6 +4,23 @@ import validation from "../validation";
 
 export default {
   allJournals: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Journal']
+        #swagger.summary = 'Journal List'
+        #swagger.description = 'Journal List'
+        #swagger.responses[200] = {
+          description: 'Successfully get journal list',
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { page, size, filters } = req.query;
     let journals = await req.JournalUC.allJournals(page, size, filters);
 
@@ -21,6 +38,30 @@ export default {
   },
 
   journalById: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Journal']
+        #swagger.summary = 'Journal By ID'
+        #swagger.description = 'Journal By ID'
+        #swagger.responses[200] = {
+          description: 'Successfully journal',
+        }
+        #swagger.responses[404] = {
+          description: 'Journal not found',
+          schema: {
+            status: "error", 
+            message: "Journal not found",
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const journalId = req.params["journalId"];
     const {
       search,
@@ -175,6 +216,53 @@ export default {
     });
   },
   createJournal: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Journal']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Create Journal'
+        #swagger.description = 'Create Journal'
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Create Journal',
+            required: true,
+            schema: {
+              "name": "International Journal of Power Electronics and Drive Systems (IJPEDS)",
+    "abbreviation": "IJPEDS",
+    "publisher": "Institute of Advanced Engineering and Science (IAES)",
+    "thumbnail": "http://127.0.0.1:5000/thumnail\\IJPEDS - Journal Cover web.jpg",
+    "cover": "http://127.0.0.1:5000/cover\\03  IJPEDS 2021.jpg",
+    "issn": "2088-8694",
+    "e_issn": "2722-256X",
+    "description": "The International Journal of Power Electronics and Drive Systems (IJPEDS), p-ISSN: 2088-8694, e-ISSN 2722-256X, is the official publication of the Institute of Advanced Engineering and Science (IAES). This is a SCOPUS indexed journal, SJR Q3 on Electrical and Electronics Engineering, CiteScore: 3.3, SJR: 0.346, and SNIP: 0.638. The scope of the journal includes all issues in the field of power electronics and drive systems. Included are techniques for advanced power semiconductor devices; control in power electronics; low and high power converters (inverters, converters, controlled and uncontrolled rectifiers); control algorithms and techniques applied to power electronics; electromagnetic and thermal performance of electronic power converters and inverters; power quality and utility applications; renewable energy; electric machines; modelling, simulation, analysis, design and implementations of the application of power circuit components (power semiconductors, inductors, high frequency transformers, capacitors), EMI/EMC considerations; power devices and components; integrated and packaged; induction motor drives; synchronous motor drives; synchronous motor drives; permanent magnet motor drives; ASDs (adjustable speed drives); multi-phase machines and converters; applications in motor drives; electric vehicles; wind energy systems; solar; battery chargers; UPS; and other applications.",
+    "base_url": "https://ijpeds.iaescore.com/index.php/IJPEDS",
+    "interests": [
+        {
+            "name": "Computer Science"
+        }
+    ]
+            }
+          },
+        #swagger.responses[200] = {
+          description: 'Successfully journal',
+          schema: [{ $ref: '#/definitions/Journal' }]
+        }
+        #swagger.responses[404] = {
+          description: 'Journal ISSN or E-ISSN not available',
+          schema: {
+            status: "error", 
+            message: "Journal ISSN or E-ISSN not available",
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { error } = validation.journal(req.body);
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
@@ -193,6 +281,56 @@ export default {
     });
   },
   updateJournal: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Journal']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Update Journal'
+        #swagger.description = 'Update Journal'
+         #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Update Journal',
+            required: true,
+            schema: {
+              "name": "International Journal of Power Electronics and Drive Systems (IJPEDS)",
+    "abbreviation": "IJPEDS",
+    "publisher": "Institute of Advanced Engineering and Science (IAES)",
+    "thumbnail": "http://127.0.0.1:5000/thumnail\\IJPEDS - Journal Cover web.jpg",
+    "cover": "http://127.0.0.1:5000/cover\\03  IJPEDS 2021.jpg",
+    "issn": "2088-8694",
+    "e_issn": "2722-256X",
+    "description": "The International Journal of Power Electronics and Drive Systems (IJPEDS), p-ISSN: 2088-8694, e-ISSN 2722-256X, is the official publication of the Institute of Advanced Engineering and Science (IAES). This is a SCOPUS indexed journal, SJR Q3 on Electrical and Electronics Engineering, CiteScore: 3.3, SJR: 0.346, and SNIP: 0.638. The scope of the journal includes all issues in the field of power electronics and drive systems. Included are techniques for advanced power semiconductor devices; control in power electronics; low and high power converters (inverters, converters, controlled and uncontrolled rectifiers); control algorithms and techniques applied to power electronics; electromagnetic and thermal performance of electronic power converters and inverters; power quality and utility applications; renewable energy; electric machines; modelling, simulation, analysis, design and implementations of the application of power circuit components (power semiconductors, inductors, high frequency transformers, capacitors), EMI/EMC considerations; power devices and components; integrated and packaged; induction motor drives; synchronous motor drives; synchronous motor drives; permanent magnet motor drives; ASDs (adjustable speed drives); multi-phase machines and converters; applications in motor drives; electric vehicles; wind energy systems; solar; battery chargers; UPS; and other applications.",
+    "base_url": "https://ijpeds.iaescore.com/index.php/IJPEDS",
+    "interests": [
+        {
+            "name": "Computer Science"
+        }
+    ]
+            }
+          },
+        #swagger.responses[200] = {
+          description: 'Successfully update journal',
+          schema: {
+            status: "success",
+            message: "Successfully updated journal"
+          }
+        }
+        #swagger.responses[404] = {
+          description: 'Journal not found',
+          schema: {
+            status: "error", 
+            message: "Journal not found",
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const journalId = req.params["journalId"];
 
     let checkJournal = await req.JournalUC.journalById(journalId);
@@ -208,10 +346,39 @@ export default {
 
     res.json({
       status: "success",
-      message: `Successfully deleted journal`,
+      message: `Successfully updated journal`,
     });
   },
   deleteJournal: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Journal']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Journal By ID'
+        #swagger.description = 'Journal By ID'
+        #swagger.responses[200] = {
+          description: 'Successfully journal',
+          schema: {
+            status: "success",
+            message: "Successfully deleted journal"
+          }
+        }
+        #swagger.responses[404] = {
+          description: 'Journal not found',
+          schema: {
+            status: "error", 
+            message: "Journal not found",
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { error } = validation.journal(req.body);
 
     const journalId = req.params["journalId"];

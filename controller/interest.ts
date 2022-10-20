@@ -4,6 +4,23 @@ import validation from "../validation";
 
 export default {
   allInterests: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Interest']
+        #swagger.summary = 'Interest List'
+        #swagger.description = 'Interest List'
+        #swagger.responses[200] = {
+          description: 'Successfully get interests list',
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     let interests = await req.InterestUC.allInterests();
 
     if (interests == null) {
@@ -18,6 +35,30 @@ export default {
   },
 
   interestById: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Interest']
+        #swagger.summary = 'Interest By ID'
+        #swagger.description = 'Interest By ID'
+        #swagger.responses[200] = {
+          description: 'Successfully interest',
+        }
+        #swagger.responses[404] = {
+          description: 'Interest not found',
+          schema: {
+            status: "error", 
+            message: "Interest not found",
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const interestId = req.params["interestId"];
 
     let interest = await req.InterestUC.interestById(interestId);
@@ -32,6 +73,49 @@ export default {
     });
   },
   createInterest: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Interest']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Create interest'
+        #swagger.description = 'Create interest'
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Create interest',
+            required: true,
+            schema: {
+              "name": "2D Material"
+            }
+          },
+        #swagger.responses[200] = {
+          description: 'Successfully interest',
+          schema: {
+            "status": "success",
+            "interest": {
+                "id": "33c8b0d6-e05a-4137-8919-761c75ac60aa",
+                "name": "2D Material",
+                "createdAt": "2022-10-14T06:23:16.853Z",
+                "updatedAt": "2022-10-14T06:23:16.853Z"
+            }        
+          }
+        }
+        #swagger.responses[400] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { error } = validation.interest(req.body);
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
@@ -44,6 +128,51 @@ export default {
     });
   },
   updateInterest: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Interest']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Update interests by iD'
+        #swagger.description = 'Update interests by iD'
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Update Interest',
+            required: true,
+            schema: {
+              "name": "2D Material"
+            }
+          },
+        #swagger.responses[200] = {
+          description: 'Successfully interest',
+          schema: {
+            status: "success",
+            message: "Successfully updated interest"
+          }
+        }
+        #swagger.responses[404] = {
+          description: 'Interest not found',
+          schema: {
+            status: "error", 
+            message: "Interest not found",
+          }
+        }
+        #swagger.responses[400] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const interestId = req.params["interestId"];
 
     let checkInterest = await req.InterestUC.interestById(interestId);
@@ -64,6 +193,35 @@ export default {
     });
   },
   deleteInterest: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Interest']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Interest By ID'
+        #swagger.description = 'Interest By ID'
+        #swagger.responses[200] = {
+          description: 'Successfully interest',
+          schema: {
+            status: "success",
+            message: "Successfully deleted interest"
+          }
+        }
+        #swagger.responses[404] = {
+          description: 'Interest not found',
+          schema: {
+            status: "error", 
+            message: "Interest not found",
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const interestId = req.params["interestId"];
 
     let checkInterest = await req.InterestUC.interestById(interestId);

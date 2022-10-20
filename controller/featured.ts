@@ -4,6 +4,42 @@ import ErrorHandler from "../helper/errorHandler";
 
 export default {
   search: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Featured']
+        #swagger.summary = 'Featured Search and Get Articles'
+        #swagger.description = 'Featured Search and Get Articles'
+        #swagger.parameters['search'] = {
+            in: 'query',
+            description: 'Query Search',
+          },
+          #swagger.parameters['range'] = {
+            in: 'query',
+            description: 'Query range',
+          },
+          #swagger.parameters['sortByDate'] = {
+            in: 'query',
+            description: 'Query sortByDate',
+          },
+           #swagger.parameters['filterByTopic'] = {
+            in: 'query',
+            description: 'Query filterByTopic',
+          }
+        #swagger.responses[200] = {
+          description: 'Successfully Search',
+          schema: {
+            $ref: '#/definitions/SearchArticles'
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const {
       search,
       page,
@@ -135,6 +171,23 @@ export default {
   },
 
   featuredArticles: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Featured']
+        #swagger.summary = 'Featured  Articles'
+        #swagger.description = 'Featured  Articles'
+        #swagger.responses[200] = {
+          description: 'Successfully Search',
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     let articles = await req.FeatruredUC.search({
       indexName: "articles",
       body: {
@@ -170,6 +223,23 @@ export default {
   },
 
   featuredAuthors: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Featured']
+        #swagger.summary = 'Featured  Authors'
+        #swagger.description = 'Featured  Authors'
+        #swagger.responses[200] = {
+          description: 'Successfully Search',
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     let articles = await req.FeatruredUC.search({
       indexName: "articles",
       body: {
@@ -211,6 +281,34 @@ export default {
   },
 
   advanced: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Featured']
+        #swagger.summary = 'Featured Advanced Search'
+        #swagger.description = 'Featured Advanced Search'
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Featured Advanced Search',
+            required: true,
+            schema: {
+              $ref: '#/definitions/Advanced'
+            }
+          },
+        #swagger.responses[200] = {
+          description: 'Successfully Search',
+          schema: {
+            $ref: '#/definitions/SearchArticles'
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const {
       searchDefault,
       page,
@@ -408,6 +506,42 @@ export default {
   },
 
   contact: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Featured']
+        #swagger.summary = 'Featured Contact'
+        #swagger.description = 'Featured Contact'
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Featured Send Message',
+            required: true,
+            schema: {
+              
+               "name": "Dian Dwi Vaputra",
+               "email": "dhyan@gmail.com",
+               "subject": "Testing Contact",
+               "message": "Message Example"
+            
+            }
+          },
+        #swagger.responses[200] = {
+          description: 'Successfully Search',
+          schema: {
+            
+               status: "success",
+              message: "Message sended successfully",
+            
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { error } = validation.contact(req.body);
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
@@ -421,6 +555,39 @@ export default {
   },
 
   subscribe: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['Featured']
+        #swagger.summary = 'Featured Subscribe'
+        #swagger.description = 'Featured Subscribe'
+        #swagger.parameters['obj'] = {
+            in: 'body',
+            description: 'Featured Subscribe',
+            required: true,
+            schema: {
+               "name": "Dian Dwi Vaputra",
+               "email": "dhyan@gmail.com",
+               "country": "Indonesia",
+               "city": "Yogyakarta",
+              "phone": "087835111061"
+            }
+          },
+        #swagger.responses[200] = {
+          description: 'Successfully Search',
+          schema:{
+               status: "success",
+              message: "Subscription added successfully",
+            }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { error } = validation.subscription(req.body);
 
     if (error) return next(new ErrorHandler(error["details"][0].message, 400));
@@ -434,6 +601,24 @@ export default {
   },
 
   subscribeList: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['User -- Admin Access']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Subscribe List'
+        #swagger.description = 'Subscribe List'
+        #swagger.responses[200] = {
+          description: 'Successfully get subscribe list',
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { page, size, filters } = req.query;
 
     let subscribe = await req.FeatruredUC.subscribeList(page, size, filters);
@@ -451,6 +636,24 @@ export default {
     });
   },
   contactList: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['User -- Admin Access']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Contact List'
+        #swagger.description = 'Contact List'
+        #swagger.responses[200] = {
+          description: 'Successfully get contact list',
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const { page, size, filters } = req.query;
 
     let contact = await req.FeatruredUC.contactList(page, size, filters);
@@ -468,6 +671,32 @@ export default {
     });
   },
   contactDetail: async (req: Request, res: Response, next: NextFunction) => {
+    /**
+        #swagger.tags = ['User -- Admin Access']
+        #swagger.security = [{ "Bearer": [] }]
+        #swagger.summary = 'Contact by ID'
+        #swagger.description = 'Contact by ID'
+        #swagger.responses[200] = {
+          description: 'Successfully get Contact by ID',
+        }
+        #swagger.responses[404] = {
+          description: '"Contact not found',
+          schema: {
+            status: "error", 
+            
+            message: "Contact not found"
+          }
+        }
+        #swagger.responses[500] = {
+          description: 'Server error',
+          schema: {
+            status: "error", 
+            
+            message: "____"
+          }
+        }
+       
+       */
     const contactId = req.params["contactId"];
 
     let contact = await req.FeatruredUC.contactDetail(contactId);
