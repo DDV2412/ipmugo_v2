@@ -27,12 +27,6 @@ import passport from "./lib/passport";
 import db from "./models";
 
 /**
- * Swagger
- */
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./docs/docs.json");
-
-/**
  * Import UseCase and Repo
  */
 import JournalRepo from "./repository/journal";
@@ -107,13 +101,6 @@ class Application {
      */
     this.app.use("/api", routes);
 
-    this.app.use(
-      "/api/docs",
-      swaggerUi.serve,
-      swaggerUi.setup(swaggerDocument, {
-        swaggerOptions: { persistAuthorization: true },
-      })
-    );
     this.app.use(express.static(path.join(__dirname, "/./static")));
 
     this.app.use(passport.initialize());
