@@ -24,16 +24,12 @@ export default {
     const { page, size, filters } = req.query;
     let journals = await req.JournalUC.allJournals(page, size, filters);
 
-    if (journals == null) {
-      journals = [];
-    }
-
     res.json({
       status: "success",
       total: journals.total,
       currentPage: journals.currentPage,
       countPage: journals.countPage,
-      journals: journals.journals,
+      journals: journals.journals || [],
     });
   },
 
