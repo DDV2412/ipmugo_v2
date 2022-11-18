@@ -95,8 +95,8 @@ export default {
             schema: {
                "name": "Ismail Abdul Rahman",
                "username": "IsmailRahman",
-                "email": "ismailar@uthm.edu.my",
-                "password": "IsmailRahman22#",
+                "email": "",
+                "password": "",
                 "roles": [{
                     "role_name": "author"
                 }],
