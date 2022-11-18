@@ -18,12 +18,15 @@ export default {
 
     let articles = await req.ArticleUC.allArticles(page, size, filters);
 
+    if (!articles) {
+      articles = [];
+    }
     res.json({
       status: "success",
       total: articles.total,
       currentPage: articles.currentPage,
       countPage: articles.countPage,
-      articles: articles.articles || [],
+      articles: articles.articles || articles,
     });
   },
 
