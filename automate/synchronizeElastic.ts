@@ -1,6 +1,6 @@
 import ArticleRepo from "../repository/article";
 import InterestRepo from "../repository/interest";
-import Elastic from "../repository/fearured";
+import Elastic from "../repository/featured";
 require("events").EventEmitter.defaultMaxListeners = 0;
 
 class Synchronize {

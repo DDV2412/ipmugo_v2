@@ -43,7 +43,7 @@ import AuthUC from "./usecase/auth";
 import CitationUC from "./usecase/citation";
 import CitationRepo from "./repository/citations";
 import FeatruredUC from "./usecase/featured";
-import FeatruredRepo from "./repository/fearured";
+import FeatruredRepo from "./repository/featured";
 
 const JournalUc = new JournalUC(new JournalRepo());
 const ArticleUc = new ArticleUC(new ArticleRepo());
